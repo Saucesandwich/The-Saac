@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test profiles & temporary artifacts
+chrome_test_profile*/
+temp_*
+*.tmp
+*.log
+
+# Editor & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Test-generated scratch screenshots (clean repo)
+screenshot_*.png
+!docs/assets/*.png

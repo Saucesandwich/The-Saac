@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Saac Financial Terminal // Institutional Bloomberg-Style Asset Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Load Local Chart.js First (with CDN Fallback for 100% Offline/Online Reliability) -->
+  <script src="./chart.umd.min.js"></script>
+  <script>
+    if (typeof Chart === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>');
+    }
+  </script>
+  <link rel="stylesheet" href="./src/css/terminal.css">
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-area">
+      <div class="logo-icon">XAU</div>
+      <div class="logo-text">
+        <h1>Gold, Baht &amp; US Bond Market Terminal</h1>
+        <p>CME COMEX Gold Futures (GC=F) • Bank of Thailand (THB=X) • CBOE US10Y (^TNX)</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Universal Multi-Asset Switcher -->
+      <div class="instrument-switcher">
+        <button class="instrument-btn active" id="instBtnGold" onclick="switchInstrument('gold')">XAU / USD</button>
+        <button class="instrument-btn" id="instBtnNasdaq" onclick="switchInstrument('nasdaq')">NASDAQ: IXIC</button>
+        <button class="instrument-btn" id="instBtnSp500" onclick="switchInstrument('sp500')">S&P: GSPC</button>
+        <button class="instrument-btn" id="instBtnCrypto" onclick="switchInstrument('crypto')">BTC / USD</button>
+      </div>
+
+      <div class="mode-switcher-wrap">
+        <button class="mode-btn active" id="btnModeLive" onclick="switchView('live')">
+          <span class="mode-dot mode-dot-live"></span>
+          <span>Live Real-Time</span>
+        </button>
+        <button class="mode-btn" id="btnModeHist" onclick="switchView('historical')">
+          <span class="mode-dot mode-dot-hist"></span>
+          <span>Interactive Lookback</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Real-World Market Metric Cards -->
+  <div class="metric-grid">
+    <div class="card card-gold">
+      <div class="card-label">
+        <span>Gold Futures (US Market)</span>
+        <span>COMEX: GC=F</span>
+      </div>
+      <div class="card-value" id="goldUsdDisplay">$4,169.30</div>
+      <div class="card-subtext">
+        <span class="badge-change up" id="goldChangeBadge">+0.25%</span>
+        <span id="goldRange">Day Range: $4,165.50 - $4,193.50</span>
+      </div>
+    </div>
+
+    <div class="card card-forex">
+      <div class="card-label">
+        <span>Forex Exchange Rate</span>
+        <span>FX: USD / THB</span>
+      </div>
+      <div class="card-value" id="usdThbDisplay">฿33.5600</div>
+      <div class="card-subtext">
+        <span id="inverseRate">1 THB ≈ $0.0298 USD</span>
+      </div>
+    </div>
+
+    <div class="card card-bond">
+      <div class="card-label">
+        <span>US 10-Year Treasury Yield</span>
+        <span>RATES: CBOE ^TNX</span>
+      </div>
+      <div class="card-value" id="bondYieldDisplay" style="color: #c084fc;">5.217%</div>
+      <div class="card-subtext">
+        <span class="badge-change down" id="bondChangeBadge">-0.44%</span>
+        <span>Benchmark Risk-Free Rate</span>
+      </div>
+    </div>
+
+    <div class="card card-thai">
+      <div class="card-label">
+        <span>Thai Gold Bar (1 บาททอง)</span>
+        <span>THAI GOLD: 96.5% BAR</span>
+      </div>
+      <div class="card-value" id="goldThaiBahtDisplay">฿66,186</div>
+      <div class="card-subtext">
+        <span id="pureGoldGramDisplay">Pure Gold: ฿4,499/g</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 1: LIVE REAL-TIME FEED -->
+  <div id="liveView" class="view-panel">
+    <div class="dashboard-body-live">
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">
+            <span>Intraday Tick Stream</span>
+            <span id="liveStreamBadge" style="font-size: 0.72rem; font-family: var(--font-mono); color: #00c853; background: #082115; border: 1px solid #0f4028; padding: 2px 8px; border-radius: 2px;">● LIVE 5-MIN WINDOW (REAL-TIME TICKS)</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.76rem; font-family: var(--font-mono); color: var(--text-muted);" id="lastUpdateTime">Connected to Feed</span>
+            <button class="btn" id="btnPauseLive" onclick="toggleLivePause()" title="Pause or Resume incoming live ticks (Shortcut: Space)">Pause</button>
+            <button class="btn" onclick="refreshLiveData()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              Refresh (<span id="countdown">30</span>s)
+            </button>
+          </div>
+        </div>
+
+        <div class="drag-instruction-bar" style="margin-bottom: 12px; padding: 8px 12px;">
+          <div class="info-text" style="font-size: 0.74rem;">
+            <span><b>[DRAG-TO-MEASURE]</b> Click &amp; drag horizontally across <i>any two points</i> on the live chart to calculate instant return percentages.</span>
+          </div>
+          <div style="font-size: 0.72rem; color: #828a99; font-family: var(--font-mono);">Press <kbd style="background:#161b24; border:1px solid #242936; border-radius:2px; padding:1px 4px; font-size:0.68rem;">Esc</kbd> to clear</div>
+        </div>
+
+        <div class="comparison-banner" id="liveComparisonBanner" style="display: none; margin-bottom: 14px;">
+          <div class="comparison-header">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <div class="period-badge">
+                <span id="liveCompStartTime">--:--:--</span>
+                <span class="arrow">&rarr;</span>
+                <span id="liveCompEndTime">--:--:--</span>
+                <span class="period-duration" id="liveCompDuration">(-- ticks)</span>
+              </div>
+              <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--text-muted);">Real-Time Drag Range</span>
+            </div>
+            <button class="clear-btn" onclick="clearLiveSelection()">Clear (Esc)</button>
+          </div>
+          <div class="comp-grid">
+            <div class="comp-card">
+              <div class="title">
+                <span>Gold Flow (USD/oz)</span>
+                <span>COMEX</span>
+              </div>
+              <div class="values-flow" id="liveCompGoldFlow">$0.00 &rarr; $0.00</div>
+              <div class="pct-change pct-up" id="liveCompGoldPct">+0.00%</div>
+              <div class="abs-change" id="liveCompGoldAbs">+$0.00 USD/oz</div>
+            </div>
+
+            <div class="comp-card">
+              <div class="title">
+                <span>USD / THB Rate</span>
+                <span>BOT FX</span>
+              </div>
+              <div class="values-flow" id="liveCompThbFlow">฿33.56 / $1 USD</div>
+              <div class="pct-change" id="liveCompThbPct" style="color: var(--thb-cyan);">฿33.5600</div>
+              <div class="abs-change" id="liveCompThbAbs">Bank of Thailand Feed</div>
+            </div>
+
+            <div class="comp-card">
+              <div class="title">
+                <span>US 10Y Treasury</span>
+                <span>CBOE ^TNX</span>
+              </div>
+              <div class="values-flow" id="liveCompBondFlow">5.217%</div>
+              <div class="pct-change" id="liveCompBondPct" style="color: var(--bond-purple);">Benchmark</div>
+              <div class="abs-change" id="liveCompBondAbs">CBOE ^TNX Rate</div>
+            </div>
+
+            <div class="comp-card">
+              <div class="title">
+                <span>Thai Gold Bar (1 บาท)</span>
+                <span>96.5% Purity</span>
+              </div>
+              <div class="values-flow" id="liveCompThaiBarFlow">฿0 &rarr; ฿0</div>
+              <div class="pct-change pct-up" id="liveCompThaiBarPct">+0.00%</div>
+              <div class="abs-change" id="liveCompThaiBarAbs">+฿0 THB / บาท</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-wrap" id="liveChartWrap">
+          <canvas id="liveChartCanvas"></canvas>
+          <div id="liveSelectionBox"></div>
+        </div>
+      </div>
+
+      <!-- Quick Convert & Position Valuation Box -->
+      <div class="calc-box">
+        <div class="calc-title">Multi-Unit Position Valuation</div>
+        <div class="calc-subtitle">Authentic Spot &amp; Thai Standard Conversions</div>
+
+        <div class="preset-amt-bar">
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); font-weight: 700; align-self: center; margin-right: 2px;">Presets:</span>
+          <button class="preset-amt-pill" onclick="setQuickConvert('USD', 1000)">$1,000</button>
+          <button class="preset-amt-pill" onclick="setQuickConvert('USD', 10000)">$10,000</button>
+          <button class="preset-amt-pill" onclick="setQuickConvert('THB', 50000)">฿50,000</button>
+          <button class="preset-amt-pill" onclick="setQuickConvert('OZ', 1)">1 oz</button>
+          <button class="preset-amt-pill" onclick="setQuickConvert('THAI_BAHT', 1)">1 บาท</button>
+          <button class="preset-amt-pill" onclick="setQuickConvert('THAI_BAHT', 5)">5 บาท</button>
+          <button class="preset-amt-pill" onclick="setQuickConvert('GRAMS', 100)">100g</button>
+        </div>
+
+        <div class="input-group">
+          <label>US Dollars (USD)</label>
+          <div class="input-field-wrap">
+            <span class="input-prefix">$</span>
+            <input type="number" id="inputUsd" class="calc-input" placeholder="1000" min="0" oninput="convertFrom('USD')">
+            <span class="input-suffix">USD</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Thai Baht (THB)</label>
+          <div class="input-field-wrap">
+            <span class="input-prefix">฿</span>
+            <input type="number" id="inputThb" class="calc-input" placeholder="33560" min="0" oninput="convertFrom('THB')">
+            <span class="input-suffix">THB</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Troy Ounces (Gold)</label>
+          <div class="input-field-wrap">
+            <span class="input-prefix">OZ</span>
+            <input type="number" id="inputOz" class="calc-input" placeholder="0.2399" step="0.0001" min="0" oninput="convertFrom('OZ')">
+            <span class="input-suffix">OZT</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Thai Gold Bar (บาททองคำ 96.5%)</label>
+          <div class="input-field-wrap">
+            <span class="input-prefix">บาท</span>
+            <input type="number" id="inputThaiBaht" class="calc-input" placeholder="0.507" step="0.01" min="0" oninput="convertFrom('THAI_BAHT')">
+            <span class="input-suffix">15.244 g</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Pure Gold Weight (Grams)</label>
+          <div class="input-field-wrap">
+            <span class="input-prefix">G</span>
+            <input type="number" id="inputGrams" class="calc-input" placeholder="7.46" step="0.01" min="0" oninput="convertFrom('GRAMS')">
+            <span class="input-suffix">100% 24K</span>
+          </div>
+        </div>
+
+        <div class="calc-ref-box">
+          <div class="calc-ref-row">
+            <span>Thai Ornament (บาทรูปพรรณ 15.16g):</span>
+            <strong id="calcOrnamentRef">฿65,820 / บาท</strong>
+          </div>
+          <div class="calc-ref-row">
+            <span>1 Kilogram Fine Bar (1,000g):</span>
+            <strong id="calcKgBarRef">$134,047 (฿4.50M)</strong>
+          </div>
+          <div class="calc-ref-row">
+            <span>1 Troy Ounce Weight:</span>
+            <strong>31.1034768 grams</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 2: HISTORICAL LOOKBACK & MACRO ANALYTICS -->
+  <div id="historicalView" class="view-panel">
+    <div class="chart-controls-strip">
+      <div class="control-cluster">
+        <span class="cluster-label">Style:</span>
+        <button class="style-pill active" id="styleLine" onclick="setChartStyle('line')">Line</button>
+        <button class="style-pill" id="styleCaves" onclick="setChartStyle('caves')">Caves</button>
+        <button class="style-pill" id="styleCandles" onclick="setChartStyle('candles')">Candles</button>
+      </div>
+
+      <div class="control-cluster">
+        <span class="cluster-label">Detail:</span>
+        <button class="opt-btn" id="rate10m" onclick="setSamplingRate('10m')">10m</button>
+        <button class="opt-btn active" id="rate1h" onclick="setSamplingRate('1h')">1h</button>
+        <button class="opt-btn" id="rate1d" onclick="setSamplingRate('1d')">1d</button>
+        <button class="opt-btn" id="rate1mo" onclick="setSamplingRate('1mo')">1mo</button>
+      </div>
+
+      <div class="control-cluster">
+        <span class="cluster-label">Scale:</span>
+        <button class="opt-btn active" id="scaleLinear" onclick="toggleScale('linear')">Linear</button>
+      </div>
+
+      <div class="overlay-toggles-bar">
+        <span class="cluster-label">Overlays:</span>
+        <div class="toggle-pill active-gold" id="toggleGold" onclick="toggleOverlay(0)">
+          <span class="pill-dot"></span> Gold (USD/oz)
+        </div>
+        <div class="toggle-pill active-thb" id="toggleThb" onclick="toggleOverlay(1)">
+          <span class="pill-dot"></span> USD / THB (฿)
+        </div>
+        <div class="toggle-pill active-bond" id="toggleBond" onclick="toggleOverlay(2)">
+          <span class="pill-dot"></span> US 10Y Yield (%)
+        </div>
+      </div>
+
+      <div class="control-cluster">
+        <button class="btn" onclick="exportCSV()">Export CSV</button>
+        <button class="btn" onclick="exportChart()">Save Chart</button>
+      </div>
+    </div>
+
+    <div class="drag-instruction-bar">
+      <div class="info-text">
+        <span><b>[DRAG-TO-MEASURE]</b> Click &amp; drag across <i>any two dates</i> on the chart to analyze return percentages, price deltas, and macro correlations.</span>
+      </div>
+      <div style="font-size: 0.72rem; color: #828a99; font-family: var(--font-mono);">Press <kbd style="background:#161b24; border:1px solid #242936; border-radius:2px; padding:1px 4px; font-size:0.68rem;">Esc</kbd> to clear</div>
+    </div>
+
+    <!-- Drag Selection Comparison Banner -->
+    <div class="comparison-banner" id="comparisonBanner" style="display: none;">
+      <div class="comparison-header">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <div class="period-badge">
+            <span id="compStartDate">1997-07</span>
+            <span class="arrow">&rarr;</span>
+            <span id="compEndDate">2024-10</span>
+            <span class="period-duration" id="compDuration">(27.3 Years)</span>
+          </div>
+          <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--text-muted);" id="compEventContext">Historical Lookback Window</span>
+        </div>
+        <button class="clear-btn" onclick="clearSelection()">Clear Selection (Esc)</button>
+      </div>
+
+      <div class="comp-grid">
+        <div class="comp-card">
+          <div class="title">
+            <span>Gold Return</span>
+            <span>COMEX SPOT</span>
+          </div>
+          <div class="values-flow" id="compGoldFlow">$325.0 &rarr; $2,749.3</div>
+          <div class="pct-change pct-up" id="compGoldPct">+745.94%</div>
+          <div class="abs-change" id="compGoldAbs">+$2,424.3 USD/oz</div>
+        </div>
+
+        <div class="comp-card">
+          <div class="title">
+            <span>USD / THB Forex</span>
+            <span>BOT EXCHANGE</span>
+          </div>
+          <div class="values-flow" id="compThbFlow">฿30.50 &rarr; ฿33.70</div>
+          <div class="pct-change pct-up" id="compThbPct">+10.49%</div>
+          <div class="abs-change" id="compThbAbs">+฿3.20 THB / USD</div>
+        </div>
+
+        <div class="comp-card">
+          <div class="title">
+            <span>US 10-Year Bond Yield</span>
+            <span>CBOE ^TNX</span>
+          </div>
+          <div class="values-flow" id="compBondFlow">6.004% &rarr; 4.284%</div>
+          <div class="pct-change pct-down" id="compBondPct">-28.65%</div>
+          <div class="abs-change" id="compBondAbs">-1.720% Yield pts</div>
+        </div>
+
+        <div class="comp-card">
+          <div class="title">
+            <span>Thai Gold Bar (1 บาท)</span>
+            <span>THAI GOLD TRADERS</span>
+          </div>
+          <div class="values-flow" id="compThaiBarFlow">฿4,690 &rarr; ฿43,890</div>
+          <div class="pct-change pct-up" id="compThaiBarPct">+835.82%</div>
+          <div class="abs-change" id="compThaiBarAbs">+฿39,200 THB / บาท</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Period Stat Summary Bar -->
+    <div class="period-summary-bar" id="periodSummaryBar">
+      <div class="period-stat-item">
+        <span class="period-stat-label">Window Return:</span>
+        <span class="period-stat-val" id="summaryPeriodReturn">--</span>
+      </div>
+      <div class="period-stat-item">
+        <span class="period-stat-label">High / Low Range:</span>
+        <span class="period-stat-val" id="summaryHighLow">--</span>
+      </div>
+      <div class="period-stat-item">
+        <span class="period-stat-label">Max Drawdown:</span>
+        <span class="period-stat-val" id="summaryMaxDrawdown">--</span>
+      </div>
+      <div class="period-stat-item">
+        <span class="period-stat-label">Thai Gold Bar Range:</span>
+        <span class="period-stat-val" id="summaryThaiBarRange">--</span>
+      </div>
+    </div>
+
+    <div class="chart-container" style="min-height: 520px; margin-bottom: 14px;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <span>Continuous Lookback Multi-Decade Timeline</span>
+          <span style="font-size: 0.72rem; color: var(--gold-primary); font-family: var(--font-mono); font-weight: 600;" id="currentSamplingTag">Timeframe: 1 Day • Interval: 1 Candle = 1 Hour (24 samples)</span>
+        </div>
+        <div style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--text-muted);">
+          Ctrl + Wheel to Continuous Zoom
+        </div>
+      </div>
+
+      <div class="chart-wrap" id="historicalChartWrap" style="min-height: 440px;">
+        <canvas id="historicalChartCanvas"></canvas>
+        <div id="selectionBox"></div>
+      </div>
+    </div>
+
+    <!-- Timeframe Presets & Historic Eras Below Chart -->
+    <div class="hist-toolbar-below">
+      <div class="control-cluster">
+        <span class="cluster-label">Timeframe:</span>
+        <button class="opt-btn active" id="tf1D" onclick="filterTimeframe('1D', this)">1D</button>
+        <button class="opt-btn" id="tf1W" onclick="filterTimeframe('1W', this)">1W</button>
+        <button class="opt-btn" id="tf1M" onclick="filterTimeframe('1M', this)">1M</button>
+        <button class="opt-btn" id="tf1Y" onclick="filterTimeframe('1Y', this)">1Y</button>
+        <button class="opt-btn" id="tf3Y" onclick="filterTimeframe('3Y', this)">3Y</button>
+        <button class="opt-btn" id="tfCustom" style="display:none;" onclick="filterTimeframe('CUSTOM', this)">4.0Y</button>
+        <button class="opt-btn" id="tf5Y" onclick="filterTimeframe('5Y', this)">5Y</button>
+        <button class="opt-btn" id="tf10Y" onclick="filterTimeframe('10Y', this)">10Y</button>
+        <button class="opt-btn" id="tf20Y" onclick="filterTimeframe('20Y', this)">20Y</button>
+        <button class="opt-btn" id="tfALL" onclick="filterTimeframe('ALL', this)">ALL</button>
+      </div>
+
+      <div class="control-cluster">
+        <span class="cluster-label">Historic Eras:</span>
+        <button class="event-pill" onclick="selectDateRangeByLabels('1997-07', '1998-01')">1997 Asian Crisis</button>
+        <button class="event-pill" onclick="selectDateRangeByLabels('2008-03', '2008-10')">2008 Lehman GFC</button>
+        <button class="event-pill" onclick="selectDateRangeByLabels('2020-03', '2020-08')">2020 COVID Shock</button>
+        <button class="event-pill" onclick="selectDateRangeByLabels('2022-03', '2022-10')">2022 Rate Hikes</button>
+        <button class="event-pill" onclick="selectDateRangeByLabels('2024-03', '2026-01')">2024-2026 ATH Run</button>
+      </div>
+    </div>
+
+    <!-- Official Specification Table -->
+    <div class="info-table">
+      <div class="info-table-title">Official Market Data Specifications &amp; Standards</div>
+      <div class="spec-grid">
+        <div class="spec-item">
+          <div class="title">Gold Specification</div>
+          <div class="value" id="specGoldBench">CME Group GC=F ($4,169.5/oz)</div>
+        </div>
+        <div class="spec-item">
+          <div class="title">Forex Exchange</div>
+          <div class="value" id="specThbBench">Bank of Thailand THB=X (฿33.56/$)</div>
+        </div>
+        <div class="spec-item">
+          <div class="title">Risk-Free Rate</div>
+          <div class="value" id="specBondBench">CBOE ^TNX / FRED GS10 (5.217%)</div>
+        </div>
+        <div class="spec-item">
+          <div class="title">Thai Gold Standard</div>
+          <div class="value">96.5% Purity (15.244g Bar)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Market Terminal • Verified Real-World Feeds from CME Group, CBOE, and Bank of Thailand. Offline &amp; Online Resilient.
+  </footer>
+</div>
+
+<!-- Load Standalone Datasets & Modular Runtime -->
+<script src="./gold_tracker.html" style="display:none;"></script>
+<script type="module">
+  // Modern ESM Entrypoint
+  import { registry } from './src/js/instruments/registry.js';
+  import { goldInstrument } from './src/js/instruments/gold.js';
+  import { nasdaqInstrument } from './src/js/instruments/nasdaq.js';
+  import { sp500Instrument } from './src/js/instruments/sp500.js';
+  import { cryptoInstrument } from './src/js/instruments/crypto.js';
+
+  registry.register(goldInstrument);
+  registry.register(nasdaqInstrument);
+  registry.register(sp500Instrument);
+  registry.register(cryptoInstrument);
+</script>
+
+</body>
+</html>
