@@ -3167,7 +3167,10 @@ html_content = f'''<!DOCTYPE html>
 </html>
 '''
 
+with open('Saac terminal launcher.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
 with open('gold_tracker.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print(f"Successfully generated gold_tracker.html with {len(html_content)} bytes")
+print(f"Successfully generated 'Saac terminal launcher.html' and 'gold_tracker.html' ({len(html_content)} bytes)")

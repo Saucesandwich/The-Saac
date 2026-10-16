@@ -14,7 +14,7 @@ cmd = [
     '--remote-allow-origins=*',
     f'--user-data-dir={temp_user_data}',
     '--window-size=1400,1250',
-    'file:///c:/Users/user/Downloads/gold tracker test/gold_tracker.html'
+    'file:///c:/Users/user/Downloads/Saac terminal/gold_tracker.html'
 ]
 
 proc = subprocess.Popen(cmd)

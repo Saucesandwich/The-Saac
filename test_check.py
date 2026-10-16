@@ -13,7 +13,7 @@ proc = subprocess.Popen([
     '--remote-allow-origins=*',
     f'--user-data-dir={temp_dir}',
     '--window-size=1400,1000',
-    'file:///c:/Users/user/Downloads/gold tracker test/gold_tracker.html'
+    'file:///c:/Users/user/Downloads/Saac terminal/gold_tracker.html'
 ])
 time.sleep(2)
 try:

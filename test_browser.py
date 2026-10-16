@@ -16,7 +16,7 @@ cmd = [
     f'--user-data-dir={temp_user_data}',
     '--no-first-run',
     '--no-default-browser-check',
-    'file:///c:/Users/user/Downloads/gold tracker test/gold_tracker.html'
+    'file:///c:/Users/user/Downloads/Saac terminal/gold_tracker.html'
 ]
 
 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
