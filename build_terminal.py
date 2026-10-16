@@ -1,5 +1,6 @@
 import json
 import datasets_json
+from scripts.terminal_components import MACRO_NAV_CSS, MACRO_NAV_HTML, NEWS_CONTAINER_HTML, NEWS_SERVICE_JS, MACRO_NAV_JS
 
 # Prepare JSON data strings
 json_1m = json.dumps(datasets_json.RAW_1M, indent=2)
@@ -8,6 +9,9 @@ json_1d = json.dumps(datasets_json.RAW_1D, indent=2)
 json_4h = json.dumps(datasets_json.RAW_4H, indent=2)
 json_1h = json.dumps(datasets_json.RAW_1H, indent=2)
 json_10m = json.dumps(datasets_json.RAW_10M, indent=2)
+
+with open('scripts/generated_instruments.js', encoding='utf-8') as f:
+    js_instruments = f.read()
 
 html_content = f'''<!DOCTYPE html>
 <html lang="en">
@@ -781,6 +785,8 @@ html_content = f'''<!DOCTYPE html>
     .spec-item .value {{ font-size: 0.88rem; font-weight: 700; font-family: var(--font-mono); color: #f8fafc; margin-top: 3px; }}
 
     footer {{ text-align: center; color: var(--text-dim); font-size: 0.74rem; font-family: var(--font-mono); padding: 16px 0; border-top: 1px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.03em; }}
+
+{MACRO_NAV_CSS}
   </style>
 </head>
 <body>
@@ -815,6 +821,8 @@ html_content = f'''<!DOCTYPE html>
       </div>
     </div>
   </header>
+
+{MACRO_NAV_HTML}
 
   <!-- Real-World Market Cards -->
   <div class="metric-grid">
@@ -1220,6 +1228,8 @@ html_content = f'''<!DOCTYPE html>
     </div>
   </div>
 
+{NEWS_CONTAINER_HTML}
+
   <footer>
     Market Terminal • Verified Real-World Feeds from CME Group, CBOE, and Bank of Thailand. Offline &amp; Online Resilient.
   </footer>
@@ -1553,153 +1563,11 @@ html_content = f'''<!DOCTYPE html>
     return sampleMasterTimeline(startTs, MASTER_END_TS, rate);
   }}
 
-  // Universal Multi-Asset Registry & Instruments
-  const INSTRUMENTS = {{
-    gold: {{
-      id: 'gold',
-      symbol: 'XAU',
-      title: 'Gold, Baht & US Bond Market Terminal',
-      subtitle: 'CME COMEX Gold Futures (GC=F) • Bank of Thailand (THB=X) • CBOE US10Y (^TNX)',
-      shortName: 'Gold',
-      currency: 'USD',
-      unit: 'oz',
-      ticker: 'GC=F',
-      themeColor: '#ff9800',
-      basePrice: 4169.3,
-      dayBase: 4159.0,
-      dayLow: 4165.50,
-      dayHigh: 4193.50,
-      card1: {{ title: 'Gold Futures (US Market)', sub: 'COMEX: GC=F' }},
-      card2: {{ title: 'Forex Exchange Rate', sub: 'FX: USD / THB' }},
-      card3: {{ title: 'US 10-Year Treasury Yield', sub: 'RATES: CBOE ^TNX' }},
-      card4: {{ title: 'Thai Gold Bar (1 บาททอง)', sub: 'THAI GOLD: 96.5% BAR' }},
-      overlay0: 'Gold (USD/oz)',
-      overlay1: 'USD / THB (฿)',
-      overlay2: 'US 10Y Yield (%)',
-      computeDerived: computeDerived
-    }},
-    nasdaq: {{
-      id: 'nasdaq',
-      symbol: 'IXIC',
-      title: 'Nasdaq Composite Tech Equity Terminal',
-      subtitle: 'NASDAQ Global Select (^IXIC) • Invesco QQQ (QQQ) • CBOE US10Y (^TNX)',
-      shortName: 'Nasdaq',
-      currency: 'USD',
-      unit: 'pts',
-      ticker: '^IXIC',
-      themeColor: '#00c853',
-      basePrice: 20340.5,
-      dayBase: 20280.0,
-      dayLow: 20210.0,
-      dayHigh: 20450.0,
-      card1: {{ title: 'Nasdaq Composite Index', sub: 'NASDAQ: ^IXIC' }},
-      card2: {{ title: 'Invesco QQQ Trust', sub: 'ETF: QQQ' }},
-      card3: {{ title: 'US 10-Year Treasury Yield', sub: 'RATES: CBOE ^TNX' }},
-      card4: {{ title: 'Micro E-Mini Notional', sub: 'CME: MNQ ($2/PT)' }},
-      overlay0: 'Nasdaq (^IXIC)',
-      overlay1: 'Invesco QQQ ($)',
-      overlay2: 'US 10Y Yield (%)',
-      computeDerived: (raw) => {{
-        const c = Number(raw.close !== undefined ? raw.close : (raw.nasdaq || 20340.5));
-        const o = Number(raw.open !== undefined ? raw.open : c);
-        const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
-        const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
-        const qqq = c / 41.0;
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        return {{
-          ...raw,
-          open: o, high: h, low: l, close: c, gold: c,
-          usd_thb: qqq, thb: qqq,
-          us10y: bond, bond: bond,
-          gold_thb_oz: qqq,
-          pure_gram_thb: qqq / 31.1034768,
-          thai_gold_bar: c * 2.0,
-          thai_gold_ornament: c * 20.0,
-          note: raw.note || ''
-        }};
-      }}
-    }},
-    sp500: {{
-      id: 'sp500',
-      symbol: 'SPX',
-      title: 'S&P 500 Macro Benchmark Terminal',
-      subtitle: 'S&P Dow Jones Indices (^GSPC) • SPDR S&P 500 ETF (SPY) • CBOE VIX (^VIX)',
-      shortName: 'S&P 500',
-      currency: 'USD',
-      unit: 'pts',
-      ticker: '^GSPC',
-      themeColor: '#38bdf8',
-      basePrice: 5850.2,
-      dayBase: 5835.0,
-      dayLow: 5820.0,
-      dayHigh: 5875.0,
-      card1: {{ title: 'S&P 500 Large-Cap', sub: 'INDEX: ^GSPC' }},
-      card2: {{ title: 'SPDR S&P 500 ETF', sub: 'ETF: SPY' }},
-      card3: {{ title: 'CBOE Volatility Index', sub: 'VOLATILITY: ^VIX' }},
-      card4: {{ title: 'Micro E-Mini S&P Notional', sub: 'CME: MES ($5/PT)' }},
-      overlay0: 'S&P 500 (^GSPC)',
-      overlay1: 'SPDR SPY ($)',
-      overlay2: 'CBOE VIX (pts)',
-      computeDerived: (raw) => {{
-        const c = Number(raw.close !== undefined ? raw.close : 5850.2);
-        const o = Number(raw.open !== undefined ? raw.open : c);
-        const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
-        const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
-        const spy = c / 10.0;
-        return {{
-          ...raw,
-          open: o, high: h, low: l, close: c, gold: c,
-          usd_thb: spy, thb: spy,
-          us10y: 15.42, bond: 15.42,
-          gold_thb_oz: spy,
-          pure_gram_thb: spy / 31.1034768,
-          thai_gold_bar: c * 5.0,
-          thai_gold_ornament: c * 50.0,
-          note: raw.note || ''
-        }};
-      }}
-    }},
-    crypto: {{
-      id: 'crypto',
-      symbol: 'BTC',
-      title: 'Bitcoin Digital Asset Terminal',
-      subtitle: 'CME Group / Binance (BTC-USD) • Ethereum (ETH-USD) • US Dollar Index (DXY)',
-      shortName: 'Bitcoin',
-      currency: 'USD',
-      unit: 'BTC',
-      ticker: 'BTC-USD',
-      themeColor: '#f59e0b',
-      basePrice: 68450.0,
-      dayBase: 68100.0,
-      dayLow: 67800.0,
-      dayHigh: 69200.0,
-      card1: {{ title: 'Bitcoin Spot', sub: 'CRYPTO: BTC-USD' }},
-      card2: {{ title: 'Ethereum / USD', sub: 'CRYPTO: ETH-USD' }},
-      card3: {{ title: 'US Dollar Index', sub: 'CURRENCY: DXY' }},
-      card4: {{ title: 'Satoshis Per Dollar', sub: 'UNIT: 100M SATS/BTC' }},
-      overlay0: 'Bitcoin (BTC)',
-      overlay1: 'Ethereum (ETH)',
-      overlay2: 'US Dollar Index',
-      computeDerived: (raw) => {{
-        const c = Number(raw.close !== undefined ? raw.close : 68450.0);
-        const o = Number(raw.open !== undefined ? raw.open : c);
-        const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
-        const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
-        const eth = c * 0.038;
-        return {{
-          ...raw,
-          open: o, high: h, low: l, close: c, gold: c,
-          usd_thb: eth, thb: eth,
-          us10y: 103.45, bond: 103.45,
-          gold_thb_oz: eth,
-          pure_gram_thb: eth / 31.1034768,
-          thai_gold_bar: Math.round(100000000 / c),
-          thai_gold_ornament: Math.round(100000000 / c),
-          note: raw.note || ''
-        }};
-      }}
-    }}
-  }};
+{js_instruments}
+
+{NEWS_SERVICE_JS}
+
+{MACRO_NAV_JS}
 
   let currentInstrument = INSTRUMENTS.gold;
 
@@ -1776,6 +1644,12 @@ html_content = f'''<!DOCTYPE html>
       activeData = getSeriesForTimeframe(currentTimeframe, currentSamplingRate);
       updateHistChartData();
       updatePeriodSummaryBar();
+    }}
+
+    // Auto-update bottom news headlines & market catalysts
+    const newsContainer = document.getElementById('marketNewsContainer');
+    if (newsContainer && window.newsService) {{
+      window.newsService.renderNewsSection(newsContainer, inst);
     }}
   }}
 
@@ -3273,7 +3147,20 @@ html_content = f'''<!DOCTYPE html>
     initLiveChart();
     refreshLiveData();
     updatePeriodSummaryBar();
+    if (typeof renderTickerPills === 'function') renderTickerPills('all');
+    const newsContainer = document.getElementById('marketNewsContainer');
+    if (newsContainer && window.newsService) {{
+      window.newsService.renderNewsSection(newsContainer, currentInstrument);
+    }}
   }});
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {{
+    if (typeof renderTickerPills === 'function') renderTickerPills('all');
+    const newsContainer = document.getElementById('marketNewsContainer');
+    if (newsContainer && window.newsService && (!newsContainer.children || newsContainer.children.length === 0)) {{
+      window.newsService.renderNewsSection(newsContainer, currentInstrument);
+    }}
+  }}
 </script>
 
 </body>

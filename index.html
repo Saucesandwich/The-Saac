@@ -50,6 +50,26 @@
     </div>
   </header>
 
+  <!-- Macro Asset Navigation & Category Bar -->
+  <div class="macro-nav-container">
+    <div class="category-nav-bar">
+      <div class="category-tabs" id="categoryTabs">
+        <button class="cat-tab-btn active" data-category="all" onclick="filterCategory('all', this)">All Markets <span class="cat-badge">30</span></button>
+        <button class="cat-tab-btn" data-category="commodities" onclick="filterCategory('commodities', this)">Commodities <span class="cat-badge">5</span></button>
+        <button class="cat-tab-btn" data-category="indices" onclick="filterCategory('indices', this)">Indices <span class="cat-badge">8</span></button>
+        <button class="cat-tab-btn" data-category="etfs" onclick="filterCategory('etfs', this)">ETFs <span class="cat-badge">8</span></button>
+        <button class="cat-tab-btn" data-category="bonds" onclick="filterCategory('bonds', this)">Sovereign Bonds <span class="cat-badge">5</span></button>
+        <button class="cat-tab-btn" data-category="forex" onclick="filterCategory('forex', this)">Forex <span class="cat-badge">4</span></button>
+      </div>
+      <div class="macro-search-wrap">
+        <input type="text" id="tickerSearchInput" class="ticker-search-input" placeholder="Search Ticker..." oninput="handleTickerSearch(this.value)">
+      </div>
+    </div>
+    <div class="ticker-scroll-bar" id="macroTickerBar">
+      <!-- Ticker pills rendered dynamically -->
+    </div>
+  </div>
+
   <!-- Real-World Market Metric Cards -->
   <div class="metric-grid">
     <div class="card card-gold">
@@ -462,6 +482,9 @@
     </div>
   </div>
 
+  <!-- Automated Bottom News Headlines & Historical Market Shocks -->
+  <div id="marketNewsContainer"></div>
+
   <footer>
     Market Terminal • Verified Real-World Feeds from CME Group, CBOE, and Bank of Thailand. Offline &amp; Online Resilient.
   </footer>
@@ -472,15 +495,18 @@
 <script type="module">
   // Modern ESM Entrypoint
   import { registry } from './src/js/instruments/registry.js';
-  import { goldInstrument } from './src/js/instruments/gold.js';
-  import { nasdaqInstrument } from './src/js/instruments/nasdaq.js';
-  import { sp500Instrument } from './src/js/instruments/sp500.js';
-  import { cryptoInstrument } from './src/js/instruments/crypto.js';
+  import { newsService } from './src/js/services/news_service.js';
 
-  registry.register(goldInstrument);
-  registry.register(nasdaqInstrument);
-  registry.register(sp500Instrument);
-  registry.register(cryptoInstrument);
+  window.registry = registry;
+  window.newsService = newsService;
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    if (typeof renderTickerPills === 'function') renderTickerPills('all');
+    const newsContainer = document.getElementById('marketNewsContainer');
+    if (newsContainer && window.newsService && (!newsContainer.children || newsContainer.children.length === 0)) {
+      window.newsService.renderNewsSection(newsContainer, currentInstrument);
+    }
+  }
 </script>
 
 </body>

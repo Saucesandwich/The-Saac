@@ -24,12 +24,12 @@ from .core.analytics import calculate_return, calculate_high_low, calculate_max_
 from .instruments.gold import GOLD_INSTRUMENT, calculate_thai_gold, TROY_OZ_TO_GRAMS
 from .instruments.nasdaq import NASDAQ_INSTRUMENT, calculate_nasdaq_derivatives
 from .instruments.indices import SP500_INSTRUMENT
+from .instruments.catalog import register_all
 from .providers.yahoo import fetch_live_quote
+from .providers.news import fetch_ticker_news
 
-# Register instruments in CLI context
-registry.register(GOLD_INSTRUMENT)
-registry.register(NASDAQ_INSTRUMENT)
-registry.register(SP500_INSTRUMENT)
+# Register all catalog instruments in CLI context
+register_all()
 
 def print_header(inst: InstrumentConfig):
     print("=" * 76)
@@ -159,10 +159,25 @@ def export_csv(inst: InstrumentConfig, filename: str):
                 writer.writerow([r["date"], r["close"], r.get("qqq", r.get("spy", "")), r.get("us10y", ""), r.get("event", "")])
     print(f"Successfully exported {len(records)} records to {filename}")
 
+def print_news(inst: InstrumentConfig):
+    print_header(inst)
+    print(f"\n[AUTOMATED REAL-TIME NEWS & CATALYSTS // {inst.symbol} ({inst.name})]")
+    headlines = fetch_ticker_news(inst.ticker, inst.name)
+    if not headlines:
+        print("  No recent market headlines reported.")
+        return
+    for idx, h in enumerate(headlines, 1):
+        print(f"\n  {idx}. {h['title']}")
+        print(f"     Source: {h.get('source', 'FEED')} • Time: {h.get('pubDate', 'RECENT')}")
+        print(f"     Link:   {h.get('link', '#')}")
+    print("\n" + "=" * 76)
+
 def main():
     parser = argparse.ArgumentParser(description="The Saac Financial Terminal - Universal Multi-Asset CLI")
-    parser.add_argument("--symbol", "--ticker", "-s", default="GC=F", help="Ticker symbol (e.g. GC=F, ^IXIC, ^GSPC, BTC-USD)")
-    parser.add_argument("--instrument", "-i", default=None, help="Instrument ID (e.g. gold, nasdaq, sp500)")
+    parser.add_argument("--symbol", "--ticker", "-s", default="GC=F", help="Ticker symbol (e.g. GC=F, ^IXIC, ^GSPC, CL=F)")
+    parser.add_argument("--instrument", "-i", default=None, help="Instrument ID (e.g. gold, nasdaq, sp500, bund10y)")
+    parser.add_argument("--category", "-c", default=None, help="Filter instruments by category (commodities, indices, etfs, bonds, forex)")
+    parser.add_argument("--news", action="store_true", help="Display automated real-time headlines and catalysts")
     parser.add_argument("--live", action="store_true", help="Launch live streaming tick stream")
     parser.add_argument("--history", action="store_true", help="Display multi-decade historical records table")
     parser.add_argument("--compare", nargs=2, metavar=("DATE1", "DATE2"), help="Compare market metrics between two dates")
@@ -173,9 +188,12 @@ def main():
     args = parser.parse_args()
 
     if args.list:
-        print("\nRegistered Terminal Instruments:")
-        for inst in registry.list_instruments():
-            print(f"  • [{inst.symbol}] {inst.name:<35} | Ticker: {inst.ticker:<8} | Unit: {inst.unit}")
+        instruments = registry.list_by_category(args.category) if args.category else registry.list_instruments()
+        cat_tag = f" [{args.category.upper()}]" if args.category else ""
+        print(f"\nRegistered Terminal Instruments{cat_tag} ({len(instruments)} total):")
+        for inst in instruments:
+            cat_label = getattr(inst, 'category', 'macro').upper()
+            print(f"  • [{inst.symbol:<8}] {inst.name:<38} | Cat: {cat_label:<11} | Ticker: {inst.ticker:<9} | Unit: {inst.unit}")
         print()
         return
 
@@ -183,7 +201,9 @@ def main():
     inst_key = args.instrument or args.symbol
     inst = registry.get(inst_key) or GOLD_INSTRUMENT
 
-    if args.history:
+    if args.news:
+        print_news(inst)
+    elif args.history:
         print_history_table(inst)
     elif args.compare:
         compare_dates(inst, args.compare[0], args.compare[1])
@@ -200,7 +220,7 @@ def main():
             print("\nLive tracker stopped.")
     else:
         print_dashboard(inst)
-        print("\nTip: Run with --help to see history, compare, convert, and export options.")
+        print("\nTip: Run with --news for headlines, --category for filtered lists, or --help for full options.")
 
 if __name__ == "__main__":
     main()

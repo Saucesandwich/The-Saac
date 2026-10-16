@@ -21,6 +21,7 @@ class InstrumentConfig:
     symbol: str
     name: str
     ticker: str
+    category: str = "commodities"
     unit: str = "unit"
     currency: str = "USD"
     theme_color: str = "#ff9800"
@@ -52,5 +53,10 @@ class InstrumentRegistry:
                 seen.add(inst.id)
                 unique.append(inst)
         return unique
+
+    def list_by_category(self, category: str) -> List[InstrumentConfig]:
+        if not category or category == "all":
+            return self.list_instruments()
+        return [i for i in self.list_instruments() if i.category.lower() == category.lower()]
 
 registry = InstrumentRegistry()
