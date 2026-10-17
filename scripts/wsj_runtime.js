@@ -8,9 +8,21 @@
 
   // Timeframe and display state
   var currentTimeframe = '1D';
-  var currentSamplingRate = '1h';
+  var currentSamplingRate = '10m';
   var currentChartStyle = 'line';
   var currentMode = window.currentMode || 'live';
+
+  window.TIMEFRAME_LOCKED_RATES = window.TIMEFRAME_LOCKED_RATES || {
+    '1D': '10m',
+    '1W': '1h',
+    '1M': '1d',
+    '1Y': '1d',
+    '3Y': '1mo',
+    '5Y': '1mo',
+    '10Y': '1mo',
+    '20Y': '1mo',
+    'ALL': '1mo'
+  };
 
   window.primaryInstrumentId = primaryInstrumentId;
   window.activeOverlays = activeOverlays;
@@ -287,7 +299,8 @@
   function getSeriesForInstrument(instId, timeframe, rate) {
     instId = instId || primaryInstrumentId || 'gold';
     timeframe = timeframe || window.currentTimeframe || '1D';
-    rate = rate || window.currentSamplingRate || '1h';
+    const lockedRate = (typeof TIMEFRAME_LOCKED_RATES !== 'undefined' && TIMEFRAME_LOCKED_RATES[timeframe]) ? TIMEFRAME_LOCKED_RATES[timeframe] : '1mo';
+    rate = rate || window.currentSamplingRate || lockedRate;
 
     if (typeof INSTRUMENTS !== 'undefined' && !window.INSTRUMENTS) {
       window.INSTRUMENTS = INSTRUMENTS;

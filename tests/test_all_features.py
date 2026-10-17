@@ -82,18 +82,18 @@ try:
     def_samples = eval_js("activeData.length")
     def_style = eval_js("currentChartStyle")
     tf1d_active = eval_js("document.getElementById('tf1D').classList.contains('active')")
-    rate1h_active = eval_js("document.getElementById('rate1h').classList.contains('active')")
+    rate10m_active = eval_js("document.getElementById('rate10m').classList.contains('active')")
     style_line_active = eval_js("document.getElementById('styleLine').classList.contains('active')")
     style_buttons = eval_js("[...document.querySelectorAll('.control-cluster button[id^=\"style\"]')].map(b => b.id)")
     print(f"4. Switch to Historical View: active={hist_active}, def_tf={def_tf}, def_rate={def_rate}, samples={def_samples}, def_style={def_style}")
     print(f"   Graph Style slot ordering in DOM: {style_buttons}")
     assert hist_active
     assert def_tf == '1D', f"Default timeframe must be 1D, got {def_tf}"
-    assert def_rate == '1h', f"Default rate must be 1h, got {def_rate}"
-    assert def_samples == 24, f"Default 1D 1h must have 24 candles, got {def_samples}"
+    assert def_rate == '10m', f"Default rate must be 10m, got {def_rate}"
+    assert def_samples == 144, f"Default 1D 10m must have 144 candles, got {def_samples}"
     assert def_style == 'line', f"Default chart style must be line, got {def_style}"
     assert tf1d_active, "tf1D button must have active class by default"
-    assert rate1h_active, "rate1h button must have active class by default"
+    assert rate10m_active, "rate10m button must have active class by default"
     assert style_line_active, "styleLine button must have active class by default"
     assert style_buttons == ['styleLine', 'styleCaves', 'styleCandles'], f"Line must be first and Candles last! Got {style_buttons}"
 
@@ -176,49 +176,30 @@ try:
         assert cnt > 0, f"Timeframe {tf} must have active candles!"
         assert btn_active, f"Timeframe button for {tf} should have active class!"
 
-    # 11b. Verify user requirement: Sampling rate keeps the same timeframe and increases sample detail!
-    print("\n--- 11b. Testing Detail Scaling in 1D Timeframe (including 10m) ---")
-    eval_js("filterTimeframe('1D')")
-    d_rates = [('1d', 2), ('1h', 24), ('10m', 144)]
-    prev_cnt = 0
-    for r, expected_cnt in d_rates:
-        eval_js(f"setSamplingRate('{r}')")
-        tf = eval_js("currentTimeframe")
-        curr_r = eval_js("currentSamplingRate")
-        cnt = eval_js("activeData.length")
-        print(f"   1D at '{r}': timeframe={tf}, samples={cnt} (expected={expected_cnt})")
-        assert tf == '1D', f"Timeframe must stay 1D! Got {tf}"
-        assert cnt == expected_cnt, f"Expected {expected_cnt} samples for {r} in 1D, got {cnt}"
-        assert cnt > prev_cnt, f"Samples must increase as granularity gets finer! {cnt} vs {prev_cnt}"
-        prev_cnt = cnt
-
-    print("\n--- 11c. Testing Detail Scaling in 1W Timeframe ---")
-    eval_js("filterTimeframe('1W')")
-    w_rates = [('1d', 7), ('1h', 168)]
-    prev_cnt = 0
-    for r, expected_cnt in w_rates:
-        eval_js(f"setSamplingRate('{r}')")
-        tf = eval_js("currentTimeframe")
-        cnt = eval_js("activeData.length")
-        print(f"   1W at '{r}': timeframe={tf}, samples={cnt} (expected={expected_cnt})")
-        assert tf == '1W', f"Timeframe must stay 1W! Got {tf}"
-        assert cnt == expected_cnt, f"Expected {expected_cnt} samples for {r} in 1W, got {cnt}"
-        assert cnt > prev_cnt, f"Samples must increase as granularity gets finer! {cnt} vs {prev_cnt}"
-        prev_cnt = cnt
-
-    print("\n--- 11d. Testing Detail Scaling in 1Y Timeframe ---")
-    eval_js("filterTimeframe('1Y')")
-    y_rates = [('1mo', 12), ('1d', 250)]
-    prev_cnt = 0
-    for r, expected_cnt in y_rates:
-        eval_js(f"setSamplingRate('{r}')")
-        tf = eval_js("currentTimeframe")
-        cnt = eval_js("activeData.length")
-        print(f"   1Y at '{r}': timeframe={tf}, samples={cnt} (expected={expected_cnt})")
-        assert tf == '1Y', f"Timeframe must stay 1Y! Got {tf}"
-        assert cnt == expected_cnt, f"Expected {expected_cnt} samples for {r} in 1Y, got {cnt}"
-        assert cnt > prev_cnt, f"Samples must increase as granularity gets finer! {cnt} vs {prev_cnt}"
-        prev_cnt = cnt
+    # 11b. Verify user requirement: Locked sample rates per timeframe
+    print("\n--- 11b. Testing Locked Sample Rates per Timeframe ---")
+    locked_checks = [
+        ('1D', '10m', 144),
+        ('1W', '1h', 168),
+        ('1M', '1d', 30),
+        ('1Y', '1d', 250),
+        ('3Y', '1mo', 36),
+        ('5Y', '1mo', 60),
+        ('10Y', '1mo', 61),
+        ('20Y', '1mo', 61),
+        ('ALL', '1mo', 61)
+    ]
+    for tf_key, expected_rate, expected_samples in locked_checks:
+        eval_js(f"filterTimeframe('{tf_key}')")
+        curr_tf = eval_js("currentTimeframe")
+        curr_rate = eval_js("currentSamplingRate")
+        curr_samples = eval_js("activeData.length")
+        curr_btn_active = eval_js(f"document.getElementById('rate{expected_rate}').classList.contains('active')")
+        print(f"   {tf_key}: locked rate={curr_rate} (expected {expected_rate}), samples={curr_samples} (expected {expected_samples}), btnActive={curr_btn_active}")
+        assert curr_tf == tf_key, f"Timeframe must be {tf_key}, got {curr_tf}"
+        assert curr_rate == expected_rate, f"Timeframe {tf_key} must be locked to {expected_rate}, got {curr_rate}"
+        assert curr_samples == expected_samples, f"Timeframe {tf_key} must have {expected_samples} samples, got {curr_samples}"
+        assert curr_btn_active is True
 
     print("\n--- 11e. Testing 10m Exclusivity & Auto-Snap to 1D ---")
     eval_js("filterTimeframe('1W')")
@@ -260,12 +241,11 @@ try:
     minimized_rate = eval_js("currentSamplingRate")
     minimized_cnt = eval_js("activeData.length")
     print(f"   After minimizing to 1D: rate={minimized_rate}, samples={minimized_cnt}")
-    assert minimized_rate == '1h', f"Minimizing to 1D must auto-adjust to 1h for best viewability! Got {minimized_rate}"
-    assert minimized_cnt == 24, f"Minimizing to 1D must show 24 hourly candles! Got {minimized_cnt}"
+    assert minimized_rate == '10m', f"Minimizing to 1D must lock to 10m! Got {minimized_rate}"
+    assert minimized_cnt == 144, f"Minimizing to 1D must show 144 10m candles! Got {minimized_cnt}"
 
     # Test auto-adjust when minimizing from 5Y with 1mo to 1M
     eval_js("filterTimeframe('5Y')")
-    eval_js("setSamplingRate('1mo')")
     eval_js("filterTimeframe('1M')")
     m_rate = eval_js("currentSamplingRate")
     m_cnt = eval_js("activeData.length")
@@ -275,44 +255,42 @@ try:
 
     # Test continuous zoom minimizing to <= 2 days
     eval_js("setContinuousWindow(365)")
-    eval_js("setSamplingRate('1d')")
     eval_js("zoomContinuousTimeframe(true, 250)") # Zoom in to ~1.46 days
     zoom_days = eval_js("currentWindowDurationDays")
     zoom_rate = eval_js("currentSamplingRate")
     zoom_cnt = eval_js("activeData.length")
     print(f"   Continuous zoom in to {zoom_days:.2f} days: rate={zoom_rate}, samples={zoom_cnt}")
     assert zoom_days <= 2.2, "Zoom in must reduce duration below 2.2 days"
-    assert zoom_rate == '1h', f"Minimizing via continuous zoom below 2.2 days must auto-adjust to 1h! Got {zoom_rate}"
-    assert zoom_cnt > 10, "Must have viewable candle count"
+    assert zoom_rate == '10m', f"Minimizing via continuous zoom below 2.2 days must auto-adjust to 10m! Got {zoom_rate}"
+    assert zoom_cnt == 144, "Must have viewable candle count"
 
     print("\n--- 11g. Testing 50 Sample Nodes Threshold (Smooth Line vs Specific Nodes) ---")
-    eval_js("filterTimeframe('1D')")
-    eval_js("setSamplingRate('1h')") # 24 samples (<= 50)
-    cnt_24 = eval_js("activeData.length")
+    eval_js("filterTimeframe('1M')") # 30 samples (<= 50)
+    cnt_30 = eval_js("activeData.length")
     eval_js("setChartStyle('line')")
-    p0_line_24 = eval_js("histChartInstance.data.datasets[0].pointRadius")
-    p1_line_24 = eval_js("histChartInstance.data.datasets[1].pointRadius")
-    p2_line_24 = eval_js("histChartInstance.data.datasets[2].pointRadius")
-    print(f"   <= 50 nodes (24 samples) in 'line': ds0={p0_line_24}, ds1={p1_line_24}, ds2={p2_line_24}")
-    assert cnt_24 == 24, "Should have 24 samples"
-    assert p0_line_24 == 2, "ds0 should show specific nodes (radius 2) when <= 50 nodes"
-    assert p1_line_24 == 2, "ds1 should show specific nodes (radius 2) when <= 50 nodes"
-    assert p2_line_24 == 2, "ds2 should show specific nodes (radius 2) when <= 50 nodes"
+    p0_line_30 = eval_js("histChartInstance.data.datasets[0].pointRadius")
+    p1_line_30 = eval_js("histChartInstance.data.datasets[1].pointRadius")
+    p2_line_30 = eval_js("histChartInstance.data.datasets[2].pointRadius")
+    print(f"   <= 50 nodes (30 samples) in 'line': ds0={p0_line_30}, ds1={p1_line_30}, ds2={p2_line_30}")
+    assert cnt_30 == 30, "Should have 30 samples"
+    assert p0_line_30 == 2, "ds0 should show specific nodes (radius 2) when <= 50 nodes"
+    assert p1_line_30 == 2, "ds1 should show specific nodes (radius 2) when <= 50 nodes"
+    assert p2_line_30 == 2, "ds2 should show specific nodes (radius 2) when <= 50 nodes"
 
     eval_js("setChartStyle('caves')")
-    p0_caves_24 = eval_js("histChartInstance.data.datasets[0].pointRadius")
-    print(f"   <= 50 nodes (24 samples) in 'caves': ds0={p0_caves_24}")
-    assert p0_caves_24 == 2, "ds0 should show specific nodes in caves when <= 50 nodes"
+    p0_caves_30 = eval_js("histChartInstance.data.datasets[0].pointRadius")
+    print(f"   <= 50 nodes (30 samples) in 'caves': ds0={p0_caves_30}")
+    assert p0_caves_30 == 2, "ds0 should show specific nodes in caves when <= 50 nodes"
 
     eval_js("setChartStyle('candles')")
-    p0_candles_24 = eval_js("histChartInstance.data.datasets[0].pointRadius")
-    p1_candles_24 = eval_js("histChartInstance.data.datasets[1].pointRadius")
-    print(f"   <= 50 nodes (24 samples) in 'candles': ds0={p0_candles_24}, ds1={p1_candles_24}")
-    assert p0_candles_24 == 0, "ds0 pointRadius should be 0 in candles mode (rendered as candle bars)"
-    assert p1_candles_24 == 2, "ds1 overlay should show nodes when <= 50 nodes"
+    p0_candles_30 = eval_js("histChartInstance.data.datasets[0].pointRadius")
+    p1_candles_30 = eval_js("histChartInstance.data.datasets[1].pointRadius")
+    print(f"   <= 50 nodes (30 samples) in 'candles': ds0={p0_candles_30}, ds1={p1_candles_30}")
+    assert p0_candles_30 == 0, "ds0 pointRadius should be 0 in candles mode (rendered as candle bars)"
+    assert p1_candles_30 == 2, "ds1 overlay should show nodes when <= 50 nodes"
 
-    # Now test with > 50 nodes (144 samples in 10m)
-    eval_js("setSamplingRate('10m')")
+    # Now test with > 50 nodes (144 samples in 1D @ 10m)
+    eval_js("filterTimeframe('1D')") # 144 samples (> 50)
     cnt_144 = eval_js("activeData.length")
     eval_js("setChartStyle('line')")
     p0_line_144 = eval_js("histChartInstance.data.datasets[0].pointRadius")
@@ -331,10 +309,11 @@ try:
     assert p0_caves_144 == 0, "ds0 must NOT show specific nodes in caves when > 50 samples"
     assert p1_caves_144 == 0, "ds1 must NOT show specific nodes in caves when > 50 samples"
 
-    # Switch back to 1h (24 samples <= 50) and verify nodes restore
-    eval_js("setSamplingRate('1h')")
+    # Switch back to 1M (30 samples <= 50) and verify nodes restore
+    eval_js("filterTimeframe('1M')")
+    eval_js("setChartStyle('line')")
     p0_restored = eval_js("histChartInstance.data.datasets[0].pointRadius")
-    print(f"   Switch back to 1h (24 samples <= 50): ds0 pointRadius restored={p0_restored}")
+    print(f"   Switch back to 1M (30 samples <= 50): ds0 pointRadius restored={p0_restored}")
     assert p0_restored == 2, "ds0 pointRadius should restore to 2 when returning to <= 50 samples!"
 
     # 12. Switch back to live

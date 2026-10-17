@@ -166,33 +166,47 @@ html_content = f'''<!DOCTYPE html>
   const MASTER_START_TS = MASTER_ANCHORS[0].ts;
   window.MASTER_ANCHORS = MASTER_ANCHORS;
 
+  const TIMEFRAME_LOCKED_RATES = {{
+    '1D': '10m',
+    '1W': '1h',
+    '1M': '1d',
+    '1Y': '1d',
+    '3Y': '1mo',
+    '5Y': '1mo',
+    '10Y': '1mo',
+    '20Y': '1mo',
+    'ALL': '1mo'
+  }};
+  window.TIMEFRAME_LOCKED_RATES = TIMEFRAME_LOCKED_RATES;
+
   const PRESETS = [
-    {{ id: '1D', label: '1D', days: 1, name: '1 Day', defaultRate: '1h', rates: ['10m', '1h', '1d'] }},
-    {{ id: '1W', label: '1W', days: 7, name: '1 Week', defaultRate: '1h', rates: ['1h', '1d'] }},
+    {{ id: '1D', label: '1D', days: 1, name: '1 Day', defaultRate: '10m', rates: ['10m'] }},
+    {{ id: '1W', label: '1W', days: 7, name: '1 Week', defaultRate: '1h', rates: ['1h'] }},
     {{ id: '1M', label: '1M', days: 30.5, name: '1 Month', defaultRate: '1d', rates: ['1d'] }},
-    {{ id: '1Y', label: '1Y', days: 365.25, name: '1 Year', defaultRate: '1d', rates: ['1d', '1mo'] }},
-    {{ id: '3Y', label: '3Y', days: 3 * 365.25, name: '3 Years', defaultRate: '1d', rates: ['1d', '1mo'] }},
-    {{ id: '5Y', label: '5Y', days: 5 * 365.25, name: '5 Years', defaultRate: '1mo', rates: ['1d', '1mo'] }},
-    {{ id: '10Y', label: '10Y', days: 10 * 365.25, name: '10 Years', defaultRate: '1mo', rates: ['1d', '1mo'] }},
-    {{ id: '20Y', label: '20Y', days: 20 * 365.25, name: '20 Years', defaultRate: '1mo', rates: ['1d', '1mo'] }},
-    {{ id: 'ALL', label: 'ALL', days: (MASTER_END_TS - MASTER_START_TS) / (86400 * 1000), name: 'All History (1990-2026)', defaultRate: '1mo', rates: ['1d', '1mo'] }}
+    {{ id: '1Y', label: '1Y', days: 365.25, name: '1 Year', defaultRate: '1d', rates: ['1d'] }},
+    {{ id: '3Y', label: '3Y', days: 3 * 365.25, name: '3 Years', defaultRate: '1mo', rates: ['1mo'] }},
+    {{ id: '5Y', label: '5Y', days: 5 * 365.25, name: '5 Years', defaultRate: '1mo', rates: ['1mo'] }},
+    {{ id: '10Y', label: '10Y', days: 10 * 365.25, name: '10 Years', defaultRate: '1mo', rates: ['1mo'] }},
+    {{ id: '20Y', label: '20Y', days: 20 * 365.25, name: '20 Years', defaultRate: '1mo', rates: ['1mo'] }},
+    {{ id: 'ALL', label: 'ALL', days: (MASTER_END_TS - MASTER_START_TS) / (86400 * 1000), name: 'All History (1990-2026)', defaultRate: '1mo', rates: ['1mo'] }}
   ];
+  window.PRESETS = PRESETS;
 
   function findMatchingPreset(durationDays) {{
     return PRESETS.find(p => Math.abs(p.days - durationDays) / p.days < 0.05);
   }}
 
   function getSupportedRatesForDuration(days) {{
-    if (days <= 2.2) return ['10m', '1h', '1d'];
-    if (days <= 14) return ['1h', '1d'];
-    if (days <= 35) return ['1d'];
+    if (days <= 2.2) return ['10m'];
+    if (days <= 14) return ['1h'];
+    if (days <= 400) return ['1d'];
     return ['1d', '1mo'];
   }}
 
   function getDefaultRateForDuration(days) {{
-    if (days <= 2.2) return '1h';
+    if (days <= 2.2) return '10m';
     if (days <= 14) return '1h';
-    if (days <= 4 * 365.25) return '1d';
+    if (days <= 400) return '1d';
     return '1mo';
   }}
 
@@ -261,8 +275,13 @@ html_content = f'''<!DOCTYPE html>
     if (rate === '1d' && (targetCount === 250 || Math.abs(durDays - 365.25) < 5.0)) {{
       return RAW_1D.slice(-250).map(computeDerived);
     }}
-    if (rate === '1mo' && Math.abs(durDays - 365.25) < 5.0) {{
-      return RAW_1M.slice(-12).map(computeDerived);
+    if (rate === '1mo' && typeof RAW_1M !== 'undefined') {{
+      if (Math.abs(durDays - 365.25) < 5.0) return RAW_1M.slice(-12).map(computeDerived);
+      if (Math.abs(durDays - 3 * 365.25) < 15.0) return RAW_1M.slice(-36).map(computeDerived);
+      if (Math.abs(durDays - 5 * 365.25) < 25.0) return RAW_1M.slice(-60).map(computeDerived);
+      if (Math.abs(durDays - 10 * 365.25) < 50.0) return RAW_1M.slice(-120).map(computeDerived);
+      if (Math.abs(durDays - 20 * 365.25) < 100.0) return RAW_1M.slice(-240).map(computeDerived);
+      if (durDays >= 30 * 365.25) return RAW_1M.map(computeDerived);
     }}
 
     let count = targetCount;
@@ -457,24 +476,29 @@ html_content = f'''<!DOCTYPE html>
 
   function updateSamplingPillState() {{
     const preset = findMatchingPreset(window.currentWindowDurationDays);
+    const lockedRate = preset ? (TIMEFRAME_LOCKED_RATES[preset.id] || preset.defaultRate) : (window.currentSamplingRate || getDefaultRateForDuration(window.currentWindowDurationDays));
+    window.currentSamplingRate = lockedRate;
+
     const validRates = preset ? preset.rates : getSupportedRatesForDuration(window.currentWindowDurationDays);
+
     document.querySelectorAll('.rate-btn, .opt-btn[id^="rate"]').forEach(b => {{
       const r = b.id.replace('rate', '');
       b.classList.remove('active');
       b.classList.remove('dimmed');
-      if (validRates.includes(r)) {{
+      if (r === lockedRate) {{
+        b.classList.add('active');
+        b.style.opacity = '1';
+        b.style.cursor = preset ? 'default' : 'pointer';
+        b.title = 'Sample rate: ' + (tagNames[r] || r) + (preset ? ' (locked for ' + preset.name + ')' : '');
+      }} else if (validRates.includes(r)) {{
         b.style.opacity = '1';
         b.style.cursor = 'pointer';
         b.title = 'Sample at ' + (tagNames[r] || r) + ' granularity';
       }} else {{
         b.classList.add('dimmed');
         b.style.opacity = '0.35';
-        b.style.cursor = r === '10m' ? 'pointer' : 'not-allowed';
-        if (r === '10m') {{
-          b.title = '10-minute candles are only available for 1D timeframe';
-        }} else {{
-          b.title = (tagNames[r] || r) + ' candles are not available for the ' + (preset ? preset.name : 'current') + ' timeframe';
-        }}
+        b.style.cursor = (r === '10m') ? 'pointer' : 'not-allowed';
+        b.title = (r === '10m') ? '10-minute candles are only available for 1D timeframe' : ('Sample rate is locked to ' + lockedRate + ' for ' + (preset ? preset.name : 'current timeframe'));
       }}
     }});
     const activeRateBtn = document.getElementById('rate' + window.currentSamplingRate);
@@ -489,69 +513,39 @@ html_content = f'''<!DOCTYPE html>
 
     const preset = PRESETS.find(p => p.id === range);
     if (preset) {{
-      const prevDays = window.currentWindowDurationDays;
       window.currentTimeframe = preset.id;
-
-      if (preset.id === '1D') {{
-        if (window.currentSamplingRate !== '10m') {{
-          window.currentSamplingRate = '1h';
-        }}
-      }} else if (preset.days < prevDays) {{
-        if (preset.days <= 35 && window.currentSamplingRate === '1mo') {{
-          window.currentSamplingRate = '1d';
-        }} else if (!preset.rates.includes(window.currentSamplingRate)) {{
-          window.currentSamplingRate = preset.defaultRate;
-        }}
-      }} else if (!preset.rates.includes(window.currentSamplingRate)) {{
-        window.currentSamplingRate = preset.defaultRate;
-      }}
-
+      window.currentSamplingRate = TIMEFRAME_LOCKED_RATES[preset.id] || preset.defaultRate;
       setContinuousWindow(preset.days, MASTER_END_TS);
     }}
   }}
 
   function setSamplingRate(rate, btnElement) {{
     const preset = findMatchingPreset(window.currentWindowDurationDays);
-    const validRates = preset ? preset.rates : getSupportedRatesForDuration(window.currentWindowDurationDays);
-    if (!validRates.includes(rate)) {{
-      if (rate === '10m') {{
-        window.currentWindowDurationDays = 1;
-      }} else {{
-        return;
+    if (!preset) {{
+      const validRates = getSupportedRatesForDuration(window.currentWindowDurationDays);
+      if (validRates.includes(rate)) {{
+        window.currentSamplingRate = rate;
+        setContinuousWindow(window.currentWindowDurationDays, window.currentWindowEndTs || MASTER_END_TS);
       }}
+      return;
     }}
-    window.currentSamplingRate = rate;
-
     if (rate === '10m') {{
-      window.currentWindowDurationDays = 1;
-    }} else if (rate === '1mo' && window.currentWindowDurationDays < 28) {{
-      window.currentWindowDurationDays = 30.5;
+      filterTimeframe('1D');
+      return;
     }}
-
-    setContinuousWindow(window.currentWindowDurationDays, window.currentWindowEndTs || MASTER_END_TS);
+    if (rate === TIMEFRAME_LOCKED_RATES[preset.id]) {{
+      window.currentSamplingRate = rate;
+      setContinuousWindow(preset.days, MASTER_END_TS);
+      return;
+    }}
   }}
 
   function setContinuousWindow(durationDays, endTs) {{
-    const prevDays = window.currentWindowDurationDays;
     if (durationDays !== undefined && !isNaN(durationDays)) {{
       window.currentWindowDurationDays = durationDays;
     }}
     if (endTs !== undefined && !isNaN(endTs)) {{
       window.currentWindowEndTs = endTs;
-    }}
-
-    const isMinimizing = (durationDays !== undefined && durationDays < prevDays - 0.01);
-
-    if (isMinimizing) {{
-      if (window.currentWindowDurationDays <= 2.2) {{
-        if (window.currentSamplingRate !== '10m') {{
-          window.currentSamplingRate = '1h';
-        }}
-      }} else if (window.currentWindowDurationDays <= 35) {{
-        if (window.currentSamplingRate === '1mo') {{
-          window.currentSamplingRate = '1d';
-        }}
-      }}
     }}
 
     const preset = findMatchingPreset(window.currentWindowDurationDays);
@@ -561,12 +555,17 @@ html_content = f'''<!DOCTYPE html>
     let tfDisplayName = '';
     if (preset) {{
       window.currentTimeframe = preset.id;
+      window.currentSamplingRate = TIMEFRAME_LOCKED_RATES[preset.id] || preset.defaultRate;
       const btn = document.getElementById('tf' + preset.id) || (preset.id === 'ALL' ? document.getElementById('btnTfAll') : null);
       if (btn) btn.classList.add('active');
       if (tfCustomBtn) tfCustomBtn.style.display = 'none';
       tfDisplayName = preset.name;
     }} else {{
       window.currentTimeframe = 'CUSTOM';
+      const validRates = getSupportedRatesForDuration(window.currentWindowDurationDays);
+      if (!window.currentSamplingRate || !validRates.includes(window.currentSamplingRate)) {{
+        window.currentSamplingRate = getDefaultRateForDuration(window.currentWindowDurationDays);
+      }}
       const yrs = window.currentWindowDurationDays / 365.25;
       const customLabel = yrs >= 1 ? (yrs.toFixed(1) + 'Y') : (Math.round(window.currentWindowDurationDays) + 'D');
       tfDisplayName = yrs.toFixed(1) + ' Years (' + Math.round(window.currentWindowDurationDays).toLocaleString() + ' days)';
@@ -576,6 +575,8 @@ html_content = f'''<!DOCTYPE html>
         tfCustomBtn.classList.add('active');
       }}
     }}
+
+    updateSamplingPillState();
 
     const tagEl = document.getElementById('currentSamplingTag');
     if (tagEl) {{
@@ -737,11 +738,10 @@ html_content = f'''<!DOCTYPE html>
     if (!wrap || wrap.dataset.wheelBound) return;
     wrap.dataset.wheelBound = 'true';
 
+    // Control scroll feature on the chart is removed per user request
     wrap.addEventListener('wheel', (e) => {{
       if (e.ctrlKey) {{
         e.preventDefault();
-        const zoomIn = e.deltaY < 0;
-        zoomContinuousTimeframe(zoomIn, 1.18);
       }}
     }}, {{ passive: false }});
   }}

@@ -104,35 +104,72 @@ try:
     assert abs(sp_all_data[-1] - 7659.4) < 20.0, f"S&P 500 in 2026 should be ~7,659.4, got {sp_all_data[-1]}"
     assert len(sp_all_data) == 442, f"Expected 442 monthly candles from 1990-01 to 2026-10, got {len(sp_all_data)}"
 
-    # Test Sample Rates on S&P 500
-    print("\n--- Testing Sample Rate Selector on S&P 500 ---")
+    # Test Locked Sample Rates per Timeframe on S&P 500
+    print("\n--- Testing Locked Sample Rates per Timeframe on S&P 500 ---")
     rate_wrap_disp = eval_js("window.getComputedStyle(document.getElementById('samplingRateWrap')).display")
     print(f"   #samplingRateWrap display: {rate_wrap_disp}")
     assert rate_wrap_disp != 'none', "Sampling rate wrap must be visible"
 
+    # 1D locked at 10m (144 points)
     eval_js("filterTimeframe('1D')")
-    eval_js("setSamplingRate('10m')")
-    pts_10m = eval_js("histChartInstance.data.datasets[0].data.length")
-    print(f"   1D @ 10m points: {pts_10m}")
-    assert pts_10m == 144, f"Expected 144 points for 1D @ 10m, got {pts_10m}"
-
-    eval_js("setSamplingRate('1h')")
-    pts_1h = eval_js("histChartInstance.data.datasets[0].data.length")
-    print(f"   1D @ 1h points: {pts_1h}")
-    assert pts_1h == 24, f"Expected 24 points for 1D @ 1h, got {pts_1h}"
-
-    eval_js("setSamplingRate('1d')")
+    tf_1d = eval_js("currentTimeframe")
+    sr_1d = eval_js("currentSamplingRate")
     pts_1d = eval_js("histChartInstance.data.datasets[0].data.length")
-    print(f"   1D @ 1d points: {pts_1d}")
-    assert pts_1d == 2, f"Expected 2 points for 1D @ 1d, got {pts_1d}"
+    active_btn_1d = eval_js("document.getElementById('rate10m').classList.contains('active')")
+    print(f"   1D: timeframe={tf_1d}, locked sr={sr_1d}, points={pts_1d}, rate10m active={active_btn_1d}")
+    assert tf_1d == '1D'
+    assert sr_1d == '10m', f"1D must be locked to 10m, got {sr_1d}"
+    assert pts_1d == 144, f"1D @ 10m must have 144 points, got {pts_1d}"
+    assert active_btn_1d is True
 
+    # 1W locked at 1h (168 points)
+    eval_js("filterTimeframe('1W')")
+    tf_1w = eval_js("currentTimeframe")
+    sr_1w = eval_js("currentSamplingRate")
+    pts_1w = eval_js("histChartInstance.data.datasets[0].data.length")
+    active_btn_1w = eval_js("document.getElementById('rate1h').classList.contains('active')")
+    print(f"   1W: timeframe={tf_1w}, locked sr={sr_1w}, points={pts_1w}, rate1h active={active_btn_1w}")
+    assert tf_1w == '1W'
+    assert sr_1w == '1h', f"1W must be locked to 1h, got {sr_1w}"
+    assert pts_1w == 168, f"1W @ 1h must have 168 points, got {pts_1w}"
+    assert active_btn_1w is True
+
+    # 1M locked at 1d (30 points)
+    eval_js("filterTimeframe('1M')")
+    tf_1m = eval_js("currentTimeframe")
+    sr_1m = eval_js("currentSamplingRate")
+    pts_1m = eval_js("histChartInstance.data.datasets[0].data.length")
+    active_btn_1m = eval_js("document.getElementById('rate1d').classList.contains('active')")
+    print(f"   1M: timeframe={tf_1m}, locked sr={sr_1m}, points={pts_1m}, rate1d active={active_btn_1m}")
+    assert tf_1m == '1M'
+    assert sr_1m == '1d', f"1M must be locked to 1d, got {sr_1m}"
+    assert pts_1m == 30, f"1M @ 1d must have 30 points, got {pts_1m}"
+    assert active_btn_1m is True
+
+    # 1Y locked at 1d (250 points)
     eval_js("filterTimeframe('1Y')")
-    eval_js("setSamplingRate('1mo')")
-    pts_1mo = eval_js("histChartInstance.data.datasets[0].data.length")
-    sp_1y_vals = eval_js("histChartInstance.data.datasets[0].data")
-    print(f"   1Y @ 1mo points: {pts_1mo}, values={sp_1y_vals[:3]}...{sp_1y_vals[-3:]}")
-    assert pts_1mo == 12, f"Expected 12 points for 1Y @ 1mo, got {pts_1mo}"
-    assert len(set(sp_1y_vals)) >= 10, f"1Y monthly series must NOT be a flat line! Got {sp_1y_vals}"
+    tf_1y = eval_js("currentTimeframe")
+    sr_1y = eval_js("currentSamplingRate")
+    pts_1y = eval_js("histChartInstance.data.datasets[0].data.length")
+    active_btn_1y = eval_js("document.getElementById('rate1d').classList.contains('active')")
+    print(f"   1Y: timeframe={tf_1y}, locked sr={sr_1y}, points={pts_1y}, rate1d active={active_btn_1y}")
+    assert tf_1y == '1Y'
+    assert sr_1y == '1d', f"1Y must be locked to 1d, got {sr_1y}"
+    assert pts_1y == 250, f"1Y @ 1d must have 250 points, got {pts_1y}"
+    assert active_btn_1y is True
+
+    # 3Y, 5Y, 10Y, 20Y, ALL locked at 1mo
+    for tf, expected_pts in [('3Y', 36), ('5Y', 60), ('10Y', 120), ('20Y', 240), ('ALL', 442)]:
+        eval_js(f"filterTimeframe('{tf}')")
+        curr_tf = eval_js("currentTimeframe")
+        curr_sr = eval_js("currentSamplingRate")
+        curr_pts = eval_js("histChartInstance.data.datasets[0].data.length")
+        active_btn_mo = eval_js("document.getElementById('rate1mo').classList.contains('active')")
+        print(f"   {tf}: timeframe={curr_tf}, locked sr={curr_sr}, points={curr_pts}, rate1mo active={active_btn_mo}")
+        assert curr_tf == tf
+        assert curr_sr == '1mo', f"{tf} must be locked to 1mo, got {curr_sr}"
+        assert curr_pts == expected_pts, f"{tf} @ 1mo must have {expected_pts} points, got {curr_pts}"
+        assert active_btn_mo is True
 
     # 3. Switch to WTI Crude Oil (crude_oil)
     print("\n--- 3. Switching to WTI Crude Oil (crude_oil) ---")

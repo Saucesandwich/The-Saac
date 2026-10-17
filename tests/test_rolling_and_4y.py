@@ -154,8 +154,8 @@ try:
         wrap.dispatchEvent(wheelEvt);
     """)
     after_wheel_days = eval_js("currentWindowDurationDays")
-    print(f"   Wheel Scroll UP with Ctrl: {before_wheel_days:.1f} days -> {after_wheel_days:.1f} days")
-    assert after_wheel_days < before_wheel_days, "Wheel scroll UP with Ctrl must zoom in (decrease days)!"
+    print(f"   Wheel Scroll UP with Ctrl: {before_wheel_days:.1f} days -> {after_wheel_days:.1f} days (unchanged)")
+    assert after_wheel_days == before_wheel_days, "Wheel scroll UP with Ctrl must NOT change window duration (control scroll feature removed)!"
 
     print("\nALL ROLLING TIMEFRAME & 4-YEAR TESTS PASSED SUCCESSFULLY!")
 

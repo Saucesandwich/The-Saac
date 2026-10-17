@@ -874,8 +874,8 @@ WSJ_HTML_CHART = """
       <!-- Sample Rate Selector (Restored & Visible) -->
       <div class="sampling-rate-wrap" id="samplingRateWrap">
         <span class="sampling-rate-label">Sample Rate:</span>
-        <button class="rate-btn opt-btn" id="rate10m" onclick="setSamplingRate('10m', this)">10m</button>
-        <button class="rate-btn opt-btn active" id="rate1h" onclick="setSamplingRate('1h', this)">1h</button>
+        <button class="rate-btn opt-btn active" id="rate10m" onclick="setSamplingRate('10m', this)">10m</button>
+        <button class="rate-btn opt-btn" id="rate1h" onclick="setSamplingRate('1h', this)">1h</button>
         <button class="rate-btn opt-btn" id="rate1d" onclick="setSamplingRate('1d', this)">1d</button>
         <button class="rate-btn opt-btn" id="rate1mo" onclick="setSamplingRate('1mo', this)">1mo</button>
       </div>
