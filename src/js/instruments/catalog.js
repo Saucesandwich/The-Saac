@@ -27,18 +27,18 @@ export const MACRO_CATALOG = [
     exchange: 'CME COMEX Gold Futures (GC=F) • Bank of Thailand (THB=X) • CBOE US10Y (^TNX)',
     unit: 'oz',
     currency: 'USD',
-    themeColor: '#ff9800',
+    themeColor: '#ff9100',
     defaultPrice: 4169.30,
     dayRange: { low: 4165.50, high: 4193.50, base: 4159.00 },
     cards: [
       { id: 'primary', domId: 'goldUsdDisplay', labelLeft: 'Gold Futures (US Market)', labelRight: 'COMEX: GC=F', format: (v) => `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
       { id: 'secondary1', domId: 'usdThbDisplay', labelLeft: 'Forex Exchange Rate', labelRight: 'FX: USD / THB', format: (v) => `฿${v.toFixed(4)}` },
-      { id: 'secondary2', domId: 'bondYieldDisplay', labelLeft: 'US 10-Year Treasury Yield', labelRight: 'RATES: CBOE ^TNX', style: 'color: #c084fc;', format: (v) => `${v.toFixed(3)}%` },
+      { id: 'secondary2', domId: 'bondYieldDisplay', labelLeft: 'US 10-Year Treasury Yield', labelRight: 'RATES: CBOE ^TNX', style: 'color: #ffd600;', format: (v) => `${v.toFixed(3)}%` },
       { id: 'derived', domId: 'goldThaiBahtDisplay', labelLeft: 'Thai Gold Bar (1 บาททอง)', labelRight: 'THAI GOLD: 96.5% BAR', format: (v) => `฿${Math.round(v).toLocaleString()}` }
     ],
     secondarySeries: [
-      { id: 'thb', label: 'USD / THB', ticker: 'THB=X', unit: '฿', color: '#38bdf8', yAxisID: 'y1', getValue: (d) => d.usd_thb || d.thb || 33.56, formatValue: (v) => `฿${Number(v).toFixed(2)}` },
-      { id: 'us10y', label: 'US 10Y Yield', ticker: '^TNX', unit: '%', color: '#a855f7', yAxisID: 'y2', getValue: (d) => d.us10y || d.bond || 5.217, formatValue: (v) => `${Number(v).toFixed(3)}%` }
+      { id: 'thb', label: 'USD / THB', ticker: 'THB=X', unit: '฿', color: '#00e5ff', yAxisID: 'y1', getValue: (d) => d.usd_thb || d.thb || 33.56, formatValue: (v) => `฿${Number(v).toFixed(2)}` },
+      { id: 'us10y', label: 'US 10Y Yield', ticker: '^TNX', unit: '%', color: '#00e676', yAxisID: 'y2', getValue: (d) => d.us10y || d.bond || 5.217, formatValue: (v) => `${Number(v).toFixed(3)}%` }
     ],
     eras: [
       { id: '1997', label: '1997 Asian Crisis', start: '1997-07', end: '1998-01', title: 'Tom Yum Kung Baht Float' },
@@ -78,7 +78,7 @@ export const MACRO_CATALOG = [
     exchange: 'CME COMEX Silver Futures (SI=F)',
     unit: 'oz',
     currency: 'USD',
-    themeColor: '#cbd5e1',
+    themeColor: '#ffffff',
     defaultPrice: 32.40,
     dayRange: { low: 31.85, high: 32.75, base: 32.10 },
     cards: [
@@ -88,7 +88,7 @@ export const MACRO_CATALOG = [
       { id: 'derived', domId: 'goldThaiBahtDisplay', labelLeft: 'Silver 1kg Bar Value', labelRight: 'STANDARD 1KG 999', format: (v) => `$${Math.round((v / 31.1035) * 1000).toLocaleString()}` }
     ],
     secondarySeries: [
-      { id: 'ratio', label: 'Gold/Silver Ratio', unit: 'x', color: '#ff9800', getValue: (d) => Number((4169.3 / (d.close || 32.4)).toFixed(1)), formatValue: (v) => `${v}x` }
+      { id: 'ratio', label: 'Gold/Silver Ratio', unit: 'x', color: '#ff9100', getValue: (d) => Number((4169.3 / (d.close || 32.4)).toFixed(1)), formatValue: (v) => `${v}x` }
     ]
   },
   {
@@ -101,7 +101,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYMEX Light Sweet Crude (CL=F) • ICE Brent (BZ=F)',
     unit: 'bbl',
     currency: 'USD',
-    themeColor: '#ef4444',
+    themeColor: '#ff1744',
     defaultPrice: 78.40,
     dayRange: { low: 77.10, high: 79.25, base: 77.80 },
     cards: [
@@ -111,7 +111,7 @@ export const MACRO_CATALOG = [
       { id: 'derived', domId: 'goldThaiBahtDisplay', labelLeft: 'Per Barrel Gallon Price', labelRight: 'UNIT: 42 GALLONS', format: (v) => `$${(v / 42.0).toFixed(2)}/gal` }
     ],
     secondarySeries: [
-      { id: 'brent', label: 'Brent Crude', color: '#38bdf8', getValue: (d) => Number((d.close + 3.85).toFixed(2)), formatValue: (v) => `$${v}` }
+      { id: 'brent', label: 'Brent Crude', color: '#00e5ff', getValue: (d) => Number((d.close + 3.85).toFixed(2)), formatValue: (v) => `$${v}` }
     ]
   },
   {
@@ -124,7 +124,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYMEX Henry Hub Natural Gas (NG=F)',
     unit: 'MMBtu',
     currency: 'USD',
-    themeColor: '#06b6d4',
+    themeColor: '#00e5ff',
     defaultPrice: 2.85,
     dayRange: { low: 2.74, high: 2.92, base: 2.80 },
     cards: [
@@ -144,7 +144,7 @@ export const MACRO_CATALOG = [
     exchange: 'CME COMEX High Grade Copper (HG=F)',
     unit: 'lb',
     currency: 'USD',
-    themeColor: '#f97316',
+    themeColor: '#ff9100',
     defaultPrice: 4.45,
     dayRange: { low: 4.38, high: 4.52, base: 4.41 },
     cards: [
@@ -168,7 +168,7 @@ export const MACRO_CATALOG = [
     exchange: 'S&P Dow Jones Indices (^GSPC)',
     unit: 'pts',
     currency: 'USD',
-    themeColor: '#38bdf8',
+    themeColor: '#00b0ff',
     defaultPrice: 5850.20,
     dayRange: { low: 5820.00, high: 5875.00, base: 5835.00 },
     cards: [
@@ -188,7 +188,7 @@ export const MACRO_CATALOG = [
     exchange: 'NASDAQ Global Select (^IXIC) • Invesco QQQ',
     unit: 'pts',
     currency: 'USD',
-    themeColor: '#00c853',
+    themeColor: '#00e676',
     defaultPrice: 20340.50,
     dayRange: { low: 20210.00, high: 20450.00, base: 20280.00 },
     cards: [
@@ -208,7 +208,7 @@ export const MACRO_CATALOG = [
     exchange: 'S&P Dow Jones Indices (^DJI)',
     unit: 'pts',
     currency: 'USD',
-    themeColor: '#3b82f6',
+    themeColor: '#00b0ff',
     defaultPrice: 42950.00,
     dayRange: { low: 42780.00, high: 43120.00, base: 42890.00 },
     cards: [
@@ -228,7 +228,7 @@ export const MACRO_CATALOG = [
     exchange: 'FTSE Russell Indices (^RUT)',
     unit: 'pts',
     currency: 'USD',
-    themeColor: '#8b5cf6',
+    themeColor: '#ffd600',
     defaultPrice: 2240.80,
     dayRange: { low: 2215.00, high: 2258.00, base: 2225.00 },
     cards: [
@@ -248,7 +248,7 @@ export const MACRO_CATALOG = [
     exchange: 'Tokyo Stock Exchange (^N225)',
     unit: 'pts',
     currency: 'JPY',
-    themeColor: '#ec4899',
+    themeColor: '#ff1744',
     defaultPrice: 38950.00,
     dayRange: { low: 38600.00, high: 39250.00, base: 38800.00 },
     cards: [
@@ -268,7 +268,7 @@ export const MACRO_CATALOG = [
     exchange: 'Deutsche Börse XETRA (^GDAXI)',
     unit: 'pts',
     currency: 'EUR',
-    themeColor: '#eab308',
+    themeColor: '#ffd600',
     defaultPrice: 19480.00,
     dayRange: { low: 19350.00, high: 19580.00, base: 19410.00 },
     cards: [
@@ -288,7 +288,7 @@ export const MACRO_CATALOG = [
     exchange: 'London Stock Exchange (^FTSE)',
     unit: 'pts',
     currency: 'GBP',
-    themeColor: '#14b8a6',
+    themeColor: '#00e676',
     defaultPrice: 8250.00,
     dayRange: { low: 8190.00, high: 8295.00, base: 8220.00 },
     cards: [
@@ -308,7 +308,7 @@ export const MACRO_CATALOG = [
     exchange: 'Hong Kong Exchanges & Clearing (^HSI)',
     unit: 'pts',
     currency: 'HKD',
-    themeColor: '#f43f5e',
+    themeColor: '#ff1744',
     defaultPrice: 20600.00,
     dayRange: { low: 20300.00, high: 20950.00, base: 20500.00 },
     cards: [
@@ -332,7 +332,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYSE Arca (SPY)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#38bdf8',
+    themeColor: '#00b0ff',
     defaultPrice: 584.50,
     dayRange: { low: 581.50, high: 586.80, base: 583.00 },
     cards: [
@@ -352,7 +352,7 @@ export const MACRO_CATALOG = [
     exchange: 'NASDAQ (QQQ)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#00c853',
+    themeColor: '#00e676',
     defaultPrice: 495.20,
     dayRange: { low: 491.80, high: 498.40, base: 493.50 },
     cards: [
@@ -372,7 +372,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYSE Arca (IWM)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#8b5cf6',
+    themeColor: '#ffd600',
     defaultPrice: 222.80,
     dayRange: { low: 220.10, high: 224.50, base: 221.40 },
     cards: [
@@ -392,7 +392,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYSE Arca (VTI)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#0ea5e9',
+    themeColor: '#00b0ff',
     defaultPrice: 282.40,
     dayRange: { low: 280.50, high: 283.90, base: 281.20 },
     cards: [
@@ -412,7 +412,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYSE Arca (AGG)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#a855f7',
+    themeColor: '#ffd600',
     defaultPrice: 97.80,
     dayRange: { low: 97.40, high: 98.15, base: 97.60 },
     cards: [
@@ -432,7 +432,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYSE Arca (GLD)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#ff9800',
+    themeColor: '#ff9100',
     defaultPrice: 252.60,
     dayRange: { low: 251.20, high: 253.90, base: 251.90 },
     cards: [
@@ -452,7 +452,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYSE Arca (USO)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#f43f5e',
+    themeColor: '#ff1744',
     defaultPrice: 74.20,
     dayRange: { low: 73.10, high: 75.10, base: 73.60 },
     cards: [
@@ -472,7 +472,7 @@ export const MACRO_CATALOG = [
     exchange: 'NYSE Arca (EEM)',
     unit: 'share',
     currency: 'USD',
-    themeColor: '#10b981',
+    themeColor: '#00e676',
     defaultPrice: 44.80,
     dayRange: { low: 44.10, high: 45.30, base: 44.40 },
     cards: [
@@ -496,11 +496,11 @@ export const MACRO_CATALOG = [
     exchange: 'CBOE 10-Year Treasury Note Yield (^TNX)',
     unit: '%',
     currency: 'Yield',
-    themeColor: '#a855f7',
+    themeColor: '#ffd600',
     defaultPrice: 5.217,
     dayRange: { low: 5.180, high: 5.245, base: 5.200 },
     cards: [
-      { id: 'primary', domId: 'goldUsdDisplay', labelLeft: 'US 10-Year Treasury Yield', labelRight: 'CBOE: ^TNX', style: 'color: #c084fc;', format: (v) => `${v.toFixed(3)}%` },
+      { id: 'primary', domId: 'goldUsdDisplay', labelLeft: 'US 10-Year Treasury Yield', labelRight: 'CBOE: ^TNX', style: 'color: #ffd600;', format: (v) => `${v.toFixed(3)}%` },
       { id: 'secondary1', domId: 'usdThbDisplay', labelLeft: 'Global Risk-Free Anchor', labelRight: 'DISCOUNT RATE', format: () => `Capital Hurdle` },
       { id: 'secondary2', domId: 'bondYieldDisplay', labelLeft: 'Bond Price Direction', labelRight: 'YIELD INVERSE', format: (v) => `${v > 5.0 ? 'Pressure' : 'Stable'}` },
       { id: 'derived', domId: 'goldThaiBahtDisplay', labelLeft: 'Basis Point Change', labelRight: 'DAY SPREAD', format: (v) => `${((v - 5.200) * 100).toFixed(1)} bps` }
@@ -516,7 +516,7 @@ export const MACRO_CATALOG = [
     exchange: 'CBOE Short-Term Treasury Yield (Policy Sensitive)',
     unit: '%',
     currency: 'Yield',
-    themeColor: '#c084fc',
+    themeColor: '#00e5ff',
     defaultPrice: 4.885,
     dayRange: { low: 4.840, high: 4.920, base: 4.870 },
     cards: [
@@ -536,7 +536,7 @@ export const MACRO_CATALOG = [
     exchange: 'Eurozone Sovereign Risk-Free Benchmark (Bund)',
     unit: '%',
     currency: 'Yield',
-    themeColor: '#eab308',
+    themeColor: '#ffd600',
     defaultPrice: 2.215,
     dayRange: { low: 2.180, high: 2.240, base: 2.200 },
     cards: [
@@ -556,7 +556,7 @@ export const MACRO_CATALOG = [
     exchange: 'Bank of England Benchmark Sovereign Debt (Gilt)',
     unit: '%',
     currency: 'Yield',
-    themeColor: '#14b8a6',
+    themeColor: '#00e676',
     defaultPrice: 4.185,
     dayRange: { low: 4.140, high: 4.220, base: 4.160 },
     cards: [
@@ -576,7 +576,7 @@ export const MACRO_CATALOG = [
     exchange: 'Ministry of Finance Japan & Bank of Japan Benchmark',
     unit: '%',
     currency: 'Yield',
-    themeColor: '#ec4899',
+    themeColor: '#ff1744',
     defaultPrice: 0.965,
     dayRange: { low: 0.940, high: 0.985, base: 0.950 },
     cards: [
@@ -600,7 +600,7 @@ export const MACRO_CATALOG = [
     exchange: 'ICE US Dollar Index Futures (DX-Y.NYB)',
     unit: 'pts',
     currency: 'USD',
-    themeColor: '#22c55e',
+    themeColor: '#00e676',
     defaultPrice: 103.45,
     dayRange: { low: 103.10, high: 103.80, base: 103.30 },
     cards: [
@@ -620,7 +620,7 @@ export const MACRO_CATALOG = [
     exchange: 'Interbank Forex Market (EUR/USD)',
     unit: 'USD',
     currency: 'USD',
-    themeColor: '#38bdf8',
+    themeColor: '#00b0ff',
     defaultPrice: 1.0850,
     dayRange: { low: 1.0820, high: 1.0880, base: 1.0840 },
     cards: [
@@ -640,7 +640,7 @@ export const MACRO_CATALOG = [
     exchange: 'Interbank Forex Market (USD/JPY)',
     unit: 'JPY',
     currency: 'JPY',
-    themeColor: '#ec4899',
+    themeColor: '#ff1744',
     defaultPrice: 149.50,
     dayRange: { low: 148.80, high: 150.20, base: 149.10 },
     cards: [
@@ -660,12 +660,12 @@ export const MACRO_CATALOG = [
     exchange: 'Bank of Thailand (THB=X)',
     unit: 'THB',
     currency: 'THB',
-    themeColor: '#38bdf8',
+    themeColor: '#00e5ff',
     defaultPrice: 33.56,
     dayRange: { low: 33.40, high: 33.72, base: 33.50 },
     cards: [
       { id: 'primary', domId: 'goldUsdDisplay', labelLeft: 'USD / THB Exchange Rate', labelRight: 'BOT: THB=X', format: (v) => `฿${v.toFixed(4)}` },
-      { id: 'secondary1', domId: 'usdThbDisplay', labelLeft: 'Inverse Baht Valuation', labelRight: '1 THB IN USD', format: (v) => `$${(1 / v).toFixed(4)}` },
+      { id: 'secondary1', domId: 'usdThbDisplay', labelLeft: 'Inverse Baht Valuation', labelRight: '1 THB IN USD', format: () => `$${(1 / v).toFixed(4)}` },
       { id: 'secondary2', domId: 'bondYieldDisplay', labelLeft: 'BOT Policy Interest Rate', labelRight: 'BANK OF THAILAND', format: () => `2.25% Policy Rate` },
       { id: 'derived', domId: 'goldThaiBahtDisplay', labelLeft: 'Gold Price Converter Multiplier', labelRight: '1 TROY OZ IN THB', format: (v) => `฿${Math.round(4169.3 * v).toLocaleString()}` }
     ]

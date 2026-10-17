@@ -73,6 +73,11 @@ try:
     assert "Gold" in gold_label, f"Dataset 0 label should contain Gold, got {gold_label}"
     assert abs(gold_last_price - 4180.6) < 20.0 or abs(gold_last_price - 4169.3) < 20.0, f"Gold price should be ~4169-4180, got {gold_last_price}"
 
+    # Check Header Title
+    top_title = eval_js("document.getElementById('terminalTopTitle')?.textContent.trim()")
+    print(f"   Top Header Title: '{top_title}'")
+    assert top_title == "The Saac Terminal" or top_title == "THE SAAC TERMINAL", f"Expected 'The Saac Terminal', got '{top_title}'"
+
     # 2. Switch to S&P 500 (sp500)
     print("\n--- 2. Switching to S&P 500 (sp500) ---")
     eval_js("switchInstrument('sp500')")
@@ -81,8 +86,11 @@ try:
     sp_data = eval_js("histChartInstance.data.datasets[0].data")
     sp_last = sp_data[-1]
     sp_hero_price = eval_js("document.getElementById('goldUsdDisplay').innerText")
+    top_title_after_switch = eval_js("document.getElementById('terminalTopTitle')?.textContent.trim()")
     print(f"   Switched to: {sp_inst}, label='{sp_label}', last_val={sp_last}, hero_price='{sp_hero_price}'")
+    print(f"   Top Title after switch: '{top_title_after_switch}'")
     assert sp_inst == 'sp500'
+    assert top_title_after_switch == "The Saac Terminal" or top_title_after_switch == "THE SAAC TERMINAL", "Top title must remain 'The Saac Terminal'!"
     assert "S&P" in sp_label, f"Expected S&P in label, got {sp_label}"
     assert abs(sp_last - 5850.2) < 30.0, f"S&P 500 price should be ~5,850, got {sp_last}"
     assert "5,850" in sp_hero_price or "5850" in sp_hero_price, f"Hero price must show 5850, got {sp_hero_price}"
@@ -95,6 +103,34 @@ try:
     assert abs(sp_1990 - 330.0) < 20.0, f"S&P 500 in 1990 was ~330, got {sp_1990}"
     assert abs(sp_all_data[-1] - 5850.2) < 20.0, f"S&P 500 in 2026 should be ~5,850, got {sp_all_data[-1]}"
 
+    # Test Sample Rates on S&P 500
+    print("\n--- Testing Sample Rate Selector on S&P 500 ---")
+    rate_wrap_disp = eval_js("window.getComputedStyle(document.getElementById('samplingRateWrap')).display")
+    print(f"   #samplingRateWrap display: {rate_wrap_disp}")
+    assert rate_wrap_disp != 'none', "Sampling rate wrap must be visible"
+
+    eval_js("filterTimeframe('1D')")
+    eval_js("setSamplingRate('10m')")
+    pts_10m = eval_js("histChartInstance.data.datasets[0].data.length")
+    print(f"   1D @ 10m points: {pts_10m}")
+    assert pts_10m == 144, f"Expected 144 points for 1D @ 10m, got {pts_10m}"
+
+    eval_js("setSamplingRate('1h')")
+    pts_1h = eval_js("histChartInstance.data.datasets[0].data.length")
+    print(f"   1D @ 1h points: {pts_1h}")
+    assert pts_1h == 24, f"Expected 24 points for 1D @ 1h, got {pts_1h}"
+
+    eval_js("setSamplingRate('1d')")
+    pts_1d = eval_js("histChartInstance.data.datasets[0].data.length")
+    print(f"   1D @ 1d points: {pts_1d}")
+    assert pts_1d == 2, f"Expected 2 points for 1D @ 1d, got {pts_1d}"
+
+    eval_js("filterTimeframe('1Y')")
+    eval_js("setSamplingRate('1mo')")
+    pts_1mo = eval_js("histChartInstance.data.datasets[0].data.length")
+    print(f"   1Y @ 1mo points: {pts_1mo}")
+    assert pts_1mo == 12, f"Expected 12 points for 1Y @ 1mo, got {pts_1mo}"
+
     # 3. Switch to WTI Crude Oil (crude_oil)
     print("\n--- 3. Switching to WTI Crude Oil (crude_oil) ---")
     eval_js("switchInstrument('crude_oil')")
@@ -103,6 +139,7 @@ try:
     oil_data = eval_js("histChartInstance.data.datasets[0].data")
     oil_last = oil_data[-1]
     oil_hero_price = eval_js("document.getElementById('goldUsdDisplay').innerText")
+    assert eval_js("document.getElementById('terminalTopTitle')?.textContent.trim()").lower() == "the saac terminal"
     print(f"   Switched to: {oil_inst}, label='{oil_label}', last_val={oil_last}, hero_price='{oil_hero_price}'")
     assert oil_inst == 'crude_oil'
     assert "Crude Oil" in oil_label
@@ -117,6 +154,7 @@ try:
     bond_data = eval_js("histChartInstance.data.datasets[0].data")
     bond_last = bond_data[-1]
     bond_hero_price = eval_js("document.getElementById('goldUsdDisplay').innerText")
+    assert eval_js("document.getElementById('terminalTopTitle')?.textContent.trim()").lower() == "the saac terminal"
     print(f"   Switched to: {bond_inst}, label='{bond_label}', last_val={bond_last}, hero_price='{bond_hero_price}'")
     assert bond_inst == 'us10y'
     assert "10Y" in bond_label or "Yield" in bond_label
@@ -130,10 +168,23 @@ try:
     silver_label = eval_js("histChartInstance.data.datasets[0].label")
     silver_data = eval_js("histChartInstance.data.datasets[0].data")
     silver_last = silver_data[-1]
+    assert eval_js("document.getElementById('terminalTopTitle')?.textContent.trim()").lower() == "the saac terminal"
     print(f"   Switched to: {silver_inst}, label='{silver_label}', last_val={silver_last}")
     assert silver_inst == 'silver'
     assert "Silver" in silver_label
     assert abs(silver_last - 32.4) < 2.0, f"Silver price should be ~$32.4, got {silver_last}"
+
+    # 6. Verify Minimalist Neutral Black Palette & No Purple
+    print("\n--- 6. Verifying Minimalist Neutral Black Dark Mode & No Purple ---")
+    body_bg = eval_js("window.getComputedStyle(document.body).backgroundColor")
+    print(f"   body background color: {body_bg}")
+    # Check dataset border colors across instruments for purple
+    for inst in ['gold', 'sp500', 'crude_oil', 'us10y', 'silver', 'bitcoin', 'eurusd']:
+        eval_js(f"switchInstrument('{inst}')")
+        bcolor = eval_js("histChartInstance.data.datasets[0].borderColor")
+        # Ensure not purple / pink
+        assert not any(p in bcolor.lower() for p in ['purple', '#8a2be2', '#9932cc', '#b388ff', '#7c4dff', '#d500f9']), f"Instrument {inst} has purple color: {bcolor}"
+    print("   All sampled instruments have vibrant/authentic non-purple colors!")
 
     print("\n>>> ALL MULTI-ASSET SWITCHING & DATA INTEGRITY TESTS PASSED! <<<")
 

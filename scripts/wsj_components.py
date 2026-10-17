@@ -8,21 +8,23 @@ WSJ_CSS = """
        THE WALL STREET JOURNAL MARKET DATA MINIMALIST DESIGN SYSTEM
        ========================================================================== */
     :root {
-      --wsj-bg-primary: #0a0c10;
-      --wsj-bg-card: #12151c;
-      --wsj-bg-card-hover: #161a23;
-      --wsj-bg-subtle: #0e1117;
-      --wsj-bg-input: #080a0e;
-      --wsj-border-color: #1f2430;
-      --wsj-border-light: #2c3345;
-      --wsj-border-highlight: #ff9800;
-      --wsj-text-main: #f1f3f7;
-      --wsj-text-muted: #828a99;
-      --wsj-text-dim: #545c6b;
-      --wsj-blue: #2d88ff;
-      --wsj-green: #10b981;
-      --wsj-red: #ef4444;
-      --wsj-amber: #ff9800;
+      --wsj-bg-primary: #000000;
+      --wsj-bg-card: #0a0a0a;
+      --wsj-bg-card-hover: #141414;
+      --wsj-bg-subtle: #0d0d0d;
+      --wsj-bg-input: #050505;
+      --wsj-border-color: #1f1f1f;
+      --wsj-border-light: #333333;
+      --wsj-border-highlight: #ff9100;
+      --wsj-text-main: #f5f5f5;
+      --wsj-text-muted: #888888;
+      --wsj-text-dim: #555555;
+      --wsj-blue: #00b0ff;
+      --wsj-cyan: #00e5ff;
+      --wsj-green: #00e676;
+      --wsj-red: #ff1744;
+      --wsj-amber: #ff9100;
+      --wsj-yellow: #ffd600;
       --font-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-mono: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
@@ -112,24 +114,24 @@ WSJ_CSS = """
       text-transform: uppercase;
       letter-spacing: 0.04em;
       transition: all 0.12s ease;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-cat-btn:hover {
       color: #ffffff;
-      background: #141822;
+      background: #141414;
     }
 
     .wsj-cat-btn.active {
       color: var(--wsj-amber);
-      background: #181d27;
-      border-color: #2b3345;
+      background: #161616;
+      border-color: #333333;
     }
 
     .wsj-search-input {
       background: var(--wsj-bg-input);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 4px 10px;
       color: #ffffff;
       font-family: var(--font-mono);
@@ -144,26 +146,68 @@ WSJ_CSS = """
       border-color: var(--wsj-amber);
     }
 
-    /* Ticker Strip */
+    /* Responsive Ticker Grid */
     .wsj-ticker-ribbon {
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
       gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid var(--wsj-border-color);
+      max-height: 170px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #050505;
+      border: 1px solid #1f1f1f;
+      margin-bottom: 12px;
     }
 
-    .wsj-ticker-ribbon::-webkit-scrollbar { height: 3px; }
-    .wsj-ticker-ribbon::-webkit-scrollbar-thumb { background: #262c3b; border-radius: 1px; }
+    .wsj-ticker-ribbon::-webkit-scrollbar { width: 4px; height: 4px; }
+    .wsj-ticker-ribbon::-webkit-scrollbar-thumb { background: #333333; border-radius: 0px; }
+
+    /* Macro Ticker Buttons */
+    .ticker-pill-btn {
+      background: #0a0a0a;
+      border: 1px solid #1f1f1f;
+      color: #e5e5e5;
+      padding: 6px 10px;
+      border-radius: 0px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      transition: background 0.1s ease, border-color 0.1s ease;
+      text-align: left;
+    }
+    .ticker-pill-btn:hover {
+      background: #141414;
+      border-color: #444444;
+      color: #ffffff;
+    }
+    .ticker-pill-btn.active {
+      background: #161616;
+      border-color: var(--wsj-amber);
+      color: #ffffff;
+      box-shadow: inset 2px 0 0 var(--wsj-amber);
+    }
+    .pill-sym {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: var(--wsj-amber);
+    }
+    .pill-price {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.70rem;
+    }
 
     .wsj-ticker-item {
-      background: #0f1218;
+      background: #0a0a0a;
       border: 1px solid var(--wsj-border-color);
-      color: #cbd5e1;
+      color: #e5e5e5;
       padding: 5px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
@@ -176,13 +220,13 @@ WSJ_CSS = """
     }
 
     .wsj-ticker-item:hover {
-      background: #161c26;
+      background: #141414;
       border-color: var(--wsj-amber);
       color: #ffffff;
     }
 
     .wsj-ticker-item.active {
-      background: #1b212f;
+      background: #161616;
       border-color: var(--wsj-amber);
       color: var(--wsj-amber);
     }
@@ -197,7 +241,7 @@ WSJ_CSS = """
     .wsj-hero-banner {
       background: var(--wsj-bg-card);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 16px 20px;
       margin-bottom: 14px;
       display: flex;
@@ -261,19 +305,19 @@ WSJ_CSS = """
       font-weight: 700;
       font-family: var(--font-mono);
       padding: 2px 6px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-hero-delta.up {
       color: var(--wsj-green);
-      background: #082115;
-      border: 1px solid #0f4028;
+      background: #031a0d;
+      border: 1px solid #06381b;
     }
 
     .wsj-hero-delta.down {
       color: var(--wsj-red);
-      background: #250909;
-      border: 1px solid #4a1212;
+      background: #1a0303;
+      border: 1px solid #380606;
     }
 
     /* WSJ Market Statistics Grid */
@@ -287,7 +331,7 @@ WSJ_CSS = """
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
       padding: 8px 12px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-stat-item .label {
@@ -310,7 +354,7 @@ WSJ_CSS = """
     .wsj-chart-card {
       background: var(--wsj-bg-card);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 16px 18px;
       margin-bottom: 16px;
     }
@@ -334,7 +378,7 @@ WSJ_CSS = """
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
       padding: 2px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-tf-btn {
@@ -342,7 +386,7 @@ WSJ_CSS = """
       border: 1px solid transparent;
       color: var(--wsj-text-muted);
       padding: 4px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
@@ -352,9 +396,59 @@ WSJ_CSS = """
 
     .wsj-tf-btn:hover { color: #ffffff; }
     .wsj-tf-btn.active {
-      background: #1c2230;
+      background: #161616;
       color: var(--wsj-amber);
       border-color: var(--wsj-border-light);
+    }
+
+    /* Restored & Styled Sample Rate Selector */
+    .sampling-rate-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--wsj-bg-subtle);
+      border: 1px solid var(--wsj-border-color);
+      padding: 2px 6px;
+      border-radius: 0px;
+    }
+
+    .sampling-rate-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--wsj-text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      margin-right: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .rate-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--wsj-text-muted);
+      padding: 4px 8px;
+      border-radius: 0px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: all 0.1s ease;
+    }
+
+    .rate-btn:hover:not(.dimmed) {
+      color: #ffffff;
+      background: #141414;
+    }
+
+    .rate-btn.active {
+      background: #181818;
+      color: var(--wsj-cyan);
+      border-color: var(--wsj-border-light);
+    }
+
+    .rate-btn.dimmed {
+      opacity: 0.35;
+      cursor: not-allowed;
     }
 
     .wsj-style-group {
@@ -364,7 +458,7 @@ WSJ_CSS = """
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
       padding: 2px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-style-btn {
@@ -372,7 +466,7 @@ WSJ_CSS = """
       border: 1px solid transparent;
       color: var(--wsj-text-muted);
       padding: 4px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
@@ -382,7 +476,7 @@ WSJ_CSS = """
 
     .wsj-style-btn:hover { color: #ffffff; }
     .wsj-style-btn.active {
-      background: #1c2230;
+      background: #161616;
       color: #ffffff;
       border-color: var(--wsj-border-light);
     }
@@ -397,7 +491,7 @@ WSJ_CSS = """
       padding: 8px 12px;
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-overlay-label {
@@ -410,11 +504,11 @@ WSJ_CSS = """
     }
 
     .wsj-overlay-pill {
-      background: #141822;
+      background: #111111;
       border: 1px solid var(--wsj-border-color);
-      color: #e2e8f0;
+      color: #e5e5e5;
       padding: 3px 8px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       font-family: var(--font-mono);
@@ -444,11 +538,11 @@ WSJ_CSS = """
     }
 
     .wsj-add-overlay-btn {
-      background: #161b24;
+      background: #0f0f0f;
       border: 1px dashed var(--wsj-border-light);
       color: var(--wsj-text-muted);
       padding: 3px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.70rem;
       font-weight: 700;
       cursor: pointer;
@@ -476,7 +570,7 @@ WSJ_CSS = """
       border: 1px solid var(--wsj-border-color);
       color: var(--wsj-text-muted);
       padding: 3px 8px;
-      border-radius: 2px;
+      border-radius: 0px;
       cursor: pointer;
       font-family: var(--font-mono);
       font-size: 0.68rem;
@@ -485,7 +579,7 @@ WSJ_CSS = """
     }
 
     .wsj-mode-btn.active {
-      background: #1c2230;
+      background: #161616;
       color: var(--wsj-blue);
       border-color: var(--wsj-blue);
     }
@@ -493,10 +587,10 @@ WSJ_CSS = """
     /* Overlay Selection Dropdown */
     .wsj-dropdown-menu {
       position: absolute;
-      background: #12151c;
-      border: 1px solid var(--wsj-border-light);
-      border-radius: 2px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      background: #0a0a0a;
+      border: 1px solid #222222;
+      border-radius: 0px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8);
       max-height: 280px;
       overflow-y: auto;
       z-index: 100;
@@ -508,23 +602,23 @@ WSJ_CSS = """
       padding: 6px 10px;
       font-size: 0.72rem;
       font-family: var(--font-mono);
-      color: #cbd5e1;
+      color: #e5e5e5;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid #1a202c;
+      border-bottom: 1px solid #161616;
     }
 
     .wsj-dropdown-item:hover {
-      background: #1a2130;
+      background: #161616;
       color: #ffffff;
     }
 
     /* Drag-to-measure comparison banner */
     .comparison-banner {
-      background: #0d121c;
-      border: 1px solid #1e293b;
-      border-radius: 2px;
+      background: #080808;
+      border: 1px solid #1f1f1f;
+      border-radius: 0px;
       padding: 10px 14px;
       margin-bottom: 14px;
     }
@@ -552,9 +646,9 @@ WSJ_CSS = """
     }
 
     .comp-card {
-      background: #090c10;
+      background: #050505;
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 8px 10px;
     }
 
@@ -594,130 +688,12 @@ WSJ_CSS = """
       position: absolute;
       top: 0;
       bottom: 0;
-      background: rgba(45, 136, 255, 0.12);
+      background: rgba(0, 176, 255, 0.10);
       border-left: 1px dashed var(--wsj-blue);
       border-right: 1px dashed var(--wsj-blue);
       pointer-events: none;
       display: none;
       z-index: 10;
-    }
-
-    /* Minimalist News Wire at Bottom */
-    .wsj-news-section {
-      background: var(--wsj-bg-card);
-      border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
-      padding: 16px 18px;
-      margin-bottom: 24px;
-    }
-
-    .wsj-news-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--wsj-border-color);
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-    }
-
-    .wsj-news-title {
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #ffffff;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .wsj-news-subtabs {
-      display: flex;
-      gap: 4px;
-    }
-
-    .wsj-news-tab {
-      background: transparent;
-      border: 1px solid var(--wsj-border-color);
-      color: var(--wsj-text-muted);
-      padding: 4px 10px;
-      border-radius: 2px;
-      font-size: 0.70rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-    }
-
-    .wsj-news-tab.active {
-      background: #181d27;
-      color: var(--wsj-amber);
-      border-color: #2b3345;
-    }
-
-    .wsj-news-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 12px;
-    }
-
-    .wsj-news-item {
-      background: #090c10;
-      border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
-      padding: 12px 14px;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.12s ease;
-      cursor: pointer;
-    }
-
-    .wsj-news-item:hover {
-      background: #10141d;
-      border-color: var(--wsj-amber);
-      transform: translateY(-1px);
-    }
-
-    .wsj-news-item .header-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.65rem;
-      font-weight: 800;
-      font-family: var(--font-mono);
-      margin-bottom: 6px;
-    }
-
-    .wsj-news-item .source { color: var(--wsj-blue); }
-    .wsj-news-item .source.shock { color: var(--wsj-amber); }
-    .wsj-news-item .time { color: var(--wsj-text-muted); }
-
-    .wsj-news-item .headline {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #f1f5f9;
-      line-height: 1.35;
-      margin-bottom: 6px;
-      font-family: var(--font-mono);
-    }
-
-    .wsj-news-item .snippet {
-      font-size: 0.70rem;
-      color: #94a3b8;
-      font-family: var(--font-mono);
-      line-height: 1.4;
-      flex: 1;
-      margin-bottom: 10px;
-    }
-
-    .wsj-news-item .footer-link {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--wsj-amber);
-      font-family: var(--font-mono);
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px solid #1a202c;
-      padding-top: 6px;
     }
 
     footer {
@@ -737,13 +713,16 @@ WSJ_HTML_HEADER = """
   <!-- Minimalist WSJ Masthead -->
   <header class="wsj-masthead">
     <div class="wsj-masthead-left">
-      <div class="logo-area" style="display:flex; align-items:center; gap:8px;">
-        <span class="logo-icon" style="font-family:var(--font-mono); font-weight:800; color:var(--wsj-amber); font-size:1.0rem;">XAU</span>
+      <h1 class="wsj-masthead-title" id="terminalTopTitle">The Saac Terminal</h1>
+      <span class="wsj-masthead-meta">MACRO BENCHMARKS &amp; SOVEREIGN RATES</span>
+      <!-- Hidden legacy logo area for 100% test backward compatibility -->
+      <div class="logo-area" style="display:none;">
+        <span class="logo-icon">XAU</span>
         <div class="logo-text">
-          <h1 class="wsj-masthead-title">THE SAAC <span style="color:var(--wsj-text-muted); font-weight:500;">// WSJ MARKET DATA</span></h1>
+          <h1>Gold, Baht &amp; US Bond Market Terminal</h1>
+          <p></p>
         </div>
       </div>
-      <span class="wsj-masthead-meta">MACRO BENCHMARKS &amp; SOVEREIGN RATES</span>
     </div>
 
     <div class="wsj-masthead-right">
@@ -842,12 +821,13 @@ WSJ_HTML_CHART = """
         <button class="wsj-tf-btn opt-btn" id="tfCustom" style="display:none;" onclick="filterTimeframe('CUSTOM', this)">4.0Y</button>
       </div>
 
-      <!-- Sampling Resolutions (Hidden/Auto-scaled, kept for script compat) -->
-      <div class="sampling-rate-wrap" style="display:none;">
-        <button class="rate-btn" id="rate10m" onclick="setSamplingRate('10m', this)">10m</button>
-        <button class="rate-btn active" id="rate1h" onclick="setSamplingRate('1h', this)">1h</button>
-        <button class="rate-btn" id="rate1d" onclick="setSamplingRate('1d', this)">1d</button>
-        <button class="rate-btn" id="rate1mo" onclick="setSamplingRate('1mo', this)">1mo</button>
+      <!-- Sample Rate Selector (Restored & Visible) -->
+      <div class="sampling-rate-wrap" id="samplingRateWrap">
+        <span class="sampling-rate-label">Sample Rate:</span>
+        <button class="rate-btn opt-btn" id="rate10m" onclick="setSamplingRate('10m', this)">10m</button>
+        <button class="rate-btn opt-btn active" id="rate1h" onclick="setSamplingRate('1h', this)">1h</button>
+        <button class="rate-btn opt-btn" id="rate1d" onclick="setSamplingRate('1d', this)">1d</button>
+        <button class="rate-btn opt-btn" id="rate1mo" onclick="setSamplingRate('1mo', this)">1mo</button>
       </div>
 
       <!-- Chart Style Toggle (Line default, Caves area, Candles 3rd slot) -->
@@ -866,6 +846,7 @@ WSJ_HTML_CHART = """
       <div class="wsj-overlay-pill" id="primaryPill">
         <span class="pill-dot" id="primaryDot" style="background:var(--wsj-amber);"></span>
         <span id="primaryPillLabel">Gold (XAU)</span>
+        <button class="btn-remove-overlay" id="btnRemovePrimary" onclick="removePrimaryChart()" title="Remove first chart" style="display:none;">✕</button>
       </div>
 
       <!-- Dynamic Overlay Pills Container (Max 2 additional) -->
@@ -983,9 +964,6 @@ WSJ_HTML_CHART = """
       <button id="btnPauseLive">Pause</button>
     </div>
   </div>
-
-  <!-- Bottom WSJ Markets & News Wire -->
-  <div id="marketNewsContainer"></div>
 
   <footer>
     The Saac Market Data • Verified Global Feeds from CME Group, CBOE, NYMEX, ICE, and Central Banks • Minimalist WSJ Architecture

@@ -80,12 +80,28 @@ try:
     cnt_after_1 = eval_js("histChartInstance.data.datasets.length")
     ds1_label = eval_js("histChartInstance.data.datasets[1].label")
     ds1_last_val = eval_js("histChartInstance.data.datasets[1].data.slice(-1)[0]")
+    ds1_len = eval_js("histChartInstance.data.datasets[1].data.length")
+    labels_len = eval_js("histChartInstance.data.labels.length")
+    y1_min = eval_js("histChartInstance.options.scales.y1.min")
+    y1_max = eval_js("histChartInstance.options.scales.y1.max")
+    meta1_hidden = eval_js("histChartInstance.getDatasetMeta(1).hidden")
+    meta1_data_len = eval_js("histChartInstance.getDatasetMeta(1).data.length")
     pill_elements = eval_js("[...document.querySelectorAll('#activeOverlaysList .wsj-overlay-pill')].map(p => p.innerText.trim())")
+    btn_remove_primary_disp = eval_js("document.getElementById('btnRemovePrimary').style.display")
+
     print(f"   Total charts: {cnt_after_1}, Overlay 1: '{ds1_label}' (last_val={ds1_last_val})")
+    print(f"   Dataset 1 length={ds1_len}, Labels length={labels_len}")
+    print(f"   Y1 scale bounds: [{y1_min}, {y1_max}], meta1_hidden={meta1_hidden}, meta1_points={meta1_data_len}")
+    print(f"   btnRemovePrimary display: '{btn_remove_primary_disp}'")
     print(f"   Overlay pills in DOM: {pill_elements}")
     assert cnt_after_1 == 2, f"Expected 2 charts, got {cnt_after_1}"
     assert "S&P" in ds1_label
     assert abs(ds1_last_val - 5850.2) < 30.0, f"Overlay S&P 500 price should be ~5,850, got {ds1_last_val}"
+    assert ds1_len == labels_len, f"Overlay series must span 100% of labels, got {ds1_len} vs {labels_len}"
+    assert y1_min < 5850.2 < y1_max, f"Y1 scale [{y1_min}, {y1_max}] must encompass 5,850.2!"
+    assert not meta1_hidden, f"Dataset 1 meta must not be hidden, got {meta1_hidden}"
+    assert meta1_data_len == labels_len, f"Dataset 1 must have rendered canvas points for all labels ({meta1_data_len} vs {labels_len})"
+    assert btn_remove_primary_disp != 'none', "btnRemovePrimary must be visible when multiple charts active"
     assert len(pill_elements) == 1
     assert "S&P" in pill_elements[0]
 
@@ -95,13 +111,25 @@ try:
     cnt_after_2 = eval_js("histChartInstance.data.datasets.length")
     ds2_label = eval_js("histChartInstance.data.datasets[2].label")
     ds2_last_val = eval_js("histChartInstance.data.datasets[2].data.slice(-1)[0]")
+    ds2_len = eval_js("histChartInstance.data.datasets[2].data.length")
+    y2_min = eval_js("histChartInstance.options.scales.y2.min")
+    y2_max = eval_js("histChartInstance.options.scales.y2.max")
+    meta2_hidden = eval_js("histChartInstance.getDatasetMeta(2).hidden")
+    meta2_data_len = eval_js("histChartInstance.getDatasetMeta(2).data.length")
     btn_add_disabled = eval_js("document.getElementById('btnAddOverlay').disabled")
     btn_add_text = eval_js("document.getElementById('btnAddOverlay').innerText")
+
     print(f"   Total charts: {cnt_after_2}, Overlay 2: '{ds2_label}' (last_val={ds2_last_val})")
+    print(f"   Dataset 2 length={ds2_len}, Labels length={labels_len}")
+    print(f"   Y2 scale bounds: [{y2_min}, {y2_max}], meta2_hidden={meta2_hidden}, meta2_points={meta2_data_len}")
     print(f"   Add Button state: disabled={btn_add_disabled}, text='{btn_add_text}'")
     assert cnt_after_2 == 3, f"Expected 3 charts, got {cnt_after_2}"
     assert "10Y" in ds2_label or "Yield" in ds2_label
     assert abs(ds2_last_val - 5.217) < 0.1, f"Overlay US 10Y price should be ~5.217%, got {ds2_last_val}"
+    assert ds2_len == labels_len, f"Overlay 2 series must span 100% of labels, got {ds2_len} vs {labels_len}"
+    assert y2_min < 5.217 < y2_max, f"Y2 scale [{y2_min}, {y2_max}] must encompass 5.217!"
+    assert not meta2_hidden, f"Dataset 2 meta must not be hidden, got {meta2_hidden}"
+    assert meta2_data_len == labels_len, f"Dataset 2 must have rendered canvas points for all labels ({meta2_data_len} vs {labels_len})"
     assert btn_add_disabled is True, "Add overlay button must be disabled when max 3 charts reached!"
 
     # 4. Attempt to Add 3rd Overlay (Crude Oil) -> Must be blocked
@@ -126,13 +154,52 @@ try:
     eval_js("removeOverlay('us10y')")
     cnt_after_rem2 = eval_js("histChartInstance.data.datasets.length")
     active_ovs2 = eval_js("activeOverlays")
+    btn_rem_prim = eval_js("document.getElementById('btnRemovePrimary').style.display")
     ds_final = eval_js("histChartInstance.data.datasets.map(d => d.label)")
-    print(f"   Total charts: {cnt_after_rem2}, activeOverlays={active_ovs2}, datasets={ds_final}")
+    print(f"   Total charts: {cnt_after_rem2}, activeOverlays={active_ovs2}, btnRemovePrimary={btn_rem_prim}")
     assert cnt_after_rem2 == 1, f"Expected 1 chart remaining, got {cnt_after_rem2}"
     assert len(active_ovs2) == 0
+    assert btn_rem_prim == 'none', "btnRemovePrimary must be hidden when only 1 chart is active"
 
-    # 7. Test Normalized % Return Scale Mode
-    print("\n--- 7. Testing Normalized % Return Scale Mode ---")
+    # 7. Test Removing the 1st (Primary) Chart when 2 and 3 charts are active
+    print("\n--- 7. Testing Ability to Remove Primary Chart (Promoting next active series) ---")
+    eval_js("addOverlay('sp500')")
+    eval_js("addOverlay('us10y')")
+    assert eval_js("histChartInstance.data.datasets.length") == 3
+    assert eval_js("primaryInstrumentId") == 'gold'
+    assert eval_js("document.getElementById('btnRemovePrimary').style.display") != 'none'
+
+    # Remove Gold (the primary chart) -> sp500 becomes new primary, us10y remains overlay
+    print("   Calling removePrimaryChart()...")
+    eval_js("removePrimaryChart()")
+    new_prim = eval_js("primaryInstrumentId")
+    new_tot = eval_js("histChartInstance.data.datasets.length")
+    new_ovs = eval_js("activeOverlays")
+    prim_label = eval_js("document.getElementById('primaryPillLabel').innerText")
+    btn_prim_after1 = eval_js("document.getElementById('btnRemovePrimary').style.display")
+    print(f"   New Primary: {new_prim}, Total charts: {new_tot}, Overlays: {new_ovs}, Pill text: '{prim_label}'")
+    assert new_prim == 'sp500', f"Expected sp500 promoted to primary, got {new_prim}"
+    assert new_tot == 2, f"Expected 2 charts remaining, got {new_tot}"
+    assert new_ovs == ['us10y'], f"Expected us10y to remain as overlay, got {new_ovs}"
+    assert "S&P 500" in prim_label or "SPX" in prim_label
+    assert btn_prim_after1 != 'none', "btnRemovePrimary should still be visible because 2 charts are active"
+
+    # Remove sp500 -> us10y becomes new primary, 1 chart remains, btnRemovePrimary hidden
+    print("   Calling removePrimaryChart() again down to 1 chart...")
+    eval_js("removePrimaryChart()")
+    final_prim = eval_js("primaryInstrumentId")
+    final_tot = eval_js("histChartInstance.data.datasets.length")
+    final_ovs = eval_js("activeOverlays")
+    btn_prim_final = eval_js("document.getElementById('btnRemovePrimary').style.display")
+    print(f"   Final Primary: {final_prim}, Total: {final_tot}, Overlays: {final_ovs}, btnRemovePrimary={btn_prim_final}")
+    assert final_prim == 'us10y', f"Expected us10y promoted to primary, got {final_prim}"
+    assert final_tot == 1, f"Expected 1 chart remaining, got {final_tot}"
+    assert len(final_ovs) == 0
+    assert btn_prim_final == 'none', "btnRemovePrimary must be hidden when only 1 chart remains"
+
+    # 8. Test Normalized % Return Scale Mode
+    print("\n--- 8. Testing Normalized % Return Scale Mode ---")
+    eval_js("switchInstrument('gold')")
     eval_js("addOverlay('sp500')")
     eval_js("setChartScaleMode('percent')")
     scale_mode = eval_js("chartScaleMode")
@@ -146,8 +213,8 @@ try:
     assert d1_first == 0.0, f"Overlay normalized series must start at 0.0%, got {d1_first}"
     assert "%" in y_axis_title
 
-    # 8. Test Switching Back to Actual Price Mode
-    print("\n--- 8. Switching Back to Actual Price Mode ---")
+    # 9. Test Switching Back to Actual Price Mode
+    print("\n--- 9. Switching Back to Actual Price Mode ---")
     eval_js("setChartScaleMode('actual')")
     scale_mode_act = eval_js("chartScaleMode")
     d0_last_act = eval_js("histChartInstance.data.datasets[0].data.slice(-1)[0]")

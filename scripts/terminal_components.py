@@ -670,11 +670,18 @@ MACRO_NAV_JS = """
     });
 
     bar.innerHTML = filtered.map(inst => {
-      const isActive = currentInstrument && currentInstrument.id === inst.id;
-      const priceStr = inst.currency === 'USD' ? ('$' + (inst.basePrice >= 100 ? inst.basePrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}) : inst.basePrice.toFixed(2))) : (inst.basePrice.toFixed(2));
+      const isActive = window.primaryInstrumentId === inst.id || (window.currentInstrument && window.currentInstrument.id === inst.id);
+      let priceStr;
+      if (inst.category === 'bonds' || inst.unit === '%') {
+        priceStr = inst.basePrice.toFixed(2) + '%';
+      } else if (inst.currency === 'USD') {
+        priceStr = '$' + (inst.basePrice >= 100 ? inst.basePrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}) : inst.basePrice.toFixed(2));
+      } else {
+        priceStr = inst.basePrice.toFixed(2);
+      }
       return `
         <button class="ticker-pill-btn ${isActive ? 'active' : ''}" data-id="${inst.id}" onclick="switchInstrument('${inst.id}')">
-          <span class="pill-sym" style="color: ${inst.themeColor};">${inst.symbol}</span>
+          <span class="pill-sym" style="color: ${inst.themeColor || '#ff9100'};">${inst.symbol}</span>
           <span class="pill-price">${priceStr}</span>
         </button>
       `;

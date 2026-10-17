@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 import datasets_json
 from scripts.wsj_components import WSJ_CSS, WSJ_HTML_HEADER, WSJ_HTML_CHART
-from scripts.terminal_components import NEWS_SERVICE_JS, MACRO_NAV_JS
+from scripts.terminal_components import MACRO_NAV_JS
 
 # Prepare JSON data strings
 json_1m = json.dumps(datasets_json.RAW_1M, indent=2)
@@ -35,7 +35,7 @@ html_content = f'''<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Saac Terminal // WSJ Market Data</title>
+  <title>The Saac Terminal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -330,9 +330,6 @@ html_content = f'''<!DOCTYPE html>
   window.INSTRUMENTS = INSTRUMENTS;
   window.currentInstrument = INSTRUMENTS.gold;
 
-  // Load Automated News Service
-  {NEWS_SERVICE_JS}
-
   // Load Macro Category Filter & Navigation
   {MACRO_NAV_JS}
 
@@ -619,54 +616,30 @@ html_content = f'''<!DOCTYPE html>
       {{
         label: `${{pInst.shortName}} (${{pInst.currency}})`,
         data: window.activeData.map(d => d.close),
-        borderColor: pInst.themeColor,
+        borderColor: pInst.themeColor || '#ff9100',
         backgroundColor: 'transparent',
         borderWidth: 2,
         fill: false,
         tension: 0.1,
         pointRadius: labels.length > 50 ? 0 : 2,
         pointHoverRadius: 5,
-        pointBackgroundColor: pInst.themeColor,
+        pointBackgroundColor: pInst.themeColor || '#ff9100',
         yAxisID: 'y'
-      }},
-      {{
-        label: 'USD / THB (฿)',
-        data: window.activeData.map(d => d.usd_thb || 33.56),
-        borderColor: '#38bdf8',
-        backgroundColor: 'transparent',
-        borderWidth: 1.8,
-        fill: false,
-        tension: 0.1,
-        pointRadius: labels.length > 50 ? 0 : 2,
-        pointHoverRadius: 5,
-        pointBackgroundColor: '#38bdf8',
-        yAxisID: 'y1'
-      }},
-      {{
-        label: 'US 10Y Yield (%)',
-        data: window.activeData.map(d => d.us10y || 5.217),
-        borderColor: '#a855f7',
-        backgroundColor: 'transparent',
-        borderWidth: 1.8,
-        fill: false,
-        tension: 0.1,
-        pointRadius: labels.length > 50 ? 0 : 2,
-        pointHoverRadius: 5,
-        pointBackgroundColor: '#a855f7',
-        yAxisID: 'y2'
       }}
+    ];
+
+    window._fallbackDatasets = [
+      {{ pointRadius: labels.length > 50 ? 0 : 2, hidden: false, data: [] }},
+      {{ pointRadius: labels.length > 50 ? 0 : 2, hidden: false, data: [] }},
+      {{ pointRadius: labels.length > 50 ? 0 : 2, hidden: false, data: [] }}
     ];
 
     const datasetsProxy = new Proxy(rawDatasets, {{
       get(target, prop, receiver) {{
-        if (prop === 'length') {{
-          return 1 + (window.activeOverlays ? window.activeOverlays.length : 0);
+        if ((prop === '1' || prop === '2') && Number(prop) >= target.length) {{
+          return window._fallbackDatasets[Number(prop)];
         }}
         return Reflect.get(target, prop, receiver);
-      }},
-      set(target, prop, value, receiver) {{
-        if (prop === 'length') return true;
-        return Reflect.set(target, prop, value, receiver);
       }}
     }});
 
@@ -685,13 +658,13 @@ html_content = f'''<!DOCTYPE html>
         plugins: {{
           legend: {{ display: false }},
           tooltip: {{
-            backgroundColor: '#12151c',
-            titleColor: '#ff9800',
+            backgroundColor: '#0a0a0a',
+            titleColor: '#ff9100',
             titleFont: {{ family: 'JetBrains Mono', size: 11, weight: 'bold' }},
             bodyFont: {{ family: 'JetBrains Mono', size: 11 }},
-            borderColor: '#2c3345',
+            borderColor: '#333333',
             borderWidth: 1,
-            cornerRadius: 2,
+            cornerRadius: 0,
             padding: 10,
             callbacks: {{
               title: (items) => {{
@@ -712,26 +685,26 @@ html_content = f'''<!DOCTYPE html>
         }},
         scales: {{
           x: {{
-            grid: {{ color: '#161a22' }},
-            ticks: {{ color: '#828a99', font: {{ family: 'JetBrains Mono', size: 10 }}, maxTicksLimit: 12 }}
+            grid: {{ color: '#161616' }},
+            ticks: {{ color: '#888888', font: {{ family: 'JetBrains Mono', size: 10 }}, maxTicksLimit: 12 }}
           }},
           y: {{
             type: 'linear', display: true, position: 'left',
-            grid: {{ color: '#161a22' }},
-            title: {{ display: true, text: `${{pInst.shortName}} (${{pInst.currency}})`, color: pInst.themeColor, font: {{ family: 'JetBrains Mono', weight: '700', size: 10 }} }},
-            ticks: {{ color: pInst.themeColor, font: {{ family: 'JetBrains Mono', size: 10 }}, callback: (v) => '$' + v.toLocaleString() }}
+            grid: {{ color: '#161616' }},
+            title: {{ display: true, text: `${{pInst.shortName}} (${{pInst.currency}})`, color: pInst.themeColor || '#ff9100', font: {{ family: 'JetBrains Mono', weight: '700', size: 10 }} }},
+            ticks: {{ color: pInst.themeColor || '#ff9100', font: {{ family: 'JetBrains Mono', size: 10 }}, callback: (v) => '$' + v.toLocaleString() }}
           }},
           y1: {{
             type: 'linear', display: false, position: 'right',
             grid: {{ drawOnChartArea: false }},
-            title: {{ display: true, text: '', color: '#38bdf8', font: {{ family: 'JetBrains Mono', weight: '700', size: 10 }} }},
-            ticks: {{ color: '#38bdf8', font: {{ family: 'JetBrains Mono', size: 10 }} }}
+            title: {{ display: true, text: '', color: '#00e5ff', font: {{ family: 'JetBrains Mono', weight: '700', size: 10 }} }},
+            ticks: {{ color: '#00e5ff', font: {{ family: 'JetBrains Mono', size: 10 }} }}
           }},
           y2: {{
             type: 'linear', display: false, position: 'right',
             grid: {{ drawOnChartArea: false }},
-            title: {{ display: true, text: '', color: '#a855f7', font: {{ family: 'JetBrains Mono', weight: '700', size: 10 }} }},
-            ticks: {{ color: '#a855f7', font: {{ family: 'JetBrains Mono', size: 10 }} }}
+            title: {{ display: true, text: '', color: '#00e676', font: {{ family: 'JetBrains Mono', weight: '700', size: 10 }} }},
+            ticks: {{ color: '#00e676', font: {{ family: 'JetBrains Mono', size: 10 }} }}
           }}
         }}
       }}
@@ -932,10 +905,7 @@ html_content = f'''<!DOCTYPE html>
     initHistoricalChart();
     if (typeof filterCategory === 'function') filterCategory('all');
     if (typeof renderOverlayPills === 'function') renderOverlayPills();
-    const newsContainer = document.getElementById('marketNewsContainer');
-    if (newsContainer && window.newsService) {{
-      window.newsService.renderNewsSection(newsContainer, window.currentInstrument || window.INSTRUMENTS.gold);
-    }}
+    if (typeof updateSamplingPillState === 'function') updateSamplingPillState();
   }});
 </script>
 </body>

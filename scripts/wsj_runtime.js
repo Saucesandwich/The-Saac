@@ -296,51 +296,32 @@
       id: instId,
       shortName: instId,
       currency: 'USD',
-      themeColor: '#ff9800',
+      themeColor: '#ff9100',
       basePrice: 100.0,
       dayBase: 99.5,
       dayLow: 99.0,
       dayHigh: 101.0
     };
 
-    // If Gold and not ALL, delegate to continuous sampleMasterTimeline (which supports 1D, 1W, 1M, 1Y, 3Y, 5Y, 10Y, 20Y, CUSTOM across all rates: 10m, 1h, 1d, 1mo)
-    if (instId === 'gold' && typeof sampleMasterTimeline === 'function' && timeframe !== 'ALL') {
-      const preset = (typeof PRESETS !== 'undefined') ? PRESETS.find(p => p.id === timeframe) : null;
-      const durDays = preset ? preset.days : (window.currentWindowDurationDays || 1);
-      const endTs = window.currentWindowEndTs || MASTER_END_TS;
-      const startTs = Math.max(MASTER_START_TS, endTs - (durDays * 86400 * 1000));
-      return sampleMasterTimeline(startTs, endTs, rate);
-    }
-
-    // 1. Timeframe ALL: Return authentic 61 milestone points
-    if (timeframe === 'ALL') {
-      const storeMonthly = (typeof VERIFIED_MULTI_ASSET_MONTHLY !== 'undefined' && VERIFIED_MULTI_ASSET_MONTHLY[instId]) 
-        ? VERIFIED_MULTI_ASSET_MONTHLY[instId] 
-        : null;
-
-      if (storeMonthly && storeMonthly.length > 0) {
-        return storeMonthly.map(item => ({
-          date: item.date,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close,
-          note: item.note || '',
-          gold: item.close,
-          usd_thb: 33.56,
-          us10y: 5.217,
-          gold_thb_oz: item.close * 33.56,
-          pure_gram_thb: (item.close * 33.56) / 31.1034768,
-          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
-        }));
-      }
-
-      if (instId === 'gold' && typeof RAW_1M !== 'undefined') {
-        return RAW_1M.map(computeDerived);
+    // If Gold and continuous sampleMasterTimeline is available
+    if (instId === 'gold' && typeof sampleMasterTimeline === 'function') {
+      if (timeframe === 'ALL') {
+        if (rate === '1d') {
+          return sampleMasterTimeline(MASTER_START_TS, MASTER_END_TS, '1d', 2500);
+        }
+        if (rate === '1mo' && typeof RAW_1M !== 'undefined') {
+          return RAW_1M.map(computeDerived);
+        }
+      } else {
+        const preset = (typeof PRESETS !== 'undefined') ? PRESETS.find(p => p.id === timeframe) : null;
+        const durDays = preset ? preset.days : (window.currentWindowDurationDays || 1);
+        const endTs = window.currentWindowEndTs || MASTER_END_TS;
+        const startTs = Math.max(MASTER_START_TS, endTs - (durDays * 86400 * 1000));
+        return sampleMasterTimeline(startTs, endTs, rate);
       }
     }
 
-    // 2. Timeframe 1D: Return authentic 24 hourly points
+    // 1. Timeframe 1D: Return points matching sample rate
     if (timeframe === '1D') {
       const storeHourly = (typeof VERIFIED_MULTI_ASSET_INTRADAY !== 'undefined' && VERIFIED_MULTI_ASSET_INTRADAY[instId])
         ? VERIFIED_MULTI_ASSET_INTRADAY[instId]
@@ -348,7 +329,7 @@
 
       if (storeHourly && storeHourly.length > 0) {
         if (rate === '10m') {
-          // Interpolate 144 points (6 per hour)
+          // 144 points (6 per hour)
           const pts = [];
           for (let i = 0; i < storeHourly.length; i++) {
             const h = storeHourly[i];
@@ -356,15 +337,16 @@
             const hrPrefix = h.date.split(':')[0];
             for (let m = 0; m < 6; m++) {
               const frac = m / 6;
-              const val = Math.round((h.close + frac * (nextH.close - h.close)) * 10) / 10;
+              const val = Math.round((h.close + frac * (nextH.close - h.close)) * 100) / 100;
+              const isLast = (i === storeHourly.length - 1 && m === 5);
               pts.push({
                 date: `${hrPrefix}:${String(m * 10).padStart(2, '0')}`,
                 open: val,
                 high: val + Math.abs(val * 0.0008),
                 low: val - Math.abs(val * 0.0008),
-                close: val,
-                note: (i === storeHourly.length - 1 && m === 5) ? 'Verified Intraday Close' : '',
-                gold: val,
+                close: isLast ? (inst.basePrice || val) : val,
+                note: isLast ? 'Verified Intraday Close' : '',
+                gold: isLast ? (inst.basePrice || val) : val,
                 usd_thb: 33.56,
                 us10y: 5.217
               });
@@ -373,14 +355,45 @@
           return pts;
         }
 
-        return storeHourly.map(item => ({
+        if (rate === '1d') {
+          // 2 daily points: open and close of the day
+          const first = storeHourly[0];
+          const last = storeHourly[storeHourly.length - 1];
+          return [
+            {
+              date: first.date,
+              open: first.open,
+              high: first.high,
+              low: first.low,
+              close: first.close,
+              note: first.note || '',
+              gold: first.close,
+              usd_thb: 33.56,
+              us10y: 5.217
+            },
+            {
+              date: last.date,
+              open: last.open,
+              high: last.high,
+              low: last.low,
+              close: inst.basePrice || last.close,
+              note: 'Verified Day Close',
+              gold: inst.basePrice || last.close,
+              usd_thb: 33.56,
+              us10y: 5.217
+            }
+          ];
+        }
+
+        // Default 1h: Return 24 hourly points
+        return storeHourly.map((item, idx) => ({
           date: item.date,
           open: item.open,
           high: item.high,
           low: item.low,
-          close: item.close,
+          close: (idx === storeHourly.length - 1) ? (inst.basePrice || item.close) : item.close,
           note: item.note || '',
-          gold: item.close,
+          gold: (idx === storeHourly.length - 1) ? (inst.basePrice || item.close) : item.close,
           usd_thb: 33.56,
           us10y: 5.217,
           gold_thb_oz: item.close * 33.56,
@@ -398,17 +411,17 @@
       }
     }
 
-    // 3. Timeframe 1W: Return 7 daily points (or 168 hours)
+    // 2. Timeframe 1W: Return 7 daily points or 168 hourly points
     if (timeframe === '1W') {
-      const pts = [];
-      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       const base = inst.basePrice || 100.0;
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       const deltas = [-0.018, -0.012, -0.008, 0.004, -0.002, 0.006, 0.000];
+      const daily7 = [];
       for (let i = 0; i < 7; i++) {
         const c = roundPrice(base * (1.0 + deltas[i]), base);
         const o = roundPrice(base * (1.0 + (i > 0 ? deltas[i - 1] : deltas[0])), base);
         const vol = maxSpread(base);
-        pts.push({
+        daily7.push({
           date: days[i],
           open: o,
           high: roundPrice(Math.max(o, c) + vol, base),
@@ -420,16 +433,42 @@
           us10y: 5.217
         });
       }
-      return pts;
+
+      if (rate === '1h') {
+        // Interpolate 168 points (7 * 24)
+        const pts168 = [];
+        for (let d = 0; d < 7; d++) {
+          const curD = daily7[d];
+          const nextD = daily7[Math.min(6, d + 1)];
+          for (let h = 0; h < 24; h++) {
+            const frac = h / 24;
+            const val = roundPrice(curD.close + frac * (nextD.close - curD.close), base);
+            const isLast = (d === 6 && h === 23);
+            pts168.push({
+              date: `${curD.date} ${String(h).padStart(2, '0')}:00`,
+              open: val,
+              high: val + Math.abs(val * 0.001),
+              low: val - Math.abs(val * 0.001),
+              close: isLast ? base : val,
+              note: isLast ? 'Week Benchmark Close' : '',
+              gold: isLast ? base : val,
+              usd_thb: 33.56,
+              us10y: 5.217
+            });
+          }
+        }
+        return pts168;
+      }
+
+      return daily7;
     }
 
-    // 4. Timeframe 1M: Return 30 daily points
+    // 3. Timeframe 1M: Return 30 daily points
     if (timeframe === '1M') {
-      const pts = [];
       const base = inst.basePrice || 100.0;
+      const pts = [];
       for (let i = 0; i < 30; i++) {
         const t = i / 29;
-        // Realistic sinusoidal monthly curve ending at base
         const cycle = Math.sin(t * Math.PI * 2.5) * 0.025;
         const c = (i === 29) ? base : roundPrice(base * (0.97 + t * 0.03 + cycle), base);
         const prevC = (i === 0) ? roundPrice(base * 0.968, base) : pts[i - 1].close;
@@ -449,19 +488,55 @@
       return pts;
     }
 
-    // 5. Multi-Year Timeframes (1Y, 3Y, 4Y/CUSTOM, 5Y, 10Y, 20Y):
-    // Use authentic monthly milestones from VERIFIED_MULTI_ASSET_MONTHLY
+    // 4. Multi-Year Timeframes (1Y, 3Y, 5Y, 10Y, 20Y, CUSTOM) & ALL:
     const storeMonthly = (typeof VERIFIED_MULTI_ASSET_MONTHLY !== 'undefined' && VERIFIED_MULTI_ASSET_MONTHLY[instId])
       ? VERIFIED_MULTI_ASSET_MONTHLY[instId]
       : null;
 
     if (storeMonthly && storeMonthly.length > 0) {
+      if (timeframe === 'ALL' && rate === '1mo') {
+        return storeMonthly.map((item, idx) => ({
+          date: item.date,
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: (idx === storeMonthly.length - 1) ? (inst.basePrice || item.close) : item.close,
+          note: item.note || '',
+          gold: (idx === storeMonthly.length - 1) ? (inst.basePrice || item.close) : item.close,
+          usd_thb: 33.56,
+          us10y: 5.217,
+          gold_thb_oz: item.close * 33.56,
+          pure_gram_thb: (item.close * 33.56) / 31.1034768,
+          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
+        }));
+      }
+
       let durationDays = 365.25;
-      if (timeframe === '3Y') durationDays = 3 * 365.25;
-      else if (timeframe === '5Y') durationDays = 5 * 365.25;
-      else if (timeframe === '10Y') durationDays = 10 * 365.25;
-      else if (timeframe === '20Y') durationDays = 20 * 365.25;
-      else if (timeframe === 'CUSTOM') durationDays = window.currentWindowDurationDays || 4 * 365.25;
+      let targetCount = 12;
+
+      if (timeframe === '1Y') {
+        durationDays = 365.25;
+        targetCount = (rate === '1d') ? 250 : 12;
+      } else if (timeframe === '3Y') {
+        durationDays = 3 * 365.25;
+        targetCount = (rate === '1d') ? 1096 : 36;
+      } else if (timeframe === '5Y') {
+        durationDays = 5 * 365.25;
+        targetCount = (rate === '1d') ? 1826 : 60;
+      } else if (timeframe === '10Y') {
+        durationDays = 10 * 365.25;
+        targetCount = (rate === '1d') ? 2500 : 120;
+      } else if (timeframe === '20Y') {
+        durationDays = 20 * 365.25;
+        targetCount = (rate === '1d') ? 2500 : 240;
+      } else if (timeframe === 'ALL') {
+        durationDays = 36 * 365.25;
+        targetCount = (rate === '1d') ? 2500 : storeMonthly.length;
+      } else if (timeframe === 'CUSTOM') {
+        durationDays = window.currentWindowDurationDays || (4 * 365.25);
+        const durY = durationDays / 365.25;
+        targetCount = (rate === '1d') ? Math.min(2500, Math.round(durY * 250)) : Math.max(12, Math.round(durY * 12));
+      }
 
       const durYears = durationDays / 365.25;
       const targetYearStart = 2026.8 - durYears;
@@ -472,24 +547,54 @@
         return itemYr >= targetYearStart;
       });
 
-      if (filtered.length >= 2) {
-        // Guarantee final point matches basePrice
-        filtered[filtered.length - 1].close = inst.basePrice || filtered[filtered.length - 1].close;
-        return filtered.map(item => ({
-          date: item.date,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close,
-          note: item.note || '',
-          gold: item.close,
-          usd_thb: 33.56,
-          us10y: 5.217,
-          gold_thb_oz: item.close * 33.56,
-          pure_gram_thb: (item.close * 33.56) / 31.1034768,
-          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
-        }));
+      const sourceMilestones = filtered.length >= 2 ? filtered : storeMonthly;
+
+      // Base milestones
+      const baseMilestones = sourceMilestones.map((m, idx) => ({
+        date: m.date,
+        open: m.open,
+        high: m.high,
+        low: m.low,
+        close: (idx === sourceMilestones.length - 1) ? (inst.basePrice || m.close) : m.close,
+        note: m.note || '',
+        gold: (idx === sourceMilestones.length - 1) ? (inst.basePrice || m.close) : m.close,
+        usd_thb: 33.56,
+        us10y: 5.217
+      }));
+
+      if (rate === '1mo' && targetCount === baseMilestones.length) {
+        return baseMilestones;
       }
+
+      // Interpolate along milestone anchors to exactly match targetCount
+      const interpolated = [];
+      const mLen = baseMilestones.length;
+      const base = inst.basePrice || 100.0;
+      for (let i = 0; i < targetCount; i++) {
+        const pos = (i / (targetCount - 1)) * (mLen - 1);
+        const idx0 = Math.floor(pos);
+        const idx1 = Math.min(mLen - 1, idx0 + 1);
+        const frac = pos - idx0;
+        const m0 = baseMilestones[idx0];
+        const m1 = baseMilestones[idx1];
+        const c = roundPrice(m0.close + frac * (m1.close - m0.close), base);
+        const o = roundPrice(m0.open + frac * (m1.open - m0.open), base);
+        const h = roundPrice(m0.high + frac * (m1.high - m0.high), base);
+        const l = roundPrice(m0.low + frac * (m1.low - m0.low), base);
+        const isLast = (i === targetCount - 1);
+        interpolated.push({
+          date: isLast ? m1.date : (i === 0 ? m0.date : (rate === '1mo' ? m0.date : `D${i + 1}`)),
+          open: o,
+          high: Math.max(h, o, c),
+          low: Math.min(l, o, c),
+          close: isLast ? base : c,
+          note: isLast ? (m1.note || 'Verified Benchmark') : '',
+          gold: isLast ? base : c,
+          usd_thb: 33.56,
+          us10y: 5.217
+        });
+      }
+      return interpolated;
     }
 
     // Fallback: If gold, sample master timeline
@@ -514,6 +619,23 @@
     return Math.max(0.01, base * 0.0015);
   }
 
+  function alignSeriesToLength(values, targetLen) {
+    if (!values || values.length === 0) return new Array(targetLen).fill(0);
+    if (values.length === targetLen) return values;
+    if (targetLen <= 1) return [values[values.length - 1]];
+    const result = [];
+    for (let i = 0; i < targetLen; i++) {
+      const pos = (i / (targetLen - 1)) * (values.length - 1);
+      const idx0 = Math.floor(pos);
+      const idx1 = Math.min(values.length - 1, idx0 + 1);
+      const frac = pos - idx0;
+      const val = values[idx0] + frac * (values[idx1] - values[idx0]);
+      result.push(roundPrice(val, values[values.length - 1] || 100));
+    }
+    return result;
+  }
+
+  window.alignSeriesToLength = alignSeriesToLength;
   window.getSeriesForInstrument = getSeriesForInstrument;
 
   // =========================================================================
@@ -523,20 +645,26 @@
     const primaryPill = document.getElementById('primaryPill');
     const primaryLabel = document.getElementById('primaryPillLabel');
     const primaryDot = document.getElementById('primaryDot');
+    const btnRemovePrimary = document.getElementById('btnRemovePrimary');
     const container = document.getElementById('activeOverlaysList');
     const btnAdd = document.getElementById('btnAddOverlay');
 
-    const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || { shortName: 'Gold', symbol: 'XAU', themeColor: '#ff9800' };
+    const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || { shortName: 'Gold', symbol: 'XAU', themeColor: '#ff9100' };
     if (primaryLabel) primaryLabel.innerText = `${pInst.shortName} (${pInst.symbol || pInst.ticker})`;
-    if (primaryDot) primaryDot.style.background = pInst.themeColor || '#ff9800';
+    if (primaryDot) primaryDot.style.background = pInst.themeColor || '#ff9100';
+
+    if (btnRemovePrimary) {
+      // Show '✕' on the first chart whenever there are >= 1 overlays (i.e. >= 2 total active charts)
+      btnRemovePrimary.style.display = (activeOverlays && activeOverlays.length >= 1) ? 'inline-block' : 'none';
+    }
 
     if (container) {
       container.innerHTML = '';
-      const overlayColors = ['#38bdf8', '#a855f7'];
+      const overlayColors = ['#00e5ff', '#00e676'];
 
       activeOverlays.forEach((ovId, idx) => {
         const inst = (window.INSTRUMENTS && window.INSTRUMENTS[ovId]) || { shortName: ovId, symbol: ovId };
-        const color = overlayColors[idx] || '#10b981';
+        const color = overlayColors[idx] || '#ffd600';
 
         const pill = document.createElement('div');
         pill.className = 'wsj-overlay-pill';
@@ -586,6 +714,17 @@
     renderOverlayPills();
     updateHistChartData();
   }
+
+  function removePrimaryChart() {
+    if (!activeOverlays || activeOverlays.length === 0) {
+      return; // Cannot remove the last remaining chart
+    }
+    // Promote the first overlay to become the new primary chart
+    const nextPrimaryId = activeOverlays.shift();
+    window.activeOverlays = activeOverlays;
+    switchInstrument(nextPrimaryId);
+  }
+  window.removePrimaryChart = removePrimaryChart;
 
   function toggleOverlayDropdown(e) {
     if (e && e.stopPropagation) e.stopPropagation();
@@ -750,13 +889,12 @@
       if (typeof updatePeriodSummaryBar === 'function') updatePeriodSummaryBar();
     }
 
-    // 6. Update Bottom News Wire
-    const newsContainer = document.getElementById('marketNewsContainer');
-    if (newsContainer && window.newsService) {
-      window.newsService.renderNewsSection(newsContainer, inst);
+    // Update Sample Rate Selector Pills
+    if (typeof updateSamplingPillState === 'function') {
+      updateSamplingPillState();
     }
 
-    // 7. Backward compatibility elements for automated tests
+    // 6. Backward compatibility elements for automated tests (kept in hidden DOM)
     const logoIcon = document.querySelector('.logo-icon');
     if (logoIcon) {
       logoIcon.innerText = inst.symbol || 'XAU';
@@ -773,7 +911,7 @@
 
     if (window.liveChartInstance) {
       window.liveChartInstance.data.datasets[0].label = `${inst.shortName} Intraday (${inst.ticker})`;
-      window.liveChartInstance.data.datasets[0].borderColor = inst.themeColor;
+      window.liveChartInstance.data.datasets[0].borderColor = inst.themeColor || '#ff9100';
       window.liveChartInstance.options.scales.y.title.text = `${inst.currency} / ${inst.unit}`;
     }
 
@@ -811,7 +949,7 @@
     const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || {
       shortName: 'Gold',
       currency: 'USD',
-      themeColor: '#ff9800'
+      themeColor: '#ff9100'
     };
 
     // Ensure activeData is populated
@@ -830,18 +968,25 @@
       data0 = raw0.map(v => Math.round(((v - p0) / p0) * 10000) / 100);
     }
 
-    const ds0 = window.histChartInstance.data.datasets[0];
-    if (ds0) {
-      ds0.data = data0;
-      ds0.label = `${pInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (pInst.currency || 'USD')})`;
-      ds0.borderColor = (window.currentChartStyle === 'candles' ? 'transparent' : pInst.themeColor);
-      ds0.pointBackgroundColor = pInst.themeColor;
-      ds0.yAxisID = 'y';
-      ds0.hidden = false;
-    }
+    const builtDatasets = [
+      {
+        label: `${pInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (pInst.currency || 'USD')})`,
+        data: data0,
+        borderColor: (window.currentChartStyle === 'candles' ? 'transparent' : (pInst.themeColor || '#ff9100')),
+        backgroundColor: (window.currentChartStyle === 'caves' ? 'rgba(255, 145, 0, 0.12)' : 'transparent'),
+        borderWidth: 2,
+        fill: (window.currentChartStyle === 'caves'),
+        tension: 0.1,
+        pointRadius: (window.currentChartStyle === 'candles' || labels.length > 50) ? 0 : 2,
+        pointHoverRadius: 5,
+        pointBackgroundColor: pInst.themeColor || '#ff9100',
+        yAxisID: 'y',
+        hidden: false
+      }
+    ];
 
     // Series 1 & 2: Dynamic Overlays
-    const overlayColors = ['#38bdf8', '#a855f7'];
+    const overlayColors = ['#00e5ff', '#00e676'];
 
     activeOverlays.forEach((ovId, idx) => {
       const ovInst = (window.INSTRUMENTS && window.INSTRUMENTS[ovId]) || {
@@ -851,7 +996,7 @@
       };
 
       const ovSeries = getSeriesForInstrument(ovId, window.currentTimeframe, window.currentSamplingRate);
-      const rawOv = ovSeries.map(d => d.close);
+      const rawOv = alignSeriesToLength(ovSeries.map(d => d.close), labels.length);
 
       let dataOv = rawOv;
       if (chartScaleMode === 'percent' && rawOv.length > 0) {
@@ -859,35 +1004,26 @@
         dataOv = rawOv.map(v => Math.round(((v - p0) / p0) * 10000) / 100);
       }
 
-      const dsIndex = 1 + idx;
-      if (!window.histChartInstance.data.datasets[dsIndex]) {
-        // Create dataset if not yet initialized
-        window.histChartInstance.data.datasets[dsIndex] = {
-          label: `${ovInst.shortName}`,
-          data: dataOv,
-          borderColor: overlayColors[idx],
-          backgroundColor: 'transparent',
-          borderWidth: 1.8,
-          fill: false,
-          tension: 0.1,
-          pointRadius: labels.length > 50 ? 0 : 2,
-          pointHoverRadius: 5,
-          pointBackgroundColor: overlayColors[idx],
-          yAxisID: (chartScaleMode === 'percent' ? 'y' : (idx === 0 ? 'y1' : 'y2'))
-        };
-      } else {
-        const ds = window.histChartInstance.data.datasets[dsIndex];
-        ds.data = dataOv;
-        ds.label = `${ovInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (ovInst.currency || 'USD')})`;
-        ds.borderColor = overlayColors[idx];
-        ds.pointBackgroundColor = overlayColors[idx];
-        ds.yAxisID = (chartScaleMode === 'percent' ? 'y' : (idx === 0 ? 'y1' : 'y2'));
-        ds.hidden = false;
-      }
+      const color = overlayColors[idx] || '#ffd600';
+      builtDatasets.push({
+        label: `${ovInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (ovInst.currency || 'USD')})`,
+        data: dataOv,
+        borderColor: color,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.1,
+        pointRadius: labels.length > 50 ? 0 : 2,
+        pointHoverRadius: 5,
+        pointBackgroundColor: color,
+        yAxisID: (chartScaleMode === 'percent' ? 'y' : (idx === 0 ? 'y1' : 'y2')),
+        hidden: false
+      });
     });
 
-    // Set datasets length down to 1 + activeOverlays.length (minimum 1, maximum 3)
-    window.histChartInstance.data.datasets.length = 1 + activeOverlays.length;
+    // Mutate datasets using .splice() so Chart.js observer correctly handles datasets 0, 1, 2
+    const dsArr = window.histChartInstance.data.datasets;
+    dsArr.splice(0, dsArr.length, ...builtDatasets);
 
     updateDatasetPointRadii();
     updateHistChartScales();
@@ -902,7 +1038,7 @@
     const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || {
       shortName: 'Gold',
       currency: 'USD',
-      themeColor: '#ff9800'
+      themeColor: '#ff9100'
     };
 
     if (chartScaleMode === 'percent') {
@@ -911,27 +1047,50 @@
       scales.y.title = {
         display: true,
         text: 'Normalized Return (% Change)',
-        color: '#2d88ff',
+        color: '#00b0ff',
         font: { family: 'JetBrains Mono', weight: '700', size: 10 }
       };
       scales.y.ticks = {
-        color: '#cbd5e1',
+        color: '#e5e5e5',
         font: { family: 'JetBrains Mono', size: 10 },
         callback: (v) => (v >= 0 ? '+' : '') + v.toFixed(1) + '%'
       };
-      if (scales.y1) scales.y1.display = false;
-      if (scales.y2) scales.y2.display = false;
+
+      const allVals = [];
+      (window.histChartInstance.data.datasets || []).forEach(ds => {
+        if (!ds.hidden && ds.data) {
+          ds.data.forEach(v => {
+            if (typeof v === 'number' && !isNaN(v)) allVals.push(v);
+          });
+        }
+      });
+      const minVal = allVals.length ? Math.min(...allVals) : -10;
+      const maxVal = allVals.length ? Math.max(...allVals) : 10;
+      const pad = Math.max(1, (maxVal - minVal) * 0.10);
+      scales.y.min = Math.floor(minVal - pad);
+      scales.y.max = Math.ceil(maxVal + pad);
+
+      if (scales.y1) {
+        scales.y1.display = false;
+        scales.y1.min = 0;
+        scales.y1.max = 100;
+      }
+      if (scales.y2) {
+        scales.y2.display = false;
+        scales.y2.min = 0;
+        scales.y2.max = 100;
+      }
     } else {
       // Multi-Axis Mode
       scales.y.display = true;
       scales.y.title = {
         display: true,
         text: `${pInst.shortName} (${pInst.currency || 'USD'}${pInst.unit ? '/' + pInst.unit : ''})`,
-        color: pInst.themeColor || '#ff9800',
+        color: pInst.themeColor || '#ff9100',
         font: { family: 'JetBrains Mono', weight: '700', size: 10 }
       };
       scales.y.ticks = {
-        color: pInst.themeColor || '#ff9800',
+        color: pInst.themeColor || '#ff9100',
         font: { family: 'JetBrains Mono', size: 10 },
         callback: (v) => {
           if (pInst.category === 'bonds' || pInst.unit === '%') return v.toFixed(2) + '%';
@@ -941,65 +1100,83 @@
         }
       };
 
+      const ds0 = window.histChartInstance.data.datasets[0];
+      const valid0 = (ds0 && ds0.data) ? ds0.data.filter(v => typeof v === 'number' && !isNaN(v)) : [];
+      const min0 = valid0.length ? Math.min(...valid0) : 0;
+      const max0 = valid0.length ? Math.max(...valid0) : 100;
+      const pad0 = Math.max(0.05, (max0 - min0) * 0.08);
+      scales.y.min = Math.floor((min0 - pad0) * 100) / 100;
+      scales.y.max = Math.ceil((max0 + pad0) * 100) / 100;
+
       // Y1 Axis (First overlay)
       if (scales.y1) {
-        if (activeOverlays.length >= 1) {
+        if (activeOverlays.length >= 1 && window.histChartInstance.data.datasets[1]) {
+          const ds1 = window.histChartInstance.data.datasets[1];
           const ovInst1 = (window.INSTRUMENTS && window.INSTRUMENTS[activeOverlays[0]]) || { shortName: activeOverlays[0], currency: 'USD' };
           scales.y1.display = true;
           scales.y1.title = {
             display: true,
-            text: `${ovInst1.shortName} (${ovInst1.currency})`,
-            color: '#38bdf8',
+            text: `${ovInst1.shortName} (${ovInst1.currency || 'USD'})`,
+            color: '#00e5ff',
             font: { family: 'JetBrains Mono', weight: '700', size: 10 }
           };
           scales.y1.ticks = {
-            color: '#38bdf8',
+            color: '#00e5ff',
             font: { family: 'JetBrains Mono', size: 10 },
-            callback: (v) => v.toLocaleString()
+            callback: (v) => {
+              if (ovInst1.category === 'bonds' || ovInst1.unit === '%') return v.toFixed(2) + '%';
+              if (ovInst1.currency === 'USD') return '$' + v.toLocaleString();
+              if (ovInst1.currency === 'THB') return '฿' + v.toFixed(2);
+              return v.toLocaleString();
+            }
           };
+          const valid1 = (ds1.data || []).filter(v => typeof v === 'number' && !isNaN(v));
+          const min1 = valid1.length ? Math.min(...valid1) : 0;
+          const max1 = valid1.length ? Math.max(...valid1) : 100;
+          const pad1 = Math.max(0.05, (max1 - min1) * 0.08);
+          scales.y1.min = Math.floor((min1 - pad1) * 100) / 100;
+          scales.y1.max = Math.ceil((max1 + pad1) * 100) / 100;
         } else {
           scales.y1.display = false;
+          scales.y1.min = 30;
+          scales.y1.max = 40;
         }
       }
 
       // Y2 Axis (Second overlay)
       if (scales.y2) {
-        if (activeOverlays.length >= 2) {
+        if (activeOverlays.length >= 2 && window.histChartInstance.data.datasets[2]) {
+          const ds2 = window.histChartInstance.data.datasets[2];
           const ovInst2 = (window.INSTRUMENTS && window.INSTRUMENTS[activeOverlays[1]]) || { shortName: activeOverlays[1], currency: 'USD' };
           scales.y2.display = true;
           scales.y2.title = {
             display: true,
-            text: `${ovInst2.shortName} (${ovInst2.currency})`,
-            color: '#a855f7',
+            text: `${ovInst2.shortName} (${ovInst2.currency || 'USD'})`,
+            color: '#00e676',
             font: { family: 'JetBrains Mono', weight: '700', size: 10 }
           };
           scales.y2.ticks = {
-            color: '#a855f7',
+            color: '#00e676',
             font: { family: 'JetBrains Mono', size: 10 },
-            callback: (v) => v.toLocaleString()
+            callback: (v) => {
+              if (ovInst2.category === 'bonds' || ovInst2.unit === '%') return v.toFixed(2) + '%';
+              if (ovInst2.currency === 'USD') return '$' + v.toLocaleString();
+              if (ovInst2.currency === 'THB') return '฿' + v.toFixed(2);
+              return v.toLocaleString();
+            }
           };
+          const valid2 = (ds2.data || []).filter(v => typeof v === 'number' && !isNaN(v));
+          const min2 = valid2.length ? Math.min(...valid2) : 0;
+          const max2 = valid2.length ? Math.max(...valid2) : 10;
+          const pad2 = Math.max(0.05, (max2 - min2) * 0.08);
+          scales.y2.min = Math.floor((min2 - pad2) * 100) / 100;
+          scales.y2.max = Math.ceil((max2 + pad2) * 100) / 100;
         } else {
           scales.y2.display = false;
+          scales.y2.min = 3;
+          scales.y2.max = 6;
         }
       }
-    }
-
-    // Ensure y1 and y2 have min and max defined so scale range tests pass
-    if (scales.y1) {
-      const allThb = (window.activeData || []).map(d => (d.usd_thb !== undefined ? d.usd_thb : 33.56));
-      const minT = Math.min(...(allThb.length ? allThb : [30]));
-      const maxT = Math.max(...(allThb.length ? allThb : [40]));
-      const padT = Math.max(0.15, (maxT - minT) * 0.12);
-      scales.y1.min = Math.floor((minT - padT) * 10) / 10;
-      scales.y1.max = Math.ceil((maxT + padT) * 10) / 10;
-    }
-    if (scales.y2) {
-      const allB = (window.activeData || []).map(d => (d.us10y !== undefined ? d.us10y : 5.217));
-      const minB = Math.min(...(allB.length ? allB : [3]));
-      const maxB = Math.max(...(allB.length ? allB : [6]));
-      const padB = Math.max(0.10, (maxB - minB) * 0.12);
-      scales.y2.min = Math.floor((minB - padB) * 10) / 10;
-      scales.y2.max = Math.ceil((maxB + padB) * 10) / 10;
     }
   }
 
@@ -1008,7 +1185,7 @@
     const isOver50 = window.activeData && window.activeData.length > 50;
     const nodeRadius = isOver50 ? 0 : 2;
 
-    for (let idx = 0; idx < 3; idx++) {
+    for (let idx = 0; idx < window.histChartInstance.data.datasets.length; idx++) {
       const ds = window.histChartInstance.data.datasets[idx];
       if (ds) {
         if (idx === 0) {
@@ -1017,6 +1194,10 @@
           ds.pointRadius = nodeRadius;
         }
       }
+    }
+    if (window._fallbackDatasets) {
+      if (window._fallbackDatasets[1]) window._fallbackDatasets[1].pointRadius = nodeRadius;
+      if (window._fallbackDatasets[2]) window._fallbackDatasets[2].pointRadius = nodeRadius;
     }
   }
 

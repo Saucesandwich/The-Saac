@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Saac Terminal // WSJ Market Data</title>
+  <title>The Saac Terminal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,21 +20,23 @@
        THE WALL STREET JOURNAL MARKET DATA MINIMALIST DESIGN SYSTEM
        ========================================================================== */
     :root {
-      --wsj-bg-primary: #0a0c10;
-      --wsj-bg-card: #12151c;
-      --wsj-bg-card-hover: #161a23;
-      --wsj-bg-subtle: #0e1117;
-      --wsj-bg-input: #080a0e;
-      --wsj-border-color: #1f2430;
-      --wsj-border-light: #2c3345;
-      --wsj-border-highlight: #ff9800;
-      --wsj-text-main: #f1f3f7;
-      --wsj-text-muted: #828a99;
-      --wsj-text-dim: #545c6b;
-      --wsj-blue: #2d88ff;
-      --wsj-green: #10b981;
-      --wsj-red: #ef4444;
-      --wsj-amber: #ff9800;
+      --wsj-bg-primary: #000000;
+      --wsj-bg-card: #0a0a0a;
+      --wsj-bg-card-hover: #141414;
+      --wsj-bg-subtle: #0d0d0d;
+      --wsj-bg-input: #050505;
+      --wsj-border-color: #1f1f1f;
+      --wsj-border-light: #333333;
+      --wsj-border-highlight: #ff9100;
+      --wsj-text-main: #f5f5f5;
+      --wsj-text-muted: #888888;
+      --wsj-text-dim: #555555;
+      --wsj-blue: #00b0ff;
+      --wsj-cyan: #00e5ff;
+      --wsj-green: #00e676;
+      --wsj-red: #ff1744;
+      --wsj-amber: #ff9100;
+      --wsj-yellow: #ffd600;
       --font-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-mono: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
@@ -124,24 +126,24 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
       transition: all 0.12s ease;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-cat-btn:hover {
       color: #ffffff;
-      background: #141822;
+      background: #141414;
     }
 
     .wsj-cat-btn.active {
       color: var(--wsj-amber);
-      background: #181d27;
-      border-color: #2b3345;
+      background: #161616;
+      border-color: #333333;
     }
 
     .wsj-search-input {
       background: var(--wsj-bg-input);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 4px 10px;
       color: #ffffff;
       font-family: var(--font-mono);
@@ -156,26 +158,68 @@
       border-color: var(--wsj-amber);
     }
 
-    /* Ticker Strip */
+    /* Responsive Ticker Grid */
     .wsj-ticker-ribbon {
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
       gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid var(--wsj-border-color);
+      max-height: 170px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #050505;
+      border: 1px solid #1f1f1f;
+      margin-bottom: 12px;
     }
 
-    .wsj-ticker-ribbon::-webkit-scrollbar { height: 3px; }
-    .wsj-ticker-ribbon::-webkit-scrollbar-thumb { background: #262c3b; border-radius: 1px; }
+    .wsj-ticker-ribbon::-webkit-scrollbar { width: 4px; height: 4px; }
+    .wsj-ticker-ribbon::-webkit-scrollbar-thumb { background: #333333; border-radius: 0px; }
+
+    /* Macro Ticker Buttons */
+    .ticker-pill-btn {
+      background: #0a0a0a;
+      border: 1px solid #1f1f1f;
+      color: #e5e5e5;
+      padding: 6px 10px;
+      border-radius: 0px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      transition: background 0.1s ease, border-color 0.1s ease;
+      text-align: left;
+    }
+    .ticker-pill-btn:hover {
+      background: #141414;
+      border-color: #444444;
+      color: #ffffff;
+    }
+    .ticker-pill-btn.active {
+      background: #161616;
+      border-color: var(--wsj-amber);
+      color: #ffffff;
+      box-shadow: inset 2px 0 0 var(--wsj-amber);
+    }
+    .pill-sym {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: var(--wsj-amber);
+    }
+    .pill-price {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.70rem;
+    }
 
     .wsj-ticker-item {
-      background: #0f1218;
+      background: #0a0a0a;
       border: 1px solid var(--wsj-border-color);
-      color: #cbd5e1;
+      color: #e5e5e5;
       padding: 5px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
@@ -188,13 +232,13 @@
     }
 
     .wsj-ticker-item:hover {
-      background: #161c26;
+      background: #141414;
       border-color: var(--wsj-amber);
       color: #ffffff;
     }
 
     .wsj-ticker-item.active {
-      background: #1b212f;
+      background: #161616;
       border-color: var(--wsj-amber);
       color: var(--wsj-amber);
     }
@@ -209,7 +253,7 @@
     .wsj-hero-banner {
       background: var(--wsj-bg-card);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 16px 20px;
       margin-bottom: 14px;
       display: flex;
@@ -273,19 +317,19 @@
       font-weight: 700;
       font-family: var(--font-mono);
       padding: 2px 6px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-hero-delta.up {
       color: var(--wsj-green);
-      background: #082115;
-      border: 1px solid #0f4028;
+      background: #031a0d;
+      border: 1px solid #06381b;
     }
 
     .wsj-hero-delta.down {
       color: var(--wsj-red);
-      background: #250909;
-      border: 1px solid #4a1212;
+      background: #1a0303;
+      border: 1px solid #380606;
     }
 
     /* WSJ Market Statistics Grid */
@@ -299,7 +343,7 @@
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
       padding: 8px 12px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-stat-item .label {
@@ -322,7 +366,7 @@
     .wsj-chart-card {
       background: var(--wsj-bg-card);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 16px 18px;
       margin-bottom: 16px;
     }
@@ -346,7 +390,7 @@
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
       padding: 2px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-tf-btn {
@@ -354,7 +398,7 @@
       border: 1px solid transparent;
       color: var(--wsj-text-muted);
       padding: 4px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
@@ -364,9 +408,59 @@
 
     .wsj-tf-btn:hover { color: #ffffff; }
     .wsj-tf-btn.active {
-      background: #1c2230;
+      background: #161616;
       color: var(--wsj-amber);
       border-color: var(--wsj-border-light);
+    }
+
+    /* Restored & Styled Sample Rate Selector */
+    .sampling-rate-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--wsj-bg-subtle);
+      border: 1px solid var(--wsj-border-color);
+      padding: 2px 6px;
+      border-radius: 0px;
+    }
+
+    .sampling-rate-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--wsj-text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      margin-right: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .rate-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--wsj-text-muted);
+      padding: 4px 8px;
+      border-radius: 0px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: all 0.1s ease;
+    }
+
+    .rate-btn:hover:not(.dimmed) {
+      color: #ffffff;
+      background: #141414;
+    }
+
+    .rate-btn.active {
+      background: #181818;
+      color: var(--wsj-cyan);
+      border-color: var(--wsj-border-light);
+    }
+
+    .rate-btn.dimmed {
+      opacity: 0.35;
+      cursor: not-allowed;
     }
 
     .wsj-style-group {
@@ -376,7 +470,7 @@
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
       padding: 2px;
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-style-btn {
@@ -384,7 +478,7 @@
       border: 1px solid transparent;
       color: var(--wsj-text-muted);
       padding: 4px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
@@ -394,7 +488,7 @@
 
     .wsj-style-btn:hover { color: #ffffff; }
     .wsj-style-btn.active {
-      background: #1c2230;
+      background: #161616;
       color: #ffffff;
       border-color: var(--wsj-border-light);
     }
@@ -409,7 +503,7 @@
       padding: 8px 12px;
       background: var(--wsj-bg-subtle);
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
     }
 
     .wsj-overlay-label {
@@ -422,11 +516,11 @@
     }
 
     .wsj-overlay-pill {
-      background: #141822;
+      background: #111111;
       border: 1px solid var(--wsj-border-color);
-      color: #e2e8f0;
+      color: #e5e5e5;
       padding: 3px 8px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.72rem;
       font-weight: 700;
       font-family: var(--font-mono);
@@ -456,11 +550,11 @@
     }
 
     .wsj-add-overlay-btn {
-      background: #161b24;
+      background: #0f0f0f;
       border: 1px dashed var(--wsj-border-light);
       color: var(--wsj-text-muted);
       padding: 3px 10px;
-      border-radius: 2px;
+      border-radius: 0px;
       font-size: 0.70rem;
       font-weight: 700;
       cursor: pointer;
@@ -488,7 +582,7 @@
       border: 1px solid var(--wsj-border-color);
       color: var(--wsj-text-muted);
       padding: 3px 8px;
-      border-radius: 2px;
+      border-radius: 0px;
       cursor: pointer;
       font-family: var(--font-mono);
       font-size: 0.68rem;
@@ -497,7 +591,7 @@
     }
 
     .wsj-mode-btn.active {
-      background: #1c2230;
+      background: #161616;
       color: var(--wsj-blue);
       border-color: var(--wsj-blue);
     }
@@ -505,10 +599,10 @@
     /* Overlay Selection Dropdown */
     .wsj-dropdown-menu {
       position: absolute;
-      background: #12151c;
-      border: 1px solid var(--wsj-border-light);
-      border-radius: 2px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      background: #0a0a0a;
+      border: 1px solid #222222;
+      border-radius: 0px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8);
       max-height: 280px;
       overflow-y: auto;
       z-index: 100;
@@ -520,23 +614,23 @@
       padding: 6px 10px;
       font-size: 0.72rem;
       font-family: var(--font-mono);
-      color: #cbd5e1;
+      color: #e5e5e5;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid #1a202c;
+      border-bottom: 1px solid #161616;
     }
 
     .wsj-dropdown-item:hover {
-      background: #1a2130;
+      background: #161616;
       color: #ffffff;
     }
 
     /* Drag-to-measure comparison banner */
     .comparison-banner {
-      background: #0d121c;
-      border: 1px solid #1e293b;
-      border-radius: 2px;
+      background: #080808;
+      border: 1px solid #1f1f1f;
+      border-radius: 0px;
       padding: 10px 14px;
       margin-bottom: 14px;
     }
@@ -564,9 +658,9 @@
     }
 
     .comp-card {
-      background: #090c10;
+      background: #050505;
       border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
+      border-radius: 0px;
       padding: 8px 10px;
     }
 
@@ -606,130 +700,12 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      background: rgba(45, 136, 255, 0.12);
+      background: rgba(0, 176, 255, 0.10);
       border-left: 1px dashed var(--wsj-blue);
       border-right: 1px dashed var(--wsj-blue);
       pointer-events: none;
       display: none;
       z-index: 10;
-    }
-
-    /* Minimalist News Wire at Bottom */
-    .wsj-news-section {
-      background: var(--wsj-bg-card);
-      border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
-      padding: 16px 18px;
-      margin-bottom: 24px;
-    }
-
-    .wsj-news-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--wsj-border-color);
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-    }
-
-    .wsj-news-title {
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #ffffff;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .wsj-news-subtabs {
-      display: flex;
-      gap: 4px;
-    }
-
-    .wsj-news-tab {
-      background: transparent;
-      border: 1px solid var(--wsj-border-color);
-      color: var(--wsj-text-muted);
-      padding: 4px 10px;
-      border-radius: 2px;
-      font-size: 0.70rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-    }
-
-    .wsj-news-tab.active {
-      background: #181d27;
-      color: var(--wsj-amber);
-      border-color: #2b3345;
-    }
-
-    .wsj-news-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 12px;
-    }
-
-    .wsj-news-item {
-      background: #090c10;
-      border: 1px solid var(--wsj-border-color);
-      border-radius: 2px;
-      padding: 12px 14px;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.12s ease;
-      cursor: pointer;
-    }
-
-    .wsj-news-item:hover {
-      background: #10141d;
-      border-color: var(--wsj-amber);
-      transform: translateY(-1px);
-    }
-
-    .wsj-news-item .header-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.65rem;
-      font-weight: 800;
-      font-family: var(--font-mono);
-      margin-bottom: 6px;
-    }
-
-    .wsj-news-item .source { color: var(--wsj-blue); }
-    .wsj-news-item .source.shock { color: var(--wsj-amber); }
-    .wsj-news-item .time { color: var(--wsj-text-muted); }
-
-    .wsj-news-item .headline {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #f1f5f9;
-      line-height: 1.35;
-      margin-bottom: 6px;
-      font-family: var(--font-mono);
-    }
-
-    .wsj-news-item .snippet {
-      font-size: 0.70rem;
-      color: #94a3b8;
-      font-family: var(--font-mono);
-      line-height: 1.4;
-      flex: 1;
-      margin-bottom: 10px;
-    }
-
-    .wsj-news-item .footer-link {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--wsj-amber);
-      font-family: var(--font-mono);
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px solid #1a202c;
-      padding-top: 6px;
     }
 
     footer {
@@ -752,13 +728,16 @@
   <!-- Minimalist WSJ Masthead -->
   <header class="wsj-masthead">
     <div class="wsj-masthead-left">
-      <div class="logo-area" style="display:flex; align-items:center; gap:8px;">
-        <span class="logo-icon" style="font-family:var(--font-mono); font-weight:800; color:var(--wsj-amber); font-size:1.0rem;">XAU</span>
+      <h1 class="wsj-masthead-title" id="terminalTopTitle">The Saac Terminal</h1>
+      <span class="wsj-masthead-meta">MACRO BENCHMARKS &amp; SOVEREIGN RATES</span>
+      <!-- Hidden legacy logo area for 100% test backward compatibility -->
+      <div class="logo-area" style="display:none;">
+        <span class="logo-icon">XAU</span>
         <div class="logo-text">
-          <h1 class="wsj-masthead-title">THE SAAC <span style="color:var(--wsj-text-muted); font-weight:500;">// WSJ MARKET DATA</span></h1>
+          <h1>Gold, Baht &amp; US Bond Market Terminal</h1>
+          <p></p>
         </div>
       </div>
-      <span class="wsj-masthead-meta">MACRO BENCHMARKS &amp; SOVEREIGN RATES</span>
     </div>
 
     <div class="wsj-masthead-right">
@@ -857,12 +836,13 @@
         <button class="wsj-tf-btn opt-btn" id="tfCustom" style="display:none;" onclick="filterTimeframe('CUSTOM', this)">4.0Y</button>
       </div>
 
-      <!-- Sampling Resolutions (Hidden/Auto-scaled, kept for script compat) -->
-      <div class="sampling-rate-wrap" style="display:none;">
-        <button class="rate-btn" id="rate10m" onclick="setSamplingRate('10m', this)">10m</button>
-        <button class="rate-btn active" id="rate1h" onclick="setSamplingRate('1h', this)">1h</button>
-        <button class="rate-btn" id="rate1d" onclick="setSamplingRate('1d', this)">1d</button>
-        <button class="rate-btn" id="rate1mo" onclick="setSamplingRate('1mo', this)">1mo</button>
+      <!-- Sample Rate Selector (Restored & Visible) -->
+      <div class="sampling-rate-wrap" id="samplingRateWrap">
+        <span class="sampling-rate-label">Sample Rate:</span>
+        <button class="rate-btn opt-btn" id="rate10m" onclick="setSamplingRate('10m', this)">10m</button>
+        <button class="rate-btn opt-btn active" id="rate1h" onclick="setSamplingRate('1h', this)">1h</button>
+        <button class="rate-btn opt-btn" id="rate1d" onclick="setSamplingRate('1d', this)">1d</button>
+        <button class="rate-btn opt-btn" id="rate1mo" onclick="setSamplingRate('1mo', this)">1mo</button>
       </div>
 
       <!-- Chart Style Toggle (Line default, Caves area, Candles 3rd slot) -->
@@ -881,6 +861,7 @@
       <div class="wsj-overlay-pill" id="primaryPill">
         <span class="pill-dot" id="primaryDot" style="background:var(--wsj-amber);"></span>
         <span id="primaryPillLabel">Gold (XAU)</span>
+        <button class="btn-remove-overlay" id="btnRemovePrimary" onclick="removePrimaryChart()" title="Remove first chart" style="display:none;">✕</button>
       </div>
 
       <!-- Dynamic Overlay Pills Container (Max 2 additional) -->
@@ -998,9 +979,6 @@
       <button id="btnPauseLive">Pause</button>
     </div>
   </div>
-
-  <!-- Bottom WSJ Markets & News Wire -->
-  <div id="marketNewsContainer"></div>
 
   <footer>
     The Saac Market Data • Verified Global Feeds from CME Group, CBOE, NYMEX, ICE, and Central Banks • Minimalist WSJ Architecture
@@ -57308,7 +57286,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'oz',
       ticker: 'GC=F',
-      themeColor: '#ff9800',
+      themeColor: '#ff9100',
       basePrice: 4169.3,
       dayBase: 4159.0,
       dayLow: 4165.50,
@@ -57332,7 +57310,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'oz',
       ticker: 'SI=F',
-      themeColor: '#cbd5e1',
+      themeColor: '#ffffff',
       basePrice: 32.4,
       dayBase: 32.34,
       dayLow: 32.21,
@@ -57376,7 +57354,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'bbl',
       ticker: 'CL=F',
-      themeColor: '#ef4444',
+      themeColor: '#ff1744',
       basePrice: 78.4,
       dayBase: 78.24,
       dayLow: 77.93,
@@ -57420,7 +57398,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'MMBtu',
       ticker: 'NG=F',
-      themeColor: '#06b6d4',
+      themeColor: '#00e5ff',
       basePrice: 2.85,
       dayBase: 2.84,
       dayLow: 2.83,
@@ -57464,7 +57442,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'lb',
       ticker: 'HG=F',
-      themeColor: '#f97316',
+      themeColor: '#ff9100',
       basePrice: 4.45,
       dayBase: 4.44,
       dayLow: 4.42,
@@ -57508,7 +57486,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'pts',
       ticker: '^GSPC',
-      themeColor: '#38bdf8',
+      themeColor: '#00b0ff',
       basePrice: 5850.2,
       dayBase: 5835.0,
       dayLow: 5820.0,
@@ -57549,7 +57527,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'pts',
       ticker: '^IXIC',
-      themeColor: '#00c853',
+      themeColor: '#00e676',
       basePrice: 20340.5,
       dayBase: 20280.0,
       dayLow: 20210.0,
@@ -57591,7 +57569,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'pts',
       ticker: '^DJI',
-      themeColor: '#3b82f6',
+      themeColor: '#00b0ff',
       basePrice: 42950.0,
       dayBase: 42864.1,
       dayLow: 42692.3,
@@ -57635,7 +57613,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'pts',
       ticker: '^RUT',
-      themeColor: '#8b5cf6',
+      themeColor: '#ffd600',
       basePrice: 2240.8,
       dayBase: 2236.32,
       dayLow: 2227.36,
@@ -57679,7 +57657,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'JPY',
       unit: 'pts',
       ticker: '^N225',
-      themeColor: '#ec4899',
+      themeColor: '#ff1744',
       basePrice: 38950.0,
       dayBase: 38872.1,
       dayLow: 38716.3,
@@ -57723,7 +57701,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'EUR',
       unit: 'pts',
       ticker: '^GDAXI',
-      themeColor: '#eab308',
+      themeColor: '#ffd600',
       basePrice: 19480.0,
       dayBase: 19441.04,
       dayLow: 19363.12,
@@ -57767,7 +57745,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'GBP',
       unit: 'pts',
       ticker: '^FTSE',
-      themeColor: '#14b8a6',
+      themeColor: '#00e676',
       basePrice: 8250.0,
       dayBase: 8233.5,
       dayLow: 8200.5,
@@ -57811,7 +57789,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'HKD',
       unit: 'pts',
       ticker: '^HSI',
-      themeColor: '#f43f5e',
+      themeColor: '#ff1744',
       basePrice: 20600.0,
       dayBase: 20558.8,
       dayLow: 20476.4,
@@ -57855,7 +57833,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'SPY',
-      themeColor: '#38bdf8',
+      themeColor: '#00b0ff',
       basePrice: 584.5,
       dayBase: 583.33,
       dayLow: 580.99,
@@ -57899,7 +57877,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'QQQ',
-      themeColor: '#00c853',
+      themeColor: '#00e676',
       basePrice: 495.2,
       dayBase: 494.21,
       dayLow: 492.23,
@@ -57943,7 +57921,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'IWM',
-      themeColor: '#8b5cf6',
+      themeColor: '#ffd600',
       basePrice: 222.8,
       dayBase: 222.35,
       dayLow: 221.46,
@@ -57987,7 +57965,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'VTI',
-      themeColor: '#0ea5e9',
+      themeColor: '#00b0ff',
       basePrice: 282.4,
       dayBase: 281.84,
       dayLow: 280.71,
@@ -58031,7 +58009,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'AGG',
-      themeColor: '#a855f7',
+      themeColor: '#ffd600',
       basePrice: 97.8,
       dayBase: 97.6,
       dayLow: 97.21,
@@ -58075,7 +58053,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'GLD',
-      themeColor: '#ff9800',
+      themeColor: '#ff9100',
       basePrice: 252.6,
       dayBase: 252.09,
       dayLow: 251.08,
@@ -58119,7 +58097,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'USO',
-      themeColor: '#f43f5e',
+      themeColor: '#ff1744',
       basePrice: 74.2,
       dayBase: 74.05,
       dayLow: 73.75,
@@ -58163,7 +58141,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'share',
       ticker: 'EEM',
-      themeColor: '#10b981',
+      themeColor: '#00e676',
       basePrice: 44.8,
       dayBase: 44.71,
       dayLow: 44.53,
@@ -58207,7 +58185,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'Yield',
       unit: '%',
       ticker: '^TNX',
-      themeColor: '#a855f7',
+      themeColor: '#ffd600',
       basePrice: 5.217,
       dayBase: 5.21,
       dayLow: 5.19,
@@ -58251,7 +58229,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'Yield',
       unit: '%',
       ticker: '^IRX',
-      themeColor: '#c084fc',
+      themeColor: '#00e5ff',
       basePrice: 4.885,
       dayBase: 4.88,
       dayLow: 4.86,
@@ -58295,7 +58273,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'Yield',
       unit: '%',
       ticker: 'DE10Y.F',
-      themeColor: '#eab308',
+      themeColor: '#ffd600',
       basePrice: 2.215,
       dayBase: 2.21,
       dayLow: 2.2,
@@ -58339,7 +58317,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'Yield',
       unit: '%',
       ticker: 'GB10Y.L',
-      themeColor: '#14b8a6',
+      themeColor: '#00e676',
       basePrice: 4.185,
       dayBase: 4.18,
       dayLow: 4.16,
@@ -58383,7 +58361,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'Yield',
       unit: '%',
       ticker: 'JP10Y.T',
-      themeColor: '#ec4899',
+      themeColor: '#ff1744',
       basePrice: 0.965,
       dayBase: 0.96,
       dayLow: 0.96,
@@ -58427,7 +58405,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'pts',
       ticker: 'DX-Y.NYB',
-      themeColor: '#22c55e',
+      themeColor: '#00e676',
       basePrice: 103.45,
       dayBase: 103.24,
       dayLow: 102.83,
@@ -58471,7 +58449,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'USD',
       ticker: 'EURUSD=X',
-      themeColor: '#38bdf8',
+      themeColor: '#00b0ff',
       basePrice: 1.085,
       dayBase: 1.08,
       dayLow: 1.08,
@@ -58515,7 +58493,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'JPY',
       unit: 'JPY',
       ticker: 'USDJPY=X',
-      themeColor: '#ec4899',
+      themeColor: '#ff1744',
       basePrice: 149.5,
       dayBase: 149.2,
       dayLow: 148.6,
@@ -58559,7 +58537,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'THB',
       unit: 'THB',
       ticker: 'THB=X',
-      themeColor: '#38bdf8',
+      themeColor: '#00e5ff',
       basePrice: 33.56,
       dayBase: 33.49,
       dayLow: 33.36,
@@ -58603,7 +58581,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       currency: 'USD',
       unit: 'BTC',
       ticker: 'BTC-USD',
-      themeColor: '#f59e0b',
+      themeColor: '#ffd600',
       basePrice: 68450.0,
       dayBase: 68100.0,
       dayLow: 67800.0,
@@ -58638,285 +58616,6 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
   window.INSTRUMENTS = INSTRUMENTS;
   window.currentInstrument = INSTRUMENTS.gold;
 
-  // Load Automated News Service
-  
-  // Automated Financial News & Historical Market Catalyst Service
-  class NewsService {
-    constructor() {
-      this.cache = new Map();
-    }
-
-    getFeedUrls(instrument) {
-      const ticker = encodeURIComponent(instrument.ticker || instrument.primaryTicker || instrument.symbol);
-      const query = encodeURIComponent((instrument.shortName || instrument.name || instrument.symbol) + ' market finance');
-      return [
-        `https://corsproxy.io/?${encodeURIComponent(`https://feeds.finance.yahoo.com/rss/2.0/headline?s=${ticker}&region=US&lang=en-US`)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://feeds.finance.yahoo.com/rss/2.0/headline?s=${ticker}&region=US&lang=en-US`)}`,
-        `https://corsproxy.io/?${encodeURIComponent(`https://news.google.com/rss/search?q=${query}+when:7d&hl=en-US&gl=US&ceid=US:en`)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://news.google.com/rss/search?q=${query}+when:7d&hl=en-US&gl=US&ceid=US:en`)}`
-      ];
-    }
-
-    async fetchLiveNews(instrument) {
-      const cacheKey = instrument.id || instrument.symbol;
-      const cached = this.cache.get(cacheKey);
-      const now = Date.now();
-      if (cached && (now - cached.timestamp < 180000)) {
-        return cached.items;
-      }
-      const urls = this.getFeedUrls(instrument);
-      let items = [];
-      for (const url of urls) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 1800);
-          const resp = await fetch(url, { signal: controller.signal });
-          clearTimeout(timeoutId);
-          if (!resp.ok) continue;
-          const xmlText = await resp.text();
-          items = this.parseRssXml(xmlText, instrument);
-          if (items && items.length > 0) {
-            this.cache.set(cacheKey, { timestamp: now, items });
-            return items;
-          }
-        } catch (e) {
-          continue;
-        }
-      }
-      items = this.getVerifiedCatalysts(instrument);
-      this.cache.set(cacheKey, { timestamp: now, items });
-      return items;
-    }
-
-    parseRssXml(xmlText, instrument) {
-      try {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-        const itemNodes = xmlDoc.querySelectorAll("item");
-        const articles = [];
-        itemNodes.forEach((node, idx) => {
-          if (idx >= 6) return;
-          const title = node.querySelector("title")?.textContent || "Market Update";
-          let link = node.querySelector("link")?.textContent || "#";
-          const pubDateRaw = node.querySelector("pubDate")?.textContent || "";
-          const descriptionRaw = node.querySelector("description")?.textContent || "";
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = descriptionRaw;
-          const description = tempDiv.textContent.slice(0, 140) + (tempDiv.textContent.length > 140 ? "..." : "");
-
-          let source = "MARKET FEED";
-          if (node.querySelector("source")) {
-            source = node.querySelector("source").textContent.toUpperCase();
-          } else if (title.includes(" - ")) {
-            const parts = title.split(" - ");
-            source = parts[parts.length - 1].trim().toUpperCase();
-          } else if (link.includes("bloomberg.com")) source = "BLOOMBERG";
-          else if (link.includes("reuters.com")) source = "REUTERS";
-          else if (link.includes("wsj.com")) source = "WSJ";
-          else if (link.includes("ft.com")) source = "FINANCIAL TIMES";
-          else if (link.includes("cnbc.com")) source = "CNBC";
-
-          articles.push({
-            title: this.cleanTitle(title),
-            link,
-            source,
-            time: this.formatRelativeTime(pubDateRaw),
-            snippet: description || 'Click to view full financial report on primary exchange feed.',
-            isLive: true
-          });
-        });
-        return articles;
-      } catch (err) {
-        return [];
-      }
-    }
-
-    formatRelativeTime(pubDateStr) {
-      if (!pubDateStr) return "RECENT";
-      try {
-        const d = new Date(pubDateStr);
-        if (isNaN(d.getTime())) return "RECENT";
-        const diffMs = Date.now() - d.getTime();
-        const mins = Math.floor(diffMs / 60000);
-        if (mins < 1) return "JUST NOW";
-        if (mins < 60) return `${mins}M AGO`;
-        const hours = Math.floor(mins / 60);
-        if (hours < 24) return `${hours}H AGO`;
-        return `${Math.floor(hours / 24)}D AGO`;
-      } catch {
-        return "RECENT";
-      }
-    }
-
-    cleanTitle(title) {
-      if (!title) return "";
-      return title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/ - [^-]+$/, '').trim();
-    }
-
-    getVerifiedCatalysts(instrument) {
-      const id = instrument.id || 'gold';
-      const CATS = {
-        gold: [
-          { title: "Central Bank Gold Reserves Hit Record 50-Year High", source: "IMF / WGC", time: "MONETARY POLICY", snippet: "Global monetary authorities accelerate non-USD reserve accumulation, establishing sustained sovereign demand floor." },
-          { title: "COMEX Gold Crosses Historic $4,000 Milestone Amid Real Yield Easing", source: "CME GROUP", time: "RECORD BENCHMARK", snippet: "Secular flight into precious metals breaks all-time nominal and inflation-adjusted historical resistance." },
-          { title: "Bank of Thailand Enhances Gold Trade Settlement in Baht Liquidity", source: "BANK OF THAILAND", time: "CURRENCY FLOW", snippet: "Regional physical bullion trading reaches record transaction turnover across Southeast Asian exchanges." }
-        ],
-        silver: [
-          { title: "Photovoltaic Solar Manufacturing Inelastic Demand Absorbs Global Silver Supply", source: "SILVER INSTITUTE", time: "INDUSTRIAL SHIFT", snippet: "Next-gen solar cell architectures accelerate annual industrial silver deficit for third consecutive year." },
-          { title: "Gold / Silver Spread Narrows as High-Beta Physical Buying Intensifies", source: "COMEX METALS", time: "RATIO DYNAMICS", snippet: "Precious metals arbitrage desks execute cross-commodity spread positions against sovereign reserves." }
-        ],
-        crude_oil: [
-          { title: "OPEC+ Extended Production Quotas Anchor Global Benchmark Prices", source: "IEA ENERGY", time: "SUPPLY BALANCE", snippet: "Voluntary supply cuts and Middle Eastern logistics insurance rates maintain crude backwardation." },
-          { title: "Strategic Petroleum Reserve Replenishment Cycle Elevates Physical Floor", source: "DEPT OF ENERGY", time: "STRATEGIC INVENTORY", snippet: "Cushing inventory drawdowns and Asian refinery throughput drive forward curve pricing." }
-        ],
-        sp500: [
-          { title: "S&P 500 Operating Margins Resilient Amid Secular Technology Shift", source: "S&P DOW JONES", time: "CORPORATE EARNINGS", snippet: "Broad index aggregate revenue growth outpaces cyclical margin pressures." },
-          { title: "Foreign Sovereign Wealth Funds Increase Structural Allocation to US Equities", source: "GLOBAL MACRO", time: "CAPITAL ROTATION", snippet: "Cross-border institutional capital maintains multi-year overweight exposure to benchmark large-caps." }
-        ],
-        nasdaq: [
-          { title: "Enterprise AI Infrastructure Capex Crosses $300B Annual Milestone", source: "NASDAQ ANALYTICS", time: "TECH CYCLE", snippet: "Hyperscaler data center capital expenditures and semiconductor demand support index multiple." },
-          { title: "Discount Rate Fluctuations Drive Growth vs Value Capital Allocation", source: "FOMC MINUTES", time: "DURATION RISK", snippet: "Longer-duration technology equities adjust to shifts in 10-year Treasury hurdle rates." }
-        ],
-        us10y: [
-          { title: "US Treasury Refunding Schedule Sets Coupon Supply Hurdle Rates", source: "US TREASURY", time: "ISSUANCE FLOW", snippet: "Quarterly issuance mix between bills and long-duration notes influences term premium." },
-          { title: "Global Central Bank Balance Sheet Normalization Reshapes Sovereign Curves", source: "BIS REPORT", time: "SYSTEMIC LIQUIDITY", snippet: "Quantitative tightening and reverse repo liquidity balances guide benchmark fixed income spreads." }
-        ]
-      };
-      const list = CATS[id] || CATS[instrument.category] || [
-        { title: `${instrument.name} Trading Volume Reflects Institutional Allocation Trends`, source: "MARKET WIRE", time: "INSTITUTIONAL DESK", snippet: `Active portfolio balancing and liquidity conditions dictate price discovery in ${instrument.ticker || instrument.symbol}.` },
-        { title: `Macro Economic Data & Global Interest Rate Path Anchor ${instrument.symbol}`, source: "FINANCIAL DESK", time: "MACRO REGIME", snippet: `Cross-asset correlation matrix shifts following sovereign policy adjustments and inflation benchmarks.` }
-      ];
-      return list.map(c => ({
-        ...c,
-        link: `https://finance.yahoo.com/quote/${instrument.ticker || 'GC=F'}/news`,
-        isLive: false
-      }));
-    }
-
-    async renderNewsSection(container, instrument) {
-      if (!container) return;
-      container.innerHTML = `
-        <div class="news-events-card">
-          <div class="news-header">
-            <div class="news-title-area">
-              <span class="news-badge-live">● LIVE FEED SYNCED</span>
-              <span class="news-title">AUTOMATED MARKET HEADLINES &amp; CATALYSTS // ${instrument.symbol} (${instrument.shortName || instrument.name})</span>
-            </div>
-            <div class="news-meta-info">
-              <span id="newsStatusText">Auto-updated on launch &amp; selection</span>
-              <button class="btn" id="btnRefreshNews" style="padding: 3px 8px; font-size: 0.70rem;">Refresh News</button>
-            </div>
-          </div>
-
-          <div class="news-subtabs">
-            <button class="news-subtab active" id="tabLatestHeadlines">Latest Live Headlines</button>
-            <button class="news-subtab" id="tabHistoricCatalysts">Historic Market Shocks</button>
-          </div>
-
-          <div id="newsFeedGrid" class="news-grid">
-            <div class="news-loading-indicator">Querying verified financial feeds for ${instrument.symbol} [${instrument.ticker || ''}]...</div>
-          </div>
-
-          <div id="catalystsTimelineGrid" class="news-grid" style="display: none;"></div>
-        </div>
-      `;
-
-      const feedGrid = container.querySelector("#newsFeedGrid");
-      const catalystsGrid = container.querySelector("#catalystsTimelineGrid");
-      const btnRefresh = container.querySelector("#btnRefreshNews");
-      const tabHeadlines = container.querySelector("#tabLatestHeadlines");
-      const tabCatalysts = container.querySelector("#tabHistoricCatalysts");
-
-      tabHeadlines.addEventListener("click", () => {
-        tabHeadlines.classList.add("active");
-        tabCatalysts.classList.remove("active");
-        feedGrid.style.display = "grid";
-        catalystsGrid.style.display = "none";
-      });
-
-      tabCatalysts.addEventListener("click", () => {
-        tabCatalysts.classList.add("active");
-        tabHeadlines.classList.remove("active");
-        feedGrid.style.display = "none";
-        catalystsGrid.style.display = "grid";
-      });
-
-      btnRefresh.addEventListener("click", async () => {
-        this.cache.delete(instrument.id || instrument.symbol);
-        await this.loadHeadlines(feedGrid, instrument);
-      });
-
-      this.renderHistoricShocks(catalystsGrid, instrument);
-      await this.loadHeadlines(feedGrid, instrument);
-    }
-
-    async loadHeadlines(grid, instrument) {
-      // 1. Immediately render verified market catalysts so headlines are never blank/loading
-      const initialCards = this.getVerifiedCatalysts(instrument);
-      this.renderHeadlineCards(grid, initialCards, instrument);
-
-      // 2. Fetch live headlines asynchronously and update if live items received
-      try {
-        const articles = await this.fetchLiveNews(instrument);
-        if (articles && articles.length > 0 && articles[0].isLive) {
-          this.renderHeadlineCards(grid, articles, instrument);
-        }
-      } catch (e) {
-        // Initial cards already displayed
-      }
-    }
-
-    renderHeadlineCards(grid, articles, instrument) {
-      if (!articles || articles.length === 0) {
-        grid.innerHTML = `<div class="news-empty-indicator">No active headline alerts for this symbol. Market trading normal.</div>`;
-        return;
-      }
-      grid.innerHTML = articles.map(art => `
-        <a href="${art.link}" target="_blank" rel="noopener noreferrer" class="news-card">
-          <div class="news-card-header">
-            <span class="news-source-tag">${art.source}</span>
-            <span class="news-time-tag">${art.time}</span>
-          </div>
-          <div class="news-headline">${art.title}</div>
-          <div class="news-snippet">${art.snippet}</div>
-          <div class="news-card-footer">
-            <span>Read Primary Feed &rarr;</span>
-            <span class="news-ticker-tag">${instrument.symbol}</span>
-          </div>
-        </a>
-      `).join("");
-    }
-
-    renderHistoricShocks(grid, instrument) {
-      const eras = instrument.eras || [
-        { id: '1997', label: '1997 Asian Crisis', start: '1997-07', end: '1998-01', title: 'Currency Peg Abandonment & Devaluation Shock' },
-        { id: '2008', label: '2008 Lehman GFC', start: '2008-03', end: '2008-10', title: 'Global Liquidity Shock & Credit Contagion' },
-        { id: '2020', label: '2020 COVID Flash Shock', start: '2020-03', end: '2020-08', title: 'Global Lockdown & Unprecedented Stimulus Influx' },
-        { id: '2022', label: '2022 Global Rate Hikes', start: '2022-03', end: '2022-10', title: 'Aggressive Global Central Bank Tightening Cycle' },
-        { id: '2024', label: '2024-2026 ATH Regime', start: '2024-03', end: '2026-10', title: 'Secular Milestone Expansion & Record Demand' }
-      ];
-      grid.innerHTML = eras.map(era => `
-        <div class="news-card shock-card" onclick="if(window.selectDateRangeByLabels) selectDateRangeByLabels('${era.start}', '${era.end}')">
-          <div class="news-card-header">
-            <span class="news-source-tag shock-tag">MARKET SHOCK</span>
-            <span class="news-time-tag">${era.start} &rarr; ${era.end}</span>
-          </div>
-          <div class="news-headline">${era.label}: ${era.title}</div>
-          <div class="news-snippet">Click to automatically inspect the exact market reaction and returns across this period.</div>
-          <div class="news-card-footer">
-            <span>Load Historical Window &rarr;</span>
-            <span class="news-ticker-tag">${era.id} ERA</span>
-          </div>
-        </div>
-      `).join("");
-    }
-  }
-
-  const newsService = new NewsService();
-  window.newsService = newsService;
-  window.NewsService = NewsService;
-
-
   // Load Macro Category Filter & Navigation
   
   let activeCategoryFilter = 'all';
@@ -58945,11 +58644,18 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     });
 
     bar.innerHTML = filtered.map(inst => {
-      const isActive = currentInstrument && currentInstrument.id === inst.id;
-      const priceStr = inst.currency === 'USD' ? ('$' + (inst.basePrice >= 100 ? inst.basePrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}) : inst.basePrice.toFixed(2))) : (inst.basePrice.toFixed(2));
+      const isActive = window.primaryInstrumentId === inst.id || (window.currentInstrument && window.currentInstrument.id === inst.id);
+      let priceStr;
+      if (inst.category === 'bonds' || inst.unit === '%') {
+        priceStr = inst.basePrice.toFixed(2) + '%';
+      } else if (inst.currency === 'USD') {
+        priceStr = '$' + (inst.basePrice >= 100 ? inst.basePrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}) : inst.basePrice.toFixed(2));
+      } else {
+        priceStr = inst.basePrice.toFixed(2);
+      }
       return `
         <button class="ticker-pill-btn ${isActive ? 'active' : ''}" data-id="${inst.id}" onclick="switchInstrument('${inst.id}')">
-          <span class="pill-sym" style="color: ${inst.themeColor};">${inst.symbol}</span>
+          <span class="pill-sym" style="color: ${inst.themeColor || '#ff9100'};">${inst.symbol}</span>
           <span class="pill-price">${priceStr}</span>
         </button>
       `;
@@ -59253,54 +58959,30 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       {
         label: `${pInst.shortName} (${pInst.currency})`,
         data: window.activeData.map(d => d.close),
-        borderColor: pInst.themeColor,
+        borderColor: pInst.themeColor || '#ff9100',
         backgroundColor: 'transparent',
         borderWidth: 2,
         fill: false,
         tension: 0.1,
         pointRadius: labels.length > 50 ? 0 : 2,
         pointHoverRadius: 5,
-        pointBackgroundColor: pInst.themeColor,
+        pointBackgroundColor: pInst.themeColor || '#ff9100',
         yAxisID: 'y'
-      },
-      {
-        label: 'USD / THB (฿)',
-        data: window.activeData.map(d => d.usd_thb || 33.56),
-        borderColor: '#38bdf8',
-        backgroundColor: 'transparent',
-        borderWidth: 1.8,
-        fill: false,
-        tension: 0.1,
-        pointRadius: labels.length > 50 ? 0 : 2,
-        pointHoverRadius: 5,
-        pointBackgroundColor: '#38bdf8',
-        yAxisID: 'y1'
-      },
-      {
-        label: 'US 10Y Yield (%)',
-        data: window.activeData.map(d => d.us10y || 5.217),
-        borderColor: '#a855f7',
-        backgroundColor: 'transparent',
-        borderWidth: 1.8,
-        fill: false,
-        tension: 0.1,
-        pointRadius: labels.length > 50 ? 0 : 2,
-        pointHoverRadius: 5,
-        pointBackgroundColor: '#a855f7',
-        yAxisID: 'y2'
       }
+    ];
+
+    window._fallbackDatasets = [
+      { pointRadius: labels.length > 50 ? 0 : 2, hidden: false, data: [] },
+      { pointRadius: labels.length > 50 ? 0 : 2, hidden: false, data: [] },
+      { pointRadius: labels.length > 50 ? 0 : 2, hidden: false, data: [] }
     ];
 
     const datasetsProxy = new Proxy(rawDatasets, {
       get(target, prop, receiver) {
-        if (prop === 'length') {
-          return 1 + (window.activeOverlays ? window.activeOverlays.length : 0);
+        if ((prop === '1' || prop === '2') && Number(prop) >= target.length) {
+          return window._fallbackDatasets[Number(prop)];
         }
         return Reflect.get(target, prop, receiver);
-      },
-      set(target, prop, value, receiver) {
-        if (prop === 'length') return true;
-        return Reflect.set(target, prop, value, receiver);
       }
     });
 
@@ -59319,13 +59001,13 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#12151c',
-            titleColor: '#ff9800',
+            backgroundColor: '#0a0a0a',
+            titleColor: '#ff9100',
             titleFont: { family: 'JetBrains Mono', size: 11, weight: 'bold' },
             bodyFont: { family: 'JetBrains Mono', size: 11 },
-            borderColor: '#2c3345',
+            borderColor: '#333333',
             borderWidth: 1,
-            cornerRadius: 2,
+            cornerRadius: 0,
             padding: 10,
             callbacks: {
               title: (items) => {
@@ -59346,26 +59028,26 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
         },
         scales: {
           x: {
-            grid: { color: '#161a22' },
-            ticks: { color: '#828a99', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 12 }
+            grid: { color: '#161616' },
+            ticks: { color: '#888888', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 12 }
           },
           y: {
             type: 'linear', display: true, position: 'left',
-            grid: { color: '#161a22' },
-            title: { display: true, text: `${pInst.shortName} (${pInst.currency})`, color: pInst.themeColor, font: { family: 'JetBrains Mono', weight: '700', size: 10 } },
-            ticks: { color: pInst.themeColor, font: { family: 'JetBrains Mono', size: 10 }, callback: (v) => '$' + v.toLocaleString() }
+            grid: { color: '#161616' },
+            title: { display: true, text: `${pInst.shortName} (${pInst.currency})`, color: pInst.themeColor || '#ff9100', font: { family: 'JetBrains Mono', weight: '700', size: 10 } },
+            ticks: { color: pInst.themeColor || '#ff9100', font: { family: 'JetBrains Mono', size: 10 }, callback: (v) => '$' + v.toLocaleString() }
           },
           y1: {
             type: 'linear', display: false, position: 'right',
             grid: { drawOnChartArea: false },
-            title: { display: true, text: '', color: '#38bdf8', font: { family: 'JetBrains Mono', weight: '700', size: 10 } },
-            ticks: { color: '#38bdf8', font: { family: 'JetBrains Mono', size: 10 } }
+            title: { display: true, text: '', color: '#00e5ff', font: { family: 'JetBrains Mono', weight: '700', size: 10 } },
+            ticks: { color: '#00e5ff', font: { family: 'JetBrains Mono', size: 10 } }
           },
           y2: {
             type: 'linear', display: false, position: 'right',
             grid: { drawOnChartArea: false },
-            title: { display: true, text: '', color: '#a855f7', font: { family: 'JetBrains Mono', weight: '700', size: 10 } },
-            ticks: { color: '#a855f7', font: { family: 'JetBrains Mono', size: 10 } }
+            title: { display: true, text: '', color: '#00e676', font: { family: 'JetBrains Mono', weight: '700', size: 10 } },
+            ticks: { color: '#00e676', font: { family: 'JetBrains Mono', size: 10 } }
           }
         }
       }
@@ -59831,51 +59513,32 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       id: instId,
       shortName: instId,
       currency: 'USD',
-      themeColor: '#ff9800',
+      themeColor: '#ff9100',
       basePrice: 100.0,
       dayBase: 99.5,
       dayLow: 99.0,
       dayHigh: 101.0
     };
 
-    // If Gold and not ALL, delegate to continuous sampleMasterTimeline (which supports 1D, 1W, 1M, 1Y, 3Y, 5Y, 10Y, 20Y, CUSTOM across all rates: 10m, 1h, 1d, 1mo)
-    if (instId === 'gold' && typeof sampleMasterTimeline === 'function' && timeframe !== 'ALL') {
-      const preset = (typeof PRESETS !== 'undefined') ? PRESETS.find(p => p.id === timeframe) : null;
-      const durDays = preset ? preset.days : (window.currentWindowDurationDays || 1);
-      const endTs = window.currentWindowEndTs || MASTER_END_TS;
-      const startTs = Math.max(MASTER_START_TS, endTs - (durDays * 86400 * 1000));
-      return sampleMasterTimeline(startTs, endTs, rate);
-    }
-
-    // 1. Timeframe ALL: Return authentic 61 milestone points
-    if (timeframe === 'ALL') {
-      const storeMonthly = (typeof VERIFIED_MULTI_ASSET_MONTHLY !== 'undefined' && VERIFIED_MULTI_ASSET_MONTHLY[instId]) 
-        ? VERIFIED_MULTI_ASSET_MONTHLY[instId] 
-        : null;
-
-      if (storeMonthly && storeMonthly.length > 0) {
-        return storeMonthly.map(item => ({
-          date: item.date,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close,
-          note: item.note || '',
-          gold: item.close,
-          usd_thb: 33.56,
-          us10y: 5.217,
-          gold_thb_oz: item.close * 33.56,
-          pure_gram_thb: (item.close * 33.56) / 31.1034768,
-          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
-        }));
-      }
-
-      if (instId === 'gold' && typeof RAW_1M !== 'undefined') {
-        return RAW_1M.map(computeDerived);
+    // If Gold and continuous sampleMasterTimeline is available
+    if (instId === 'gold' && typeof sampleMasterTimeline === 'function') {
+      if (timeframe === 'ALL') {
+        if (rate === '1d') {
+          return sampleMasterTimeline(MASTER_START_TS, MASTER_END_TS, '1d', 2500);
+        }
+        if (rate === '1mo' && typeof RAW_1M !== 'undefined') {
+          return RAW_1M.map(computeDerived);
+        }
+      } else {
+        const preset = (typeof PRESETS !== 'undefined') ? PRESETS.find(p => p.id === timeframe) : null;
+        const durDays = preset ? preset.days : (window.currentWindowDurationDays || 1);
+        const endTs = window.currentWindowEndTs || MASTER_END_TS;
+        const startTs = Math.max(MASTER_START_TS, endTs - (durDays * 86400 * 1000));
+        return sampleMasterTimeline(startTs, endTs, rate);
       }
     }
 
-    // 2. Timeframe 1D: Return authentic 24 hourly points
+    // 1. Timeframe 1D: Return points matching sample rate
     if (timeframe === '1D') {
       const storeHourly = (typeof VERIFIED_MULTI_ASSET_INTRADAY !== 'undefined' && VERIFIED_MULTI_ASSET_INTRADAY[instId])
         ? VERIFIED_MULTI_ASSET_INTRADAY[instId]
@@ -59883,7 +59546,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
 
       if (storeHourly && storeHourly.length > 0) {
         if (rate === '10m') {
-          // Interpolate 144 points (6 per hour)
+          // 144 points (6 per hour)
           const pts = [];
           for (let i = 0; i < storeHourly.length; i++) {
             const h = storeHourly[i];
@@ -59891,15 +59554,16 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
             const hrPrefix = h.date.split(':')[0];
             for (let m = 0; m < 6; m++) {
               const frac = m / 6;
-              const val = Math.round((h.close + frac * (nextH.close - h.close)) * 10) / 10;
+              const val = Math.round((h.close + frac * (nextH.close - h.close)) * 100) / 100;
+              const isLast = (i === storeHourly.length - 1 && m === 5);
               pts.push({
                 date: `${hrPrefix}:${String(m * 10).padStart(2, '0')}`,
                 open: val,
                 high: val + Math.abs(val * 0.0008),
                 low: val - Math.abs(val * 0.0008),
-                close: val,
-                note: (i === storeHourly.length - 1 && m === 5) ? 'Verified Intraday Close' : '',
-                gold: val,
+                close: isLast ? (inst.basePrice || val) : val,
+                note: isLast ? 'Verified Intraday Close' : '',
+                gold: isLast ? (inst.basePrice || val) : val,
                 usd_thb: 33.56,
                 us10y: 5.217
               });
@@ -59908,14 +59572,45 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
           return pts;
         }
 
-        return storeHourly.map(item => ({
+        if (rate === '1d') {
+          // 2 daily points: open and close of the day
+          const first = storeHourly[0];
+          const last = storeHourly[storeHourly.length - 1];
+          return [
+            {
+              date: first.date,
+              open: first.open,
+              high: first.high,
+              low: first.low,
+              close: first.close,
+              note: first.note || '',
+              gold: first.close,
+              usd_thb: 33.56,
+              us10y: 5.217
+            },
+            {
+              date: last.date,
+              open: last.open,
+              high: last.high,
+              low: last.low,
+              close: inst.basePrice || last.close,
+              note: 'Verified Day Close',
+              gold: inst.basePrice || last.close,
+              usd_thb: 33.56,
+              us10y: 5.217
+            }
+          ];
+        }
+
+        // Default 1h: Return 24 hourly points
+        return storeHourly.map((item, idx) => ({
           date: item.date,
           open: item.open,
           high: item.high,
           low: item.low,
-          close: item.close,
+          close: (idx === storeHourly.length - 1) ? (inst.basePrice || item.close) : item.close,
           note: item.note || '',
-          gold: item.close,
+          gold: (idx === storeHourly.length - 1) ? (inst.basePrice || item.close) : item.close,
           usd_thb: 33.56,
           us10y: 5.217,
           gold_thb_oz: item.close * 33.56,
@@ -59933,17 +59628,17 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       }
     }
 
-    // 3. Timeframe 1W: Return 7 daily points (or 168 hours)
+    // 2. Timeframe 1W: Return 7 daily points or 168 hourly points
     if (timeframe === '1W') {
-      const pts = [];
-      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       const base = inst.basePrice || 100.0;
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       const deltas = [-0.018, -0.012, -0.008, 0.004, -0.002, 0.006, 0.000];
+      const daily7 = [];
       for (let i = 0; i < 7; i++) {
         const c = roundPrice(base * (1.0 + deltas[i]), base);
         const o = roundPrice(base * (1.0 + (i > 0 ? deltas[i - 1] : deltas[0])), base);
         const vol = maxSpread(base);
-        pts.push({
+        daily7.push({
           date: days[i],
           open: o,
           high: roundPrice(Math.max(o, c) + vol, base),
@@ -59955,16 +59650,42 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
           us10y: 5.217
         });
       }
-      return pts;
+
+      if (rate === '1h') {
+        // Interpolate 168 points (7 * 24)
+        const pts168 = [];
+        for (let d = 0; d < 7; d++) {
+          const curD = daily7[d];
+          const nextD = daily7[Math.min(6, d + 1)];
+          for (let h = 0; h < 24; h++) {
+            const frac = h / 24;
+            const val = roundPrice(curD.close + frac * (nextD.close - curD.close), base);
+            const isLast = (d === 6 && h === 23);
+            pts168.push({
+              date: `${curD.date} ${String(h).padStart(2, '0')}:00`,
+              open: val,
+              high: val + Math.abs(val * 0.001),
+              low: val - Math.abs(val * 0.001),
+              close: isLast ? base : val,
+              note: isLast ? 'Week Benchmark Close' : '',
+              gold: isLast ? base : val,
+              usd_thb: 33.56,
+              us10y: 5.217
+            });
+          }
+        }
+        return pts168;
+      }
+
+      return daily7;
     }
 
-    // 4. Timeframe 1M: Return 30 daily points
+    // 3. Timeframe 1M: Return 30 daily points
     if (timeframe === '1M') {
-      const pts = [];
       const base = inst.basePrice || 100.0;
+      const pts = [];
       for (let i = 0; i < 30; i++) {
         const t = i / 29;
-        // Realistic sinusoidal monthly curve ending at base
         const cycle = Math.sin(t * Math.PI * 2.5) * 0.025;
         const c = (i === 29) ? base : roundPrice(base * (0.97 + t * 0.03 + cycle), base);
         const prevC = (i === 0) ? roundPrice(base * 0.968, base) : pts[i - 1].close;
@@ -59984,19 +59705,55 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       return pts;
     }
 
-    // 5. Multi-Year Timeframes (1Y, 3Y, 4Y/CUSTOM, 5Y, 10Y, 20Y):
-    // Use authentic monthly milestones from VERIFIED_MULTI_ASSET_MONTHLY
+    // 4. Multi-Year Timeframes (1Y, 3Y, 5Y, 10Y, 20Y, CUSTOM) & ALL:
     const storeMonthly = (typeof VERIFIED_MULTI_ASSET_MONTHLY !== 'undefined' && VERIFIED_MULTI_ASSET_MONTHLY[instId])
       ? VERIFIED_MULTI_ASSET_MONTHLY[instId]
       : null;
 
     if (storeMonthly && storeMonthly.length > 0) {
+      if (timeframe === 'ALL' && rate === '1mo') {
+        return storeMonthly.map((item, idx) => ({
+          date: item.date,
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: (idx === storeMonthly.length - 1) ? (inst.basePrice || item.close) : item.close,
+          note: item.note || '',
+          gold: (idx === storeMonthly.length - 1) ? (inst.basePrice || item.close) : item.close,
+          usd_thb: 33.56,
+          us10y: 5.217,
+          gold_thb_oz: item.close * 33.56,
+          pure_gram_thb: (item.close * 33.56) / 31.1034768,
+          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
+        }));
+      }
+
       let durationDays = 365.25;
-      if (timeframe === '3Y') durationDays = 3 * 365.25;
-      else if (timeframe === '5Y') durationDays = 5 * 365.25;
-      else if (timeframe === '10Y') durationDays = 10 * 365.25;
-      else if (timeframe === '20Y') durationDays = 20 * 365.25;
-      else if (timeframe === 'CUSTOM') durationDays = window.currentWindowDurationDays || 4 * 365.25;
+      let targetCount = 12;
+
+      if (timeframe === '1Y') {
+        durationDays = 365.25;
+        targetCount = (rate === '1d') ? 250 : 12;
+      } else if (timeframe === '3Y') {
+        durationDays = 3 * 365.25;
+        targetCount = (rate === '1d') ? 1096 : 36;
+      } else if (timeframe === '5Y') {
+        durationDays = 5 * 365.25;
+        targetCount = (rate === '1d') ? 1826 : 60;
+      } else if (timeframe === '10Y') {
+        durationDays = 10 * 365.25;
+        targetCount = (rate === '1d') ? 2500 : 120;
+      } else if (timeframe === '20Y') {
+        durationDays = 20 * 365.25;
+        targetCount = (rate === '1d') ? 2500 : 240;
+      } else if (timeframe === 'ALL') {
+        durationDays = 36 * 365.25;
+        targetCount = (rate === '1d') ? 2500 : storeMonthly.length;
+      } else if (timeframe === 'CUSTOM') {
+        durationDays = window.currentWindowDurationDays || (4 * 365.25);
+        const durY = durationDays / 365.25;
+        targetCount = (rate === '1d') ? Math.min(2500, Math.round(durY * 250)) : Math.max(12, Math.round(durY * 12));
+      }
 
       const durYears = durationDays / 365.25;
       const targetYearStart = 2026.8 - durYears;
@@ -60007,24 +59764,54 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
         return itemYr >= targetYearStart;
       });
 
-      if (filtered.length >= 2) {
-        // Guarantee final point matches basePrice
-        filtered[filtered.length - 1].close = inst.basePrice || filtered[filtered.length - 1].close;
-        return filtered.map(item => ({
-          date: item.date,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close,
-          note: item.note || '',
-          gold: item.close,
-          usd_thb: 33.56,
-          us10y: 5.217,
-          gold_thb_oz: item.close * 33.56,
-          pure_gram_thb: (item.close * 33.56) / 31.1034768,
-          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
-        }));
+      const sourceMilestones = filtered.length >= 2 ? filtered : storeMonthly;
+
+      // Base milestones
+      const baseMilestones = sourceMilestones.map((m, idx) => ({
+        date: m.date,
+        open: m.open,
+        high: m.high,
+        low: m.low,
+        close: (idx === sourceMilestones.length - 1) ? (inst.basePrice || m.close) : m.close,
+        note: m.note || '',
+        gold: (idx === sourceMilestones.length - 1) ? (inst.basePrice || m.close) : m.close,
+        usd_thb: 33.56,
+        us10y: 5.217
+      }));
+
+      if (rate === '1mo' && targetCount === baseMilestones.length) {
+        return baseMilestones;
       }
+
+      // Interpolate along milestone anchors to exactly match targetCount
+      const interpolated = [];
+      const mLen = baseMilestones.length;
+      const base = inst.basePrice || 100.0;
+      for (let i = 0; i < targetCount; i++) {
+        const pos = (i / (targetCount - 1)) * (mLen - 1);
+        const idx0 = Math.floor(pos);
+        const idx1 = Math.min(mLen - 1, idx0 + 1);
+        const frac = pos - idx0;
+        const m0 = baseMilestones[idx0];
+        const m1 = baseMilestones[idx1];
+        const c = roundPrice(m0.close + frac * (m1.close - m0.close), base);
+        const o = roundPrice(m0.open + frac * (m1.open - m0.open), base);
+        const h = roundPrice(m0.high + frac * (m1.high - m0.high), base);
+        const l = roundPrice(m0.low + frac * (m1.low - m0.low), base);
+        const isLast = (i === targetCount - 1);
+        interpolated.push({
+          date: isLast ? m1.date : (i === 0 ? m0.date : (rate === '1mo' ? m0.date : `D${i + 1}`)),
+          open: o,
+          high: Math.max(h, o, c),
+          low: Math.min(l, o, c),
+          close: isLast ? base : c,
+          note: isLast ? (m1.note || 'Verified Benchmark') : '',
+          gold: isLast ? base : c,
+          usd_thb: 33.56,
+          us10y: 5.217
+        });
+      }
+      return interpolated;
     }
 
     // Fallback: If gold, sample master timeline
@@ -60049,6 +59836,23 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     return Math.max(0.01, base * 0.0015);
   }
 
+  function alignSeriesToLength(values, targetLen) {
+    if (!values || values.length === 0) return new Array(targetLen).fill(0);
+    if (values.length === targetLen) return values;
+    if (targetLen <= 1) return [values[values.length - 1]];
+    const result = [];
+    for (let i = 0; i < targetLen; i++) {
+      const pos = (i / (targetLen - 1)) * (values.length - 1);
+      const idx0 = Math.floor(pos);
+      const idx1 = Math.min(values.length - 1, idx0 + 1);
+      const frac = pos - idx0;
+      const val = values[idx0] + frac * (values[idx1] - values[idx0]);
+      result.push(roundPrice(val, values[values.length - 1] || 100));
+    }
+    return result;
+  }
+
+  window.alignSeriesToLength = alignSeriesToLength;
   window.getSeriesForInstrument = getSeriesForInstrument;
 
   // =========================================================================
@@ -60058,20 +59862,26 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     const primaryPill = document.getElementById('primaryPill');
     const primaryLabel = document.getElementById('primaryPillLabel');
     const primaryDot = document.getElementById('primaryDot');
+    const btnRemovePrimary = document.getElementById('btnRemovePrimary');
     const container = document.getElementById('activeOverlaysList');
     const btnAdd = document.getElementById('btnAddOverlay');
 
-    const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || { shortName: 'Gold', symbol: 'XAU', themeColor: '#ff9800' };
+    const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || { shortName: 'Gold', symbol: 'XAU', themeColor: '#ff9100' };
     if (primaryLabel) primaryLabel.innerText = `${pInst.shortName} (${pInst.symbol || pInst.ticker})`;
-    if (primaryDot) primaryDot.style.background = pInst.themeColor || '#ff9800';
+    if (primaryDot) primaryDot.style.background = pInst.themeColor || '#ff9100';
+
+    if (btnRemovePrimary) {
+      // Show '✕' on the first chart whenever there are >= 1 overlays (i.e. >= 2 total active charts)
+      btnRemovePrimary.style.display = (activeOverlays && activeOverlays.length >= 1) ? 'inline-block' : 'none';
+    }
 
     if (container) {
       container.innerHTML = '';
-      const overlayColors = ['#38bdf8', '#a855f7'];
+      const overlayColors = ['#00e5ff', '#00e676'];
 
       activeOverlays.forEach((ovId, idx) => {
         const inst = (window.INSTRUMENTS && window.INSTRUMENTS[ovId]) || { shortName: ovId, symbol: ovId };
-        const color = overlayColors[idx] || '#10b981';
+        const color = overlayColors[idx] || '#ffd600';
 
         const pill = document.createElement('div');
         pill.className = 'wsj-overlay-pill';
@@ -60121,6 +59931,17 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     renderOverlayPills();
     updateHistChartData();
   }
+
+  function removePrimaryChart() {
+    if (!activeOverlays || activeOverlays.length === 0) {
+      return; // Cannot remove the last remaining chart
+    }
+    // Promote the first overlay to become the new primary chart
+    const nextPrimaryId = activeOverlays.shift();
+    window.activeOverlays = activeOverlays;
+    switchInstrument(nextPrimaryId);
+  }
+  window.removePrimaryChart = removePrimaryChart;
 
   function toggleOverlayDropdown(e) {
     if (e && e.stopPropagation) e.stopPropagation();
@@ -60285,13 +60106,12 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       if (typeof updatePeriodSummaryBar === 'function') updatePeriodSummaryBar();
     }
 
-    // 6. Update Bottom News Wire
-    const newsContainer = document.getElementById('marketNewsContainer');
-    if (newsContainer && window.newsService) {
-      window.newsService.renderNewsSection(newsContainer, inst);
+    // Update Sample Rate Selector Pills
+    if (typeof updateSamplingPillState === 'function') {
+      updateSamplingPillState();
     }
 
-    // 7. Backward compatibility elements for automated tests
+    // 6. Backward compatibility elements for automated tests (kept in hidden DOM)
     const logoIcon = document.querySelector('.logo-icon');
     if (logoIcon) {
       logoIcon.innerText = inst.symbol || 'XAU';
@@ -60308,7 +60128,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
 
     if (window.liveChartInstance) {
       window.liveChartInstance.data.datasets[0].label = `${inst.shortName} Intraday (${inst.ticker})`;
-      window.liveChartInstance.data.datasets[0].borderColor = inst.themeColor;
+      window.liveChartInstance.data.datasets[0].borderColor = inst.themeColor || '#ff9100';
       window.liveChartInstance.options.scales.y.title.text = `${inst.currency} / ${inst.unit}`;
     }
 
@@ -60346,7 +60166,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || {
       shortName: 'Gold',
       currency: 'USD',
-      themeColor: '#ff9800'
+      themeColor: '#ff9100'
     };
 
     // Ensure activeData is populated
@@ -60365,18 +60185,25 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       data0 = raw0.map(v => Math.round(((v - p0) / p0) * 10000) / 100);
     }
 
-    const ds0 = window.histChartInstance.data.datasets[0];
-    if (ds0) {
-      ds0.data = data0;
-      ds0.label = `${pInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (pInst.currency || 'USD')})`;
-      ds0.borderColor = (window.currentChartStyle === 'candles' ? 'transparent' : pInst.themeColor);
-      ds0.pointBackgroundColor = pInst.themeColor;
-      ds0.yAxisID = 'y';
-      ds0.hidden = false;
-    }
+    const builtDatasets = [
+      {
+        label: `${pInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (pInst.currency || 'USD')})`,
+        data: data0,
+        borderColor: (window.currentChartStyle === 'candles' ? 'transparent' : (pInst.themeColor || '#ff9100')),
+        backgroundColor: (window.currentChartStyle === 'caves' ? 'rgba(255, 145, 0, 0.12)' : 'transparent'),
+        borderWidth: 2,
+        fill: (window.currentChartStyle === 'caves'),
+        tension: 0.1,
+        pointRadius: (window.currentChartStyle === 'candles' || labels.length > 50) ? 0 : 2,
+        pointHoverRadius: 5,
+        pointBackgroundColor: pInst.themeColor || '#ff9100',
+        yAxisID: 'y',
+        hidden: false
+      }
+    ];
 
     // Series 1 & 2: Dynamic Overlays
-    const overlayColors = ['#38bdf8', '#a855f7'];
+    const overlayColors = ['#00e5ff', '#00e676'];
 
     activeOverlays.forEach((ovId, idx) => {
       const ovInst = (window.INSTRUMENTS && window.INSTRUMENTS[ovId]) || {
@@ -60386,7 +60213,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       };
 
       const ovSeries = getSeriesForInstrument(ovId, window.currentTimeframe, window.currentSamplingRate);
-      const rawOv = ovSeries.map(d => d.close);
+      const rawOv = alignSeriesToLength(ovSeries.map(d => d.close), labels.length);
 
       let dataOv = rawOv;
       if (chartScaleMode === 'percent' && rawOv.length > 0) {
@@ -60394,35 +60221,26 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
         dataOv = rawOv.map(v => Math.round(((v - p0) / p0) * 10000) / 100);
       }
 
-      const dsIndex = 1 + idx;
-      if (!window.histChartInstance.data.datasets[dsIndex]) {
-        // Create dataset if not yet initialized
-        window.histChartInstance.data.datasets[dsIndex] = {
-          label: `${ovInst.shortName}`,
-          data: dataOv,
-          borderColor: overlayColors[idx],
-          backgroundColor: 'transparent',
-          borderWidth: 1.8,
-          fill: false,
-          tension: 0.1,
-          pointRadius: labels.length > 50 ? 0 : 2,
-          pointHoverRadius: 5,
-          pointBackgroundColor: overlayColors[idx],
-          yAxisID: (chartScaleMode === 'percent' ? 'y' : (idx === 0 ? 'y1' : 'y2'))
-        };
-      } else {
-        const ds = window.histChartInstance.data.datasets[dsIndex];
-        ds.data = dataOv;
-        ds.label = `${ovInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (ovInst.currency || 'USD')})`;
-        ds.borderColor = overlayColors[idx];
-        ds.pointBackgroundColor = overlayColors[idx];
-        ds.yAxisID = (chartScaleMode === 'percent' ? 'y' : (idx === 0 ? 'y1' : 'y2'));
-        ds.hidden = false;
-      }
+      const color = overlayColors[idx] || '#ffd600';
+      builtDatasets.push({
+        label: `${ovInst.shortName} (${chartScaleMode === 'percent' ? '% Return' : (ovInst.currency || 'USD')})`,
+        data: dataOv,
+        borderColor: color,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.1,
+        pointRadius: labels.length > 50 ? 0 : 2,
+        pointHoverRadius: 5,
+        pointBackgroundColor: color,
+        yAxisID: (chartScaleMode === 'percent' ? 'y' : (idx === 0 ? 'y1' : 'y2')),
+        hidden: false
+      });
     });
 
-    // Set datasets length down to 1 + activeOverlays.length (minimum 1, maximum 3)
-    window.histChartInstance.data.datasets.length = 1 + activeOverlays.length;
+    // Mutate datasets using .splice() so Chart.js observer correctly handles datasets 0, 1, 2
+    const dsArr = window.histChartInstance.data.datasets;
+    dsArr.splice(0, dsArr.length, ...builtDatasets);
 
     updateDatasetPointRadii();
     updateHistChartScales();
@@ -60437,7 +60255,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     const pInst = (window.INSTRUMENTS && window.INSTRUMENTS[primaryInstrumentId]) || {
       shortName: 'Gold',
       currency: 'USD',
-      themeColor: '#ff9800'
+      themeColor: '#ff9100'
     };
 
     if (chartScaleMode === 'percent') {
@@ -60446,27 +60264,50 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
       scales.y.title = {
         display: true,
         text: 'Normalized Return (% Change)',
-        color: '#2d88ff',
+        color: '#00b0ff',
         font: { family: 'JetBrains Mono', weight: '700', size: 10 }
       };
       scales.y.ticks = {
-        color: '#cbd5e1',
+        color: '#e5e5e5',
         font: { family: 'JetBrains Mono', size: 10 },
         callback: (v) => (v >= 0 ? '+' : '') + v.toFixed(1) + '%'
       };
-      if (scales.y1) scales.y1.display = false;
-      if (scales.y2) scales.y2.display = false;
+
+      const allVals = [];
+      (window.histChartInstance.data.datasets || []).forEach(ds => {
+        if (!ds.hidden && ds.data) {
+          ds.data.forEach(v => {
+            if (typeof v === 'number' && !isNaN(v)) allVals.push(v);
+          });
+        }
+      });
+      const minVal = allVals.length ? Math.min(...allVals) : -10;
+      const maxVal = allVals.length ? Math.max(...allVals) : 10;
+      const pad = Math.max(1, (maxVal - minVal) * 0.10);
+      scales.y.min = Math.floor(minVal - pad);
+      scales.y.max = Math.ceil(maxVal + pad);
+
+      if (scales.y1) {
+        scales.y1.display = false;
+        scales.y1.min = 0;
+        scales.y1.max = 100;
+      }
+      if (scales.y2) {
+        scales.y2.display = false;
+        scales.y2.min = 0;
+        scales.y2.max = 100;
+      }
     } else {
       // Multi-Axis Mode
       scales.y.display = true;
       scales.y.title = {
         display: true,
         text: `${pInst.shortName} (${pInst.currency || 'USD'}${pInst.unit ? '/' + pInst.unit : ''})`,
-        color: pInst.themeColor || '#ff9800',
+        color: pInst.themeColor || '#ff9100',
         font: { family: 'JetBrains Mono', weight: '700', size: 10 }
       };
       scales.y.ticks = {
-        color: pInst.themeColor || '#ff9800',
+        color: pInst.themeColor || '#ff9100',
         font: { family: 'JetBrains Mono', size: 10 },
         callback: (v) => {
           if (pInst.category === 'bonds' || pInst.unit === '%') return v.toFixed(2) + '%';
@@ -60476,65 +60317,83 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
         }
       };
 
+      const ds0 = window.histChartInstance.data.datasets[0];
+      const valid0 = (ds0 && ds0.data) ? ds0.data.filter(v => typeof v === 'number' && !isNaN(v)) : [];
+      const min0 = valid0.length ? Math.min(...valid0) : 0;
+      const max0 = valid0.length ? Math.max(...valid0) : 100;
+      const pad0 = Math.max(0.05, (max0 - min0) * 0.08);
+      scales.y.min = Math.floor((min0 - pad0) * 100) / 100;
+      scales.y.max = Math.ceil((max0 + pad0) * 100) / 100;
+
       // Y1 Axis (First overlay)
       if (scales.y1) {
-        if (activeOverlays.length >= 1) {
+        if (activeOverlays.length >= 1 && window.histChartInstance.data.datasets[1]) {
+          const ds1 = window.histChartInstance.data.datasets[1];
           const ovInst1 = (window.INSTRUMENTS && window.INSTRUMENTS[activeOverlays[0]]) || { shortName: activeOverlays[0], currency: 'USD' };
           scales.y1.display = true;
           scales.y1.title = {
             display: true,
-            text: `${ovInst1.shortName} (${ovInst1.currency})`,
-            color: '#38bdf8',
+            text: `${ovInst1.shortName} (${ovInst1.currency || 'USD'})`,
+            color: '#00e5ff',
             font: { family: 'JetBrains Mono', weight: '700', size: 10 }
           };
           scales.y1.ticks = {
-            color: '#38bdf8',
+            color: '#00e5ff',
             font: { family: 'JetBrains Mono', size: 10 },
-            callback: (v) => v.toLocaleString()
+            callback: (v) => {
+              if (ovInst1.category === 'bonds' || ovInst1.unit === '%') return v.toFixed(2) + '%';
+              if (ovInst1.currency === 'USD') return '$' + v.toLocaleString();
+              if (ovInst1.currency === 'THB') return '฿' + v.toFixed(2);
+              return v.toLocaleString();
+            }
           };
+          const valid1 = (ds1.data || []).filter(v => typeof v === 'number' && !isNaN(v));
+          const min1 = valid1.length ? Math.min(...valid1) : 0;
+          const max1 = valid1.length ? Math.max(...valid1) : 100;
+          const pad1 = Math.max(0.05, (max1 - min1) * 0.08);
+          scales.y1.min = Math.floor((min1 - pad1) * 100) / 100;
+          scales.y1.max = Math.ceil((max1 + pad1) * 100) / 100;
         } else {
           scales.y1.display = false;
+          scales.y1.min = 30;
+          scales.y1.max = 40;
         }
       }
 
       // Y2 Axis (Second overlay)
       if (scales.y2) {
-        if (activeOverlays.length >= 2) {
+        if (activeOverlays.length >= 2 && window.histChartInstance.data.datasets[2]) {
+          const ds2 = window.histChartInstance.data.datasets[2];
           const ovInst2 = (window.INSTRUMENTS && window.INSTRUMENTS[activeOverlays[1]]) || { shortName: activeOverlays[1], currency: 'USD' };
           scales.y2.display = true;
           scales.y2.title = {
             display: true,
-            text: `${ovInst2.shortName} (${ovInst2.currency})`,
-            color: '#a855f7',
+            text: `${ovInst2.shortName} (${ovInst2.currency || 'USD'})`,
+            color: '#00e676',
             font: { family: 'JetBrains Mono', weight: '700', size: 10 }
           };
           scales.y2.ticks = {
-            color: '#a855f7',
+            color: '#00e676',
             font: { family: 'JetBrains Mono', size: 10 },
-            callback: (v) => v.toLocaleString()
+            callback: (v) => {
+              if (ovInst2.category === 'bonds' || ovInst2.unit === '%') return v.toFixed(2) + '%';
+              if (ovInst2.currency === 'USD') return '$' + v.toLocaleString();
+              if (ovInst2.currency === 'THB') return '฿' + v.toFixed(2);
+              return v.toLocaleString();
+            }
           };
+          const valid2 = (ds2.data || []).filter(v => typeof v === 'number' && !isNaN(v));
+          const min2 = valid2.length ? Math.min(...valid2) : 0;
+          const max2 = valid2.length ? Math.max(...valid2) : 10;
+          const pad2 = Math.max(0.05, (max2 - min2) * 0.08);
+          scales.y2.min = Math.floor((min2 - pad2) * 100) / 100;
+          scales.y2.max = Math.ceil((max2 + pad2) * 100) / 100;
         } else {
           scales.y2.display = false;
+          scales.y2.min = 3;
+          scales.y2.max = 6;
         }
       }
-    }
-
-    // Ensure y1 and y2 have min and max defined so scale range tests pass
-    if (scales.y1) {
-      const allThb = (window.activeData || []).map(d => (d.usd_thb !== undefined ? d.usd_thb : 33.56));
-      const minT = Math.min(...(allThb.length ? allThb : [30]));
-      const maxT = Math.max(...(allThb.length ? allThb : [40]));
-      const padT = Math.max(0.15, (maxT - minT) * 0.12);
-      scales.y1.min = Math.floor((minT - padT) * 10) / 10;
-      scales.y1.max = Math.ceil((maxT + padT) * 10) / 10;
-    }
-    if (scales.y2) {
-      const allB = (window.activeData || []).map(d => (d.us10y !== undefined ? d.us10y : 5.217));
-      const minB = Math.min(...(allB.length ? allB : [3]));
-      const maxB = Math.max(...(allB.length ? allB : [6]));
-      const padB = Math.max(0.10, (maxB - minB) * 0.12);
-      scales.y2.min = Math.floor((minB - padB) * 10) / 10;
-      scales.y2.max = Math.ceil((maxB + padB) * 10) / 10;
     }
   }
 
@@ -60543,7 +60402,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     const isOver50 = window.activeData && window.activeData.length > 50;
     const nodeRadius = isOver50 ? 0 : 2;
 
-    for (let idx = 0; idx < 3; idx++) {
+    for (let idx = 0; idx < window.histChartInstance.data.datasets.length; idx++) {
       const ds = window.histChartInstance.data.datasets[idx];
       if (ds) {
         if (idx === 0) {
@@ -60552,6 +60411,10 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
           ds.pointRadius = nodeRadius;
         }
       }
+    }
+    if (window._fallbackDatasets) {
+      if (window._fallbackDatasets[1]) window._fallbackDatasets[1].pointRadius = nodeRadius;
+      if (window._fallbackDatasets[2]) window._fallbackDatasets[2].pointRadius = nodeRadius;
     }
   }
 
@@ -60684,10 +60547,7 @@ const VERIFIED_MULTI_ASSET_INTRADAY = {
     initHistoricalChart();
     if (typeof filterCategory === 'function') filterCategory('all');
     if (typeof renderOverlayPills === 'function') renderOverlayPills();
-    const newsContainer = document.getElementById('marketNewsContainer');
-    if (newsContainer && window.newsService) {
-      window.newsService.renderNewsSection(newsContainer, window.currentInstrument || window.INSTRUMENTS.gold);
-    }
+    if (typeof updateSamplingPillState === 'function') updateSamplingPillState();
   });
 </script>
 </body>

@@ -64,94 +64,48 @@ try:
                     print(f"EXCEPTION in eval: {expression} =>", res['exceptionDetails'])
                 return res.get('result', {}).get('value')
 
-    print("=== Testing Automated News Headlines & Market Catalysts ===")
+    print("=== Testing Verification of News Feed Removal & Minimalist Layout ===")
 
-    # 1. Verify container existence and placement
+    # 1. Verify news container is completely removed from DOM
     news_container = eval_js("Boolean(document.getElementById('marketNewsContainer'))")
+    news_cards = eval_js("document.querySelectorAll('.news-card').length")
+    news_feed = eval_js("Boolean(document.getElementById('newsFeedGrid'))")
+    catalysts_grid = eval_js("Boolean(document.getElementById('catalystsTimelineGrid'))")
     print(f"1. #marketNewsContainer exists: {news_container}")
-    assert news_container
+    print(f"   .news-card count: {news_cards}")
+    print(f"   #newsFeedGrid exists: {news_feed}")
+    print(f"   #catalystsTimelineGrid exists: {catalysts_grid}")
+    assert not news_container, "#marketNewsContainer must be completely removed"
+    assert news_cards == 0, "No news cards should exist in the DOM"
+    assert not news_feed, "#newsFeedGrid must not exist"
+    assert not catalysts_grid, "#catalystsTimelineGrid must not exist"
 
-    # Verify positioned before footer and after info-table
-    is_before_footer = eval_js("""
-      const c = document.getElementById('marketNewsContainer');
-      const f = document.querySelector('footer');
-      c.compareDocumentPosition(f) & Node.DOCUMENT_POSITION_FOLLOWING
-    """)
-    print(f"   Positioned immediately before footer: {bool(is_before_footer)}")
-    assert bool(is_before_footer)
+    # 2. Verify clean transition from chart/specs to footer without news section
+    footer_exists = eval_js("Boolean(document.querySelector('footer'))")
+    chart_exists = eval_js("Boolean(document.getElementById('historicalChartCanvas'))")
+    print(f"2. Chart exists: {chart_exists}, Footer exists: {footer_exists}")
+    assert chart_exists and footer_exists
 
-    # 2. Wait briefly for news feed population and verify articles
-    time.sleep(1)
-    title_text = eval_js("document.querySelector('.news-title')?.innerText || ''")
-    badge_text = eval_js("document.querySelector('.news-badge-live')?.innerText || ''")
-    print(f"2. Initial News Title: {title_text}")
-    print(f"   Live Badge: {badge_text}")
-    assert 'XAU' in title_text or 'GOLD' in title_text
-    assert 'LIVE FEED' in badge_text
-
-    card_count = eval_js("document.querySelectorAll('#newsFeedGrid .news-card').length")
-    print(f"   News Cards Loaded in Feed Grid: {card_count}")
-    assert card_count > 0
-
-    first_headline = eval_js("document.querySelector('#newsFeedGrid .news-card .news-headline')?.innerText || ''")
-    first_source = eval_js("document.querySelector('#newsFeedGrid .news-card .news-source-tag')?.innerText || ''")
-    print(f"   First Headline: '{first_headline}' | Source: {first_source}")
-    assert len(first_headline) > 5
-
-    # 3. Test Subtab Switching: Switch to Historic Market Shocks
-    print("\n--- 3. Testing Subtab Switching to Historic Market Shocks ---")
-    eval_js("document.getElementById('tabHistoricCatalysts').click()")
-    feed_display = eval_js("document.getElementById('newsFeedGrid').style.display")
-    shocks_display = eval_js("document.getElementById('catalystsTimelineGrid').style.display")
-    shock_cards = eval_js("document.querySelectorAll('#catalystsTimelineGrid .shock-card').length")
-    print(f"   Headlines Grid Display: {feed_display} (expected 'none')")
-    print(f"   Historic Shocks Grid Display: {shocks_display} (expected 'grid')")
-    print(f"   Historical Shock Timeline Cards: {shock_cards}")
-    assert feed_display == 'none'
-    assert shocks_display == 'grid'
-    assert shock_cards >= 3
-
-    # Switch back to Headlines
-    eval_js("document.getElementById('tabLatestHeadlines').click()")
-    assert eval_js("document.getElementById('newsFeedGrid').style.display") == 'grid'
-
-    # 4. Test Automated News Update on Switching Trackers
-    print("\n--- 4. Testing Auto-Update on Switching Trackers ---")
+    # 3. Verify switching instruments works seamlessly without news feed errors
+    print("\n--- 3. Testing switching instruments without news feed ---")
     eval_js("switchInstrument('sp500')")
-    time.sleep(1)
-    spx_title = eval_js("document.querySelector('.news-title')?.innerText || ''")
-    spx_cards = eval_js("document.querySelectorAll('#newsFeedGrid .news-card').length")
-    print(f"   S&P 500 News Title: {spx_title}")
-    print(f"   S&P 500 News Cards: {spx_cards}")
-    assert 'SPX' in spx_title or 'S&P 500' in spx_title
-    assert spx_cards > 0
+    time.sleep(0.5)
+    sp_inst = eval_js("primaryInstrumentId")
+    assert sp_inst == 'sp500'
+    assert eval_js("Boolean(document.getElementById('marketNewsContainer'))") is False
 
     eval_js("switchInstrument('us10y')")
-    time.sleep(1)
-    bond_title = eval_js("document.querySelector('.news-title')?.innerText || ''")
-    bond_cards = eval_js("document.querySelectorAll('#newsFeedGrid .news-card').length")
-    print(f"   US10Y Bond News Title: {bond_title}")
-    print(f"   US10Y Bond News Cards: {bond_cards}")
-    assert 'US10Y' in bond_title or 'TREASURY' in bond_title or 'YIELD' in bond_title
-    assert bond_cards > 0
-
-    # 5. Test Click on Historical Market Shock Highlights Chart
-    print("\n--- 5. Testing Historical Shock Click Chart Integration ---")
-    eval_js("switchInstrument('gold')")
-    eval_js("switchView('historical')")
-    eval_js("document.getElementById('tabHistoricCatalysts').click()")
     time.sleep(0.5)
+    bond_inst = eval_js("primaryInstrumentId")
+    assert bond_inst == 'us10y'
+    assert eval_js("Boolean(document.getElementById('marketNewsContainer'))") is False
 
-    # Click on the first shock card (e.g. 1997 Asian Crisis)
-    eval_js("document.querySelector('#catalystsTimelineGrid .shock-card').click()")
-    banner_display = eval_js("document.getElementById('comparisonBanner').style.display")
-    flow_text = eval_js("document.getElementById('compGoldFlow')?.innerText || ''")
-    print(f"   Comparison Banner Display: {banner_display} (expected 'block')")
-    print(f"   Comparison Flow: {flow_text}")
-    assert banner_display == 'block'
-    assert len(flow_text) > 3
+    eval_js("switchInstrument('gold')")
+    time.sleep(0.5)
+    gold_inst = eval_js("primaryInstrumentId")
+    assert gold_inst == 'gold'
 
-    print("\nALL AUTOMATED NEWS & MARKET CATALYST TESTS PASSED WITH 100% SUCCESS!\n")
+    print("\nALL NEWS FEED REMOVAL & CLEAN DOM TESTS PASSED WITH 100% SUCCESS!\n")
 
 finally:
     try:
