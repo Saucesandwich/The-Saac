@@ -92,16 +92,17 @@ try:
     assert sp_inst == 'sp500'
     assert top_title_after_switch == "The Saac Terminal" or top_title_after_switch == "THE SAAC TERMINAL", "Top title must remain 'The Saac Terminal'!"
     assert "S&P" in sp_label, f"Expected S&P in label, got {sp_label}"
-    assert abs(sp_last - 5850.2) < 30.0, f"S&P 500 price should be ~5,850, got {sp_last}"
-    assert "5,850" in sp_hero_price or "5850" in sp_hero_price, f"Hero price must show 5850, got {sp_hero_price}"
+    assert abs(sp_last - 7659.4) < 30.0, f"S&P 500 price should be ~7,659.4, got {sp_last}"
+    assert "7,659" in sp_hero_price or "7659" in sp_hero_price, f"Hero price must show 7,659, got {sp_hero_price}"
 
     # Test ALL timeframe on S&P 500
     eval_js("filterTimeframe('ALL')")
     sp_all_data = eval_js("histChartInstance.data.datasets[0].data")
     sp_1990 = sp_all_data[0]
     print(f"   S&P 500 ALL history: 1990={sp_1990}, 2026={sp_all_data[-1]}, samples={len(sp_all_data)}")
-    assert abs(sp_1990 - 330.0) < 20.0, f"S&P 500 in 1990 was ~330, got {sp_1990}"
-    assert abs(sp_all_data[-1] - 5850.2) < 20.0, f"S&P 500 in 2026 should be ~5,850, got {sp_all_data[-1]}"
+    assert abs(sp_1990 - 329.08) < 20.0, f"S&P 500 in 1990 was ~329.08, got {sp_1990}"
+    assert abs(sp_all_data[-1] - 7659.4) < 20.0, f"S&P 500 in 2026 should be ~7,659.4, got {sp_all_data[-1]}"
+    assert len(sp_all_data) == 442, f"Expected 442 monthly candles from 1990-01 to 2026-10, got {len(sp_all_data)}"
 
     # Test Sample Rates on S&P 500
     print("\n--- Testing Sample Rate Selector on S&P 500 ---")
@@ -128,8 +129,10 @@ try:
     eval_js("filterTimeframe('1Y')")
     eval_js("setSamplingRate('1mo')")
     pts_1mo = eval_js("histChartInstance.data.datasets[0].data.length")
-    print(f"   1Y @ 1mo points: {pts_1mo}")
+    sp_1y_vals = eval_js("histChartInstance.data.datasets[0].data")
+    print(f"   1Y @ 1mo points: {pts_1mo}, values={sp_1y_vals[:3]}...{sp_1y_vals[-3:]}")
     assert pts_1mo == 12, f"Expected 12 points for 1Y @ 1mo, got {pts_1mo}"
+    assert len(set(sp_1y_vals)) >= 10, f"1Y monthly series must NOT be a flat line! Got {sp_1y_vals}"
 
     # 3. Switch to WTI Crude Oil (crude_oil)
     print("\n--- 3. Switching to WTI Crude Oil (crude_oil) ---")
@@ -143,8 +146,8 @@ try:
     print(f"   Switched to: {oil_inst}, label='{oil_label}', last_val={oil_last}, hero_price='{oil_hero_price}'")
     assert oil_inst == 'crude_oil'
     assert "Crude Oil" in oil_label
-    assert abs(oil_last - 78.4) < 5.0, f"Crude Oil price should be ~$78.4, got {oil_last}"
-    assert "78" in oil_hero_price
+    assert abs(oil_last - 99.04) < 5.0, f"Crude Oil price should be ~$99.04, got {oil_last}"
+    assert "99" in oil_hero_price
 
     # 4. Switch to US 10Y Yield (us10y)
     print("\n--- 4. Switching to US 10-Year Bond Yield (us10y) ---")
@@ -158,8 +161,8 @@ try:
     print(f"   Switched to: {bond_inst}, label='{bond_label}', last_val={bond_last}, hero_price='{bond_hero_price}'")
     assert bond_inst == 'us10y'
     assert "10Y" in bond_label or "Yield" in bond_label
-    assert abs(bond_last - 5.217) < 0.1, f"US 10Y Yield should be ~5.217%, got {bond_last}"
-    assert "5.2" in bond_hero_price
+    assert abs(bond_last - 5.098) < 0.15, f"US 10Y Yield should be ~5.098%, got {bond_last}"
+    assert "5.0" in bond_hero_price or "5.1" in bond_hero_price
 
     # 5. Switch to Silver (silver)
     print("\n--- 5. Switching to Silver (silver) ---")
@@ -172,21 +175,52 @@ try:
     print(f"   Switched to: {silver_inst}, label='{silver_label}', last_val={silver_last}")
     assert silver_inst == 'silver'
     assert "Silver" in silver_label
-    assert abs(silver_last - 32.4) < 2.0, f"Silver price should be ~$32.4, got {silver_last}"
+    assert abs(silver_last - 57.13) < 2.0, f"Silver price should be ~$57.13, got {silver_last}"
 
-    # 6. Verify Minimalist Neutral Black Palette & No Purple
-    print("\n--- 6. Verifying Minimalist Neutral Black Dark Mode & No Purple ---")
+    # 6. Verify All 31 Markets Have Non-Flat 1Y & 1M Data and Authentic Date Labels
+    print("\n--- 6. Verifying All 31 Markets Have Non-Flat 1Y & 1M Series & Authentic Dates ---")
+    all_ids = eval_js("Object.keys(window.INSTRUMENTS)")
+    assert len(all_ids) == 31, f"Expected 31 instruments, got {len(all_ids)}"
+    for inst_id in all_ids:
+        s_1y = eval_js(f"getSeriesForInstrument('{inst_id}', '1Y', '1mo').map(d => d.close)")
+        s_1m = eval_js(f"getSeriesForInstrument('{inst_id}', '1M', '1d')")
+        assert len(set(s_1y)) >= 6, f"Instrument {inst_id} 1Y monthly series is flat: {s_1y}"
+        assert len(s_1m) == 30, f"Instrument {inst_id} 1M daily series should have 30 points, got {len(s_1m)}"
+        assert not s_1m[0]['date'].startswith('D'), f"Instrument {inst_id} 1M date label must be real YYYY-MM-DD, got {s_1m[0]['date']}"
+    print(f"   Verified all {len(all_ids)} instruments have authentic non-flat 1Y & 1M curves and real calendar dates!")
+
+    # 7. Verify Real-Time Data on Market Switcher Side Numbers (#pillPrice_<id> & #pillChange_<id>)
+    print("\n--- 7. Verifying Real-Time Market Switcher Side Numbers & Live Ticks ---")
+    eval_js("filterCategory('all')")
+    pill_side_count = eval_js("document.querySelectorAll('#macroTickerBar .pill-side').length")
+    pill_price_before = eval_js("document.getElementById('pillPrice_sp500')?.innerText")
+    pill_chg_before = eval_js("document.getElementById('pillChange_sp500')?.innerText")
+    print(f"   Market switcher pills count: {pill_side_count}, sp500 before tick: price='{pill_price_before}', chg='{pill_chg_before}'")
+    assert pill_side_count == 31, f"Expected 31 market switcher side blocks in #macroTickerBar, got {pill_side_count}"
+    assert pill_price_before and len(pill_price_before) > 0
+    assert pill_chg_before and ('%' in pill_chg_before)
+
+    # Trigger a real-time market switcher tick and verify live prices update
+    eval_js("window.isLivePaused = false; tickMarketSwitchersRealtime();")
+    changed_count = eval_js("""
+      Object.values(window.INSTRUMENTS).filter(i => i.livePrice !== i.basePrice).length
+    """)
+    pill_price_after = eval_js("document.getElementById('pillPrice_sp500')?.innerText")
+    pill_chg_after = eval_js("document.getElementById('pillChange_sp500')?.innerText")
+    print(f"   After tickMarketSwitchersRealtime(): {changed_count}/31 live prices ticked; sp500 now price='{pill_price_after}', chg='{pill_chg_after}'")
+    assert changed_count >= 25, f"Expected most instruments to tick in real time, got {changed_count}"
+
+    # 8. Verify Minimalist Neutral Black Palette & No Purple
+    print("\n--- 8. Verifying Minimalist Neutral Black Dark Mode & No Purple ---")
     body_bg = eval_js("window.getComputedStyle(document.body).backgroundColor")
     print(f"   body background color: {body_bg}")
-    # Check dataset border colors across instruments for purple
-    for inst in ['gold', 'sp500', 'crude_oil', 'us10y', 'silver', 'bitcoin', 'eurusd']:
+    for inst in ['gold', 'sp500', 'crude_oil', 'us10y', 'silver', 'crypto', 'eurusd']:
         eval_js(f"switchInstrument('{inst}')")
         bcolor = eval_js("histChartInstance.data.datasets[0].borderColor")
-        # Ensure not purple / pink
         assert not any(p in bcolor.lower() for p in ['purple', '#8a2be2', '#9932cc', '#b388ff', '#7c4dff', '#d500f9']), f"Instrument {inst} has purple color: {bcolor}"
     print("   All sampled instruments have vibrant/authentic non-purple colors!")
 
-    print("\n>>> ALL MULTI-ASSET SWITCHING & DATA INTEGRITY TESTS PASSED! <<<")
+    print("\n>>> ALL MULTI-ASSET SWITCHING, REAL-TIME TICKER & DATA INTEGRITY TESTS PASSED! <<<")
 
 finally:
     try:

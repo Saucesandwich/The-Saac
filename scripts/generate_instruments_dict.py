@@ -1,8 +1,36 @@
+import json
+import os
 import re
 
 def generate_js_instruments():
+    meta_path = 'scripts/real_market_meta.json'
+    meta_store = {}
+    if os.path.exists(meta_path):
+        with open(meta_path, encoding='utf-8') as f:
+            meta_store = json.load(f)
+
     with open('src/js/instruments/catalog.js', encoding='utf-8') as f:
         catalog_code = f.read()
+
+    # Sync catalog.js defaultPrice and dayRange with real_market_meta.json
+    for inst_id, m in meta_store.items():
+        if inst_id == 'gold':
+            continue
+        pat = re.compile(
+            r"(id:\s*'" + re.escape(inst_id) + r"'[\s\S]*?defaultPrice:\s*)([\d\.]+)(,\s*dayRange:\s*\{\s*low:\s*)([\d\.]+)(,\s*high:\s*)([\d\.]+)(,\s*base:\s*)([\d\.]+)(\s*\})"
+        )
+        def _repl(match, m=m):
+            return (
+                f"{match.group(1)}{m['price']}"
+                f"{match.group(3)}{m['dayLow']}"
+                f"{match.group(5)}{m['dayHigh']}"
+                f"{match.group(7)}{m['prevClose']}"
+                f"{match.group(9)}"
+            )
+        catalog_code, _ = pat.subn(_repl, catalog_code, count=1)
+
+    with open('src/js/instruments/catalog.js', 'w', encoding='utf-8') as f:
+        f.write(catalog_code)
 
     # Pattern for instrument blocks
     pattern = re.compile(
@@ -20,17 +48,22 @@ def generate_js_instruments():
     )
 
     matches = pattern.findall(catalog_code)
-    print(f"Found {len(matches)} instruments.")
+    print(f"Found {len(matches)} instruments in catalog.js.")
 
     lines = []
     lines.append("  const INSTRUMENTS = {")
 
     for m in matches:
         inst_id, cat, sym, name, short_name, ticker, exch, unit, curr, color, def_price = m
-        price = float(def_price)
-        day_base = round(price * 0.998, 2)
-        day_low = round(price * 0.994, 2)
-        day_high = round(price * 1.006, 2)
+        m_info = meta_store.get(inst_id, {})
+        price = float(m_info.get('price', def_price))
+        day_base = float(m_info.get('prevClose', round(price * 0.998, 2)))
+        day_open = float(m_info.get('open', day_base))
+        day_low = float(m_info.get('dayLow', round(price * 0.994, 2)))
+        day_high = float(m_info.get('dayHigh', round(price * 1.006, 2)))
+        low_52w = float(m_info.get('low52w', round(price * 0.78, 2)))
+        high_52w = float(m_info.get('high52w', round(price * 1.12, 2)))
+        ytd_pct = float(m_info.get('ytdPct', 11.4))
 
         # Custom cards and labels per category
         if cat == 'commodities':
@@ -81,7 +114,7 @@ def generate_js_instruments():
             o0 = f"{short_name} ({sym} %)"
             o1 = "Curve Slope (bps)"
             o2 = "US 10Y Yield (%)"
-        else: # forex
+        else:  # forex
             c1_t = f"{short_name} Exchange Rate"
             c1_s = f"FX: {ticker}"
             c2_t = "US Dollar Index DXY"
@@ -108,9 +141,14 @@ def generate_js_instruments():
       ticker: 'GC=F',
       themeColor: '#ff9100',
       basePrice: 4169.3,
+      livePrice: 4169.3,
       dayBase: 4159.0,
+      dayOpen: 4159.0,
       dayLow: 4165.50,
       dayHigh: 4193.50,
+      low52w: 3901.30,
+      high52w: 5586.20,
+      ytdPct: 54.2,
       card1: {{ title: 'Gold Futures (US Market)', sub: 'COMEX: GC=F' }},
       card2: {{ title: 'Forex Exchange Rate', sub: 'FX: USD / THB' }},
       card3: {{ title: 'US 10-Year Treasury Yield', sub: 'RATES: CBOE ^TNX' }},
@@ -132,10 +170,15 @@ def generate_js_instruments():
       unit: 'pts',
       ticker: '^IXIC',
       themeColor: '#00e676',
-      basePrice: 20340.5,
-      dayBase: 20280.0,
-      dayLow: 20210.0,
-      dayHigh: 20450.0,
+      basePrice: {price},
+      livePrice: {price},
+      dayBase: {day_base},
+      dayOpen: {day_open},
+      dayLow: {day_low},
+      dayHigh: {day_high},
+      low52w: {low_52w},
+      high52w: {high_52w},
+      ytdPct: {ytd_pct},
       card1: {{ title: 'Nasdaq Composite Index', sub: 'NASDAQ: ^IXIC' }},
       card2: {{ title: 'Invesco QQQ Trust', sub: 'ETF: QQQ' }},
       card3: {{ title: 'US 10-Year Treasury Yield', sub: 'RATES: CBOE ^TNX' }},
@@ -144,12 +187,12 @@ def generate_js_instruments():
       overlay1: 'Invesco QQQ ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {{
-        const c = Number(raw.close !== undefined ? raw.close : (raw.nasdaq || 20340.5));
+        const c = Number(raw.close !== undefined ? raw.close : (raw.nasdaq || {price}));
         const o = Number(raw.open !== undefined ? raw.open : c);
         const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
         const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
-        const qqq = c / 41.0;
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
+        const qqq = c / 36.8;
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
         return {{
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -175,10 +218,15 @@ def generate_js_instruments():
       unit: 'pts',
       ticker: '^GSPC',
       themeColor: '#00b0ff',
-      basePrice: 5850.2,
-      dayBase: 5835.0,
-      dayLow: 5820.0,
-      dayHigh: 5875.0,
+      basePrice: {price},
+      livePrice: {price},
+      dayBase: {day_base},
+      dayOpen: {day_open},
+      dayLow: {day_low},
+      dayHigh: {day_high},
+      low52w: {low_52w},
+      high52w: {high_52w},
+      ytdPct: {ytd_pct},
       card1: {{ title: 'S&P 500 Large-Cap', sub: 'INDEX: ^GSPC' }},
       card2: {{ title: 'SPDR S&P 500 ETF', sub: 'ETF: SPY' }},
       card3: {{ title: 'CBOE Volatility Index', sub: 'VOLATILITY: ^VIX' }},
@@ -187,7 +235,7 @@ def generate_js_instruments():
       overlay1: 'SPDR SPY ($)',
       overlay2: 'CBOE VIX (pts)',
       computeDerived: (raw) => {{
-        const c = Number(raw.close !== undefined ? raw.close : 5850.2);
+        const c = Number(raw.close !== undefined ? raw.close : {price});
         const o = Number(raw.open !== undefined ? raw.open : c);
         const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
         const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
@@ -206,7 +254,6 @@ def generate_js_instruments():
       }}
     }},""")
         else:
-            # Generic catalog instrument
             ratio_expr = f"({price} / 4169.3)"
             lines.append(f"""    {inst_id}: {{
       id: '{inst_id}',
@@ -220,9 +267,14 @@ def generate_js_instruments():
       ticker: '{ticker}',
       themeColor: '{color}',
       basePrice: {price},
+      livePrice: {price},
       dayBase: {day_base},
+      dayOpen: {day_open},
       dayLow: {day_low},
       dayHigh: {day_high},
+      low52w: {low_52w},
+      high52w: {high_52w},
+      ytdPct: {ytd_pct},
       card1: {{ title: '{c1_t}', sub: '{c1_s}' }},
       card2: {{ title: '{c2_t}', sub: '{c2_s}' }},
       card3: {{ title: '{c3_t}', sub: '{c3_s}' }},
@@ -237,8 +289,8 @@ def generate_js_instruments():
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {{
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -253,8 +305,18 @@ def generate_js_instruments():
       }}
     }},""")
 
-    # Add crypto for backwards compatibility
-    lines.append("""    crypto: {
+    # Add crypto with real Yahoo Finance metadata
+    c_meta = meta_store.get('crypto', {})
+    c_price = float(c_meta.get('price', 81433.3))
+    c_base = float(c_meta.get('prevClose', 82141.5))
+    c_open = float(c_meta.get('open', 81501.6))
+    c_low = float(c_meta.get('dayLow', 81302.6))
+    c_high = float(c_meta.get('dayHigh', 81546.9))
+    c_52l = float(c_meta.get('low52w', 57747.8))
+    c_52h = float(c_meta.get('high52w', 87363.8))
+    c_ytd = float(c_meta.get('ytdPct', -6.94))
+
+    lines.append(f"""    crypto: {{
       id: 'crypto',
       category: 'forex',
       symbol: 'BTC',
@@ -265,37 +327,42 @@ def generate_js_instruments():
       unit: 'BTC',
       ticker: 'BTC-USD',
       themeColor: '#ffd600',
-      basePrice: 68450.0,
-      dayBase: 68100.0,
-      dayLow: 67800.0,
-      dayHigh: 69200.0,
-      card1: { title: 'Bitcoin Spot', sub: 'CRYPTO: BTC-USD' },
-      card2: { title: 'Ethereum / USD', sub: 'CRYPTO: ETH-USD' },
-      card3: { title: 'US Dollar Index', sub: 'CURRENCY: DXY' },
-      card4: { title: 'Satoshis Per Dollar', sub: 'UNIT: 100M SATS/BTC' },
+      basePrice: {c_price},
+      livePrice: {c_price},
+      dayBase: {c_base},
+      dayOpen: {c_open},
+      dayLow: {c_low},
+      dayHigh: {c_high},
+      low52w: {c_52l},
+      high52w: {c_52h},
+      ytdPct: {c_ytd},
+      card1: {{ title: 'Bitcoin Spot', sub: 'CRYPTO: BTC-USD' }},
+      card2: {{ title: 'Ethereum / USD', sub: 'CRYPTO: ETH-USD' }},
+      card3: {{ title: 'US Dollar Index', sub: 'CURRENCY: DXY' }},
+      card4: {{ title: 'Satoshis Per Dollar', sub: 'UNIT: 100M SATS/BTC' }},
       overlay0: 'Bitcoin (BTC)',
       overlay1: 'Ethereum (ETH)',
       overlay2: 'US Dollar Index',
-      computeDerived: (raw) => {
-        const c = Number(raw.close !== undefined ? raw.close : 68450.0);
+      computeDerived: (raw) => {{
+        const c = Number(raw.close !== undefined ? raw.close : {c_price});
         const o = Number(raw.open !== undefined ? raw.open : c);
         const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
         const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
         const eth = c * 0.038;
-        return {
+        return {{
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
           usd_thb: eth, thb: eth,
-          us10y: 103.45, bond: 103.45,
+          us10y: 101.78, bond: 101.78,
           gold_thb_oz: eth,
           pure_gram_thb: eth / 31.1034768,
           thai_gold_bar: Math.round(100000000 / c),
           thai_gold_ornament: Math.round(100000000 / c),
           note: raw.note || ''
-        };
-      }
-    }
-  };""")
+        }};
+      }}
+    }}
+  }};""")
 
     output = "\n".join(lines)
     with open('scripts/generated_instruments.js', 'w', encoding='utf-8') as f:

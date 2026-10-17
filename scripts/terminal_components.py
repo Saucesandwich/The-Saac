@@ -646,6 +646,66 @@ NEWS_SERVICE_JS = """
 MACRO_NAV_JS = """
   let activeCategoryFilter = 'all';
 
+  function formatPillPrice(inst, val) {
+    const p = Number(val !== undefined ? val : (inst.livePrice !== undefined ? inst.livePrice : inst.basePrice));
+    if (inst.category === 'bonds' || inst.unit === '%') {
+      return p.toFixed(3) + '%';
+    } else if (inst.currency === 'USD') {
+      return '$' + (p >= 100 ? p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : (p < 10 ? p.toFixed(3) : p.toFixed(2)));
+    } else if (inst.currency === 'THB') {
+      return '฿' + p.toFixed(2);
+    } else if (inst.currency === 'JPY') {
+      return '¥' + (p >= 1000 ? Math.round(p).toLocaleString() : p.toFixed(2));
+    } else if (inst.currency === 'EUR') {
+      return '€' + Math.round(p).toLocaleString();
+    } else if (inst.currency === 'GBP') {
+      return '£' + Math.round(p).toLocaleString();
+    } else {
+      return p >= 100 ? Math.round(p).toLocaleString() : p.toFixed(2);
+    }
+  }
+
+  function formatPillChange(inst, val, baseVal) {
+    const p = Number(val !== undefined ? val : (inst.livePrice !== undefined ? inst.livePrice : inst.basePrice));
+    const base = Number(baseVal !== undefined ? baseVal : (inst.dayBase || inst.basePrice));
+    const delta = p - base;
+    const pct = base !== 0 ? (delta / Math.abs(base)) * 100 : 0;
+    const sign = delta >= 0 ? '+' : '';
+    return {
+      isUp: delta >= 0,
+      delta: delta,
+      pct: pct,
+      text: `${sign}${pct.toFixed(2)}%`
+    };
+  }
+
+  function handleTickerClick(event, instId) {
+    if (event && (event.ctrlKey || event.metaKey)) {
+      if (event.preventDefault) event.preventDefault();
+      if (event.stopPropagation) event.stopPropagation();
+      if (instId === window.primaryInstrumentId) return;
+      if (window.activeOverlays && window.activeOverlays.includes(instId)) {
+        if (typeof removeOverlay === 'function') removeOverlay(instId);
+      } else {
+        if (typeof addOverlay === 'function') addOverlay(instId);
+      }
+      syncTickerPillOverlayStates();
+      return;
+    }
+    switchInstrument(instId);
+  }
+
+  function syncTickerPillOverlayStates() {
+    const ovs = window.activeOverlays || [];
+    document.querySelectorAll('.ticker-pill-btn').forEach(btn => {
+      const id = btn.dataset.id;
+      btn.classList.toggle('active', id === window.primaryInstrumentId);
+      const ovIdx = ovs.indexOf(id);
+      btn.classList.toggle('overlay-active-1', ovIdx === 0);
+      btn.classList.toggle('overlay-active-2', ovIdx === 1);
+    });
+  }
+
   function filterCategory(cat, btnEl) {
     activeCategoryFilter = cat;
     document.querySelectorAll('.cat-tab-btn').forEach(b => b.classList.remove('active'));
@@ -669,20 +729,21 @@ MACRO_NAV_JS = """
       return matchCat && matchQuery;
     });
 
+    const ovs = window.activeOverlays || [];
     bar.innerHTML = filtered.map(inst => {
       const isActive = window.primaryInstrumentId === inst.id || (window.currentInstrument && window.currentInstrument.id === inst.id);
-      let priceStr;
-      if (inst.category === 'bonds' || inst.unit === '%') {
-        priceStr = inst.basePrice.toFixed(2) + '%';
-      } else if (inst.currency === 'USD') {
-        priceStr = '$' + (inst.basePrice >= 100 ? inst.basePrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}) : inst.basePrice.toFixed(2));
-      } else {
-        priceStr = inst.basePrice.toFixed(2);
-      }
+      const ovIdx = ovs.indexOf(inst.id);
+      const ovClass = ovIdx === 0 ? 'overlay-active-1' : (ovIdx === 1 ? 'overlay-active-2' : '');
+      const liveVal = inst.livePrice !== undefined ? inst.livePrice : inst.basePrice;
+      const priceStr = formatPillPrice(inst, liveVal);
+      const chg = formatPillChange(inst, liveVal, inst.dayBase);
       return `
-        <button class="ticker-pill-btn ${isActive ? 'active' : ''}" data-id="${inst.id}" onclick="switchInstrument('${inst.id}')">
+        <button class="ticker-pill-btn ${isActive ? 'active' : ''} ${ovClass}" data-id="${inst.id}" onclick="handleTickerClick(event, '${inst.id}')" title="Click: Switch to ${inst.shortName} • Ctrl+Click: Add/Remove Comparison">
           <span class="pill-sym" style="color: ${inst.themeColor || '#ff9100'};">${inst.symbol}</span>
-          <span class="pill-price">${priceStr}</span>
+          <span class="pill-side" id="pillSide_${inst.id}">
+            <span class="pill-price" id="pillPrice_${inst.id}">${priceStr}</span>
+            <span class="pill-change ${chg.isUp ? 'up' : 'down'}" id="pillChange_${inst.id}">${chg.text}</span>
+          </span>
         </button>
       `;
     }).join('');
@@ -700,4 +761,9 @@ MACRO_NAV_JS = """
       renderTickerPills(activeCategoryFilter);
     }
   }
+
+  window.formatPillPrice = formatPillPrice;
+  window.formatPillChange = formatPillChange;
+  window.handleTickerClick = handleTickerClick;
+  window.syncTickerPillOverlayStates = syncTickerPillOverlayStates;
 """

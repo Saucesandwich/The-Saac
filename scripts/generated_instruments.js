@@ -11,9 +11,14 @@
       ticker: 'GC=F',
       themeColor: '#ff9100',
       basePrice: 4169.3,
+      livePrice: 4169.3,
       dayBase: 4159.0,
+      dayOpen: 4159.0,
       dayLow: 4165.50,
       dayHigh: 4193.50,
+      low52w: 3901.30,
+      high52w: 5586.20,
+      ytdPct: 54.2,
       card1: { title: 'Gold Futures (US Market)', sub: 'COMEX: GC=F' },
       card2: { title: 'Forex Exchange Rate', sub: 'FX: USD / THB' },
       card3: { title: 'US 10-Year Treasury Yield', sub: 'RATES: CBOE ^TNX' },
@@ -34,10 +39,15 @@
       unit: 'oz',
       ticker: 'SI=F',
       themeColor: '#ffffff',
-      basePrice: 32.4,
-      dayBase: 32.34,
-      dayLow: 32.21,
-      dayHigh: 32.59,
+      basePrice: 57.13,
+      livePrice: 57.13,
+      dayBase: 56.84,
+      dayOpen: 56.99,
+      dayLow: 56.99,
+      dayHigh: 57.13,
+      low52w: 45.85,
+      high52w: 121.3,
+      ytdPct: -19.96,
       card1: { title: 'Silver Spot / Futures', sub: 'MARKET: SI=F' },
       card2: { title: 'USD / THB Forex', sub: 'FX: USD / THB' },
       card3: { title: 'US 10Y Yield', sub: 'RATES: CBOE ^TNX' },
@@ -46,14 +56,14 @@
       overlay1: 'USD / THB (฿)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (32.4 / 4169.3);
+        const ratio = (57.13 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -78,10 +88,15 @@
       unit: 'bbl',
       ticker: 'CL=F',
       themeColor: '#ff1744',
-      basePrice: 78.4,
-      dayBase: 78.24,
-      dayLow: 77.93,
-      dayHigh: 78.87,
+      basePrice: 99.04,
+      livePrice: 99.04,
+      dayBase: 97.97,
+      dayOpen: 97.55,
+      dayLow: 96.85,
+      dayHigh: 101.9,
+      low52w: 54.98,
+      high52w: 119.48,
+      ytdPct: 72.51,
       card1: { title: 'Crude Oil Spot / Futures', sub: 'MARKET: CL=F' },
       card2: { title: 'USD / THB Forex', sub: 'FX: USD / THB' },
       card3: { title: 'US 10Y Yield', sub: 'RATES: CBOE ^TNX' },
@@ -90,14 +105,14 @@
       overlay1: 'USD / THB (฿)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (78.4 / 4169.3);
+        const ratio = (99.04 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -122,10 +137,15 @@
       unit: 'MMBtu',
       ticker: 'NG=F',
       themeColor: '#00e5ff',
-      basePrice: 2.85,
-      dayBase: 2.84,
-      dayLow: 2.83,
-      dayHigh: 2.87,
+      basePrice: 3.117,
+      livePrice: 3.117,
+      dayBase: 3.236,
+      dayOpen: 3.212,
+      dayLow: 3.062,
+      dayHigh: 3.229,
+      low52w: 2.483,
+      high52w: 7.827,
+      ytdPct: -15.28,
       card1: { title: 'Natural Gas Spot / Futures', sub: 'MARKET: NG=F' },
       card2: { title: 'USD / THB Forex', sub: 'FX: USD / THB' },
       card3: { title: 'US 10Y Yield', sub: 'RATES: CBOE ^TNX' },
@@ -134,14 +154,14 @@
       overlay1: 'USD / THB (฿)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (2.85 / 4169.3);
+        const ratio = (3.117 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -166,10 +186,15 @@
       unit: 'lb',
       ticker: 'HG=F',
       themeColor: '#ff9100',
-      basePrice: 4.45,
-      dayBase: 4.44,
-      dayLow: 4.42,
-      dayHigh: 4.48,
+      basePrice: 6.562,
+      livePrice: 6.562,
+      dayBase: 6.511,
+      dayOpen: 6.574,
+      dayLow: 6.531,
+      dayHigh: 6.607,
+      low52w: 4.905,
+      high52w: 6.83,
+      ytdPct: 16.08,
       card1: { title: 'Copper Spot / Futures', sub: 'MARKET: HG=F' },
       card2: { title: 'USD / THB Forex', sub: 'FX: USD / THB' },
       card3: { title: 'US 10Y Yield', sub: 'RATES: CBOE ^TNX' },
@@ -178,14 +203,14 @@
       overlay1: 'USD / THB (฿)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (4.45 / 4169.3);
+        const ratio = (6.562 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -210,10 +235,15 @@
       unit: 'pts',
       ticker: '^GSPC',
       themeColor: '#00b0ff',
-      basePrice: 5850.2,
-      dayBase: 5835.0,
-      dayLow: 5820.0,
-      dayHigh: 5875.0,
+      basePrice: 7659.4,
+      livePrice: 7659.4,
+      dayBase: 7744.1,
+      dayOpen: 7745.3,
+      dayLow: 7631.8,
+      dayHigh: 7756.8,
+      low52w: 6316.9,
+      high52w: 7844.5,
+      ytdPct: 11.36,
       card1: { title: 'S&P 500 Large-Cap', sub: 'INDEX: ^GSPC' },
       card2: { title: 'SPDR S&P 500 ETF', sub: 'ETF: SPY' },
       card3: { title: 'CBOE Volatility Index', sub: 'VOLATILITY: ^VIX' },
@@ -222,7 +252,7 @@
       overlay1: 'SPDR SPY ($)',
       overlay2: 'CBOE VIX (pts)',
       computeDerived: (raw) => {
-        const c = Number(raw.close !== undefined ? raw.close : 5850.2);
+        const c = Number(raw.close !== undefined ? raw.close : 7659.4);
         const o = Number(raw.open !== undefined ? raw.open : c);
         const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
         const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
@@ -251,10 +281,15 @@
       unit: 'pts',
       ticker: '^IXIC',
       themeColor: '#00e676',
-      basePrice: 20340.5,
-      dayBase: 20280.0,
-      dayLow: 20210.0,
-      dayHigh: 20450.0,
+      basePrice: 26140.0,
+      livePrice: 26140.0,
+      dayBase: 26713.0,
+      dayOpen: 26653.0,
+      dayLow: 26023.1,
+      dayHigh: 26674.7,
+      low52w: 20690.2,
+      high52w: 27722.8,
+      ytdPct: 11.32,
       card1: { title: 'Nasdaq Composite Index', sub: 'NASDAQ: ^IXIC' },
       card2: { title: 'Invesco QQQ Trust', sub: 'ETF: QQQ' },
       card3: { title: 'US 10-Year Treasury Yield', sub: 'RATES: CBOE ^TNX' },
@@ -263,12 +298,12 @@
       overlay1: 'Invesco QQQ ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const c = Number(raw.close !== undefined ? raw.close : (raw.nasdaq || 20340.5));
+        const c = Number(raw.close !== undefined ? raw.close : (raw.nasdaq || 26140.0));
         const o = Number(raw.open !== undefined ? raw.open : c);
         const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
         const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
-        const qqq = c / 41.0;
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
+        const qqq = c / 36.8;
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -293,10 +328,15 @@
       unit: 'pts',
       ticker: '^DJI',
       themeColor: '#00b0ff',
-      basePrice: 42950.0,
-      dayBase: 42864.1,
-      dayLow: 42692.3,
-      dayHigh: 43207.7,
+      basePrice: 52002.4,
+      livePrice: 52002.4,
+      dayBase: 52177.7,
+      dayOpen: 52308.3,
+      dayLow: 51847.9,
+      dayHigh: 52582.3,
+      low52w: 45057.3,
+      high52w: 54744.3,
+      ytdPct: 8.1,
       card1: { title: 'Dow Jones Benchmark', sub: 'INDEX: ^DJI' },
       card2: { title: 'Tracking ETF Proxy', sub: 'ETF BENCHMARK' },
       card3: { title: 'US 10Y Discount Rate', sub: 'RATES: CBOE ^TNX' },
@@ -305,14 +345,14 @@
       overlay1: 'ETF Proxy ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (42950.0 / 4169.3);
+        const ratio = (52002.4 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -337,10 +377,15 @@
       unit: 'pts',
       ticker: '^RUT',
       themeColor: '#ffd600',
-      basePrice: 2240.8,
-      dayBase: 2236.32,
-      dayLow: 2227.36,
-      dayHigh: 2254.24,
+      basePrice: 2721.4,
+      livePrice: 2721.4,
+      dayBase: 2767.3,
+      dayOpen: 2768.9,
+      dayLow: 2716.2,
+      dayHigh: 2771.7,
+      low52w: 2303.5,
+      high52w: 3069.7,
+      ytdPct: 9.21,
       card1: { title: 'Russell 2000 Benchmark', sub: 'INDEX: ^RUT' },
       card2: { title: 'Tracking ETF Proxy', sub: 'ETF BENCHMARK' },
       card3: { title: 'US 10Y Discount Rate', sub: 'RATES: CBOE ^TNX' },
@@ -349,14 +394,14 @@
       overlay1: 'ETF Proxy ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (2240.8 / 4169.3);
+        const ratio = (2721.4 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -381,10 +426,15 @@
       unit: 'pts',
       ticker: '^N225',
       themeColor: '#ff1744',
-      basePrice: 38950.0,
-      dayBase: 38872.1,
-      dayLow: 38716.3,
-      dayHigh: 39183.7,
+      basePrice: 65324.3,
+      livePrice: 65324.3,
+      dayBase: 64425.9,
+      dayOpen: 64925.3,
+      dayLow: 64800.9,
+      dayHigh: 65712.3,
+      low52w: 44659.2,
+      high52w: 72831.7,
+      ytdPct: 28.06,
       card1: { title: 'Nikkei 225 Benchmark', sub: 'INDEX: ^N225' },
       card2: { title: 'Tracking ETF Proxy', sub: 'ETF BENCHMARK' },
       card3: { title: 'US 10Y Discount Rate', sub: 'RATES: CBOE ^TNX' },
@@ -393,14 +443,14 @@
       overlay1: 'ETF Proxy ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (38950.0 / 4169.3);
+        const ratio = (65324.3 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -425,10 +475,15 @@
       unit: 'pts',
       ticker: '^GDAXI',
       themeColor: '#ffd600',
-      basePrice: 19480.0,
-      dayBase: 19441.04,
-      dayLow: 19363.12,
-      dayHigh: 19596.88,
+      basePrice: 25622.6,
+      livePrice: 25622.6,
+      dayBase: 25382.6,
+      dayOpen: 25495.3,
+      dayLow: 25466.1,
+      dayHigh: 25693.9,
+      low52w: 21863.8,
+      high52w: 26618.7,
+      ytdPct: 4.58,
       card1: { title: 'DAX 40 Benchmark', sub: 'INDEX: ^GDAXI' },
       card2: { title: 'Tracking ETF Proxy', sub: 'ETF BENCHMARK' },
       card3: { title: 'US 10Y Discount Rate', sub: 'RATES: CBOE ^TNX' },
@@ -437,14 +492,14 @@
       overlay1: 'ETF Proxy ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (19480.0 / 4169.3);
+        const ratio = (25622.6 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -469,10 +524,15 @@
       unit: 'pts',
       ticker: '^FTSE',
       themeColor: '#00e676',
-      basePrice: 8250.0,
-      dayBase: 8233.5,
-      dayLow: 8200.5,
-      dayHigh: 8299.5,
+      basePrice: 10881.9,
+      livePrice: 10881.9,
+      dayBase: 10840.4,
+      dayOpen: 10839.2,
+      dayLow: 10796.7,
+      dayHigh: 10892.4,
+      low52w: 9354.5,
+      high52w: 10989.5,
+      ytdPct: 9.57,
       card1: { title: 'FTSE 100 Benchmark', sub: 'INDEX: ^FTSE' },
       card2: { title: 'Tracking ETF Proxy', sub: 'ETF BENCHMARK' },
       card3: { title: 'US 10Y Discount Rate', sub: 'RATES: CBOE ^TNX' },
@@ -481,14 +541,14 @@
       overlay1: 'ETF Proxy ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (8250.0 / 4169.3);
+        const ratio = (10881.9 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -513,10 +573,15 @@
       unit: 'pts',
       ticker: '^HSI',
       themeColor: '#ff1744',
-      basePrice: 20600.0,
-      dayBase: 20558.8,
-      dayLow: 20476.4,
-      dayHigh: 20723.6,
+      basePrice: 24186.8,
+      livePrice: 24186.8,
+      dayBase: 24062.7,
+      dayOpen: 24321.4,
+      dayLow: 24087.2,
+      dayHigh: 24392.3,
+      low52w: 22518.0,
+      high52w: 28056.1,
+      ytdPct: -5.95,
       card1: { title: 'Hang Seng Benchmark', sub: 'INDEX: ^HSI' },
       card2: { title: 'Tracking ETF Proxy', sub: 'ETF BENCHMARK' },
       card3: { title: 'US 10Y Discount Rate', sub: 'RATES: CBOE ^TNX' },
@@ -525,14 +590,14 @@
       overlay1: 'ETF Proxy ($)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (20600.0 / 4169.3);
+        const ratio = (24186.8 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -557,10 +622,15 @@
       unit: 'share',
       ticker: 'SPY',
       themeColor: '#00b0ff',
-      basePrice: 584.5,
-      dayBase: 583.33,
-      dayLow: 580.99,
-      dayHigh: 588.01,
+      basePrice: 763.25,
+      livePrice: 763.25,
+      dayBase: 771.79,
+      dayOpen: 773.24,
+      dayLow: 760.64,
+      dayHigh: 773.25,
+      low52w: 629.28,
+      high52w: 781.62,
+      ytdPct: 11.31,
       card1: { title: 'SPY ETF ETF Net Asset Value', sub: 'ETF: SPY' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -569,14 +639,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (584.5 / 4169.3);
+        const ratio = (763.25 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -601,10 +671,15 @@
       unit: 'share',
       ticker: 'QQQ',
       themeColor: '#00e676',
-      basePrice: 495.2,
-      dayBase: 494.21,
-      dayLow: 492.23,
-      dayHigh: 498.17,
+      basePrice: 709.8,
+      livePrice: 709.8,
+      dayBase: 728.0,
+      dayOpen: 725.52,
+      dayLow: 707.23,
+      dayHigh: 725.96,
+      low52w: 555.6,
+      high52w: 762.86,
+      ytdPct: 14.47,
       card1: { title: 'QQQ ETF ETF Net Asset Value', sub: 'ETF: QQQ' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -613,14 +688,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (495.2 / 4169.3);
+        const ratio = (709.8 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -645,10 +720,15 @@
       unit: 'share',
       ticker: 'IWM',
       themeColor: '#ffd600',
-      basePrice: 222.8,
-      dayBase: 222.35,
-      dayLow: 221.46,
-      dayHigh: 224.14,
+      basePrice: 270.44,
+      livePrice: 270.44,
+      dayBase: 275.08,
+      dayOpen: 275.52,
+      dayLow: 269.88,
+      dayHigh: 275.91,
+      low52w: 228.9,
+      high52w: 305.18,
+      ytdPct: 9.21,
       card1: { title: 'IWM ETF ETF Net Asset Value', sub: 'ETF: IWM' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -657,14 +737,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (222.8 / 4169.3);
+        const ratio = (270.44 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -689,10 +769,15 @@
       unit: 'share',
       ticker: 'VTI',
       themeColor: '#00b0ff',
-      basePrice: 282.4,
-      dayBase: 281.84,
-      dayLow: 280.71,
-      dayHigh: 284.09,
+      basePrice: 374.07,
+      livePrice: 374.07,
+      dayBase: 378.42,
+      dayOpen: 379.2,
+      dayLow: 372.74,
+      dayHigh: 379.42,
+      low52w: 310.4,
+      high52w: 385.12,
+      ytdPct: 10.95,
       card1: { title: 'VTI ETF ETF Net Asset Value', sub: 'ETF: VTI' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -701,14 +786,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (282.4 / 4169.3);
+        const ratio = (374.07 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -733,10 +818,15 @@
       unit: 'share',
       ticker: 'AGG',
       themeColor: '#ffd600',
-      basePrice: 97.8,
-      dayBase: 97.6,
-      dayLow: 97.21,
-      dayHigh: 98.39,
+      basePrice: 95.38,
+      livePrice: 95.38,
+      dayBase: 95.41,
+      dayOpen: 95.29,
+      dayLow: 95.22,
+      dayHigh: 95.58,
+      low52w: 93.84,
+      high52w: 101.46,
+      ytdPct: -4.62,
       card1: { title: 'AGG Bond ETF ETF Net Asset Value', sub: 'ETF: AGG' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -745,14 +835,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (97.8 / 4169.3);
+        const ratio = (95.38 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -777,10 +867,15 @@
       unit: 'share',
       ticker: 'GLD',
       themeColor: '#ff9100',
-      basePrice: 252.6,
-      dayBase: 252.09,
-      dayLow: 251.08,
-      dayHigh: 254.12,
+      basePrice: 382.01,
+      livePrice: 382.01,
+      dayBase: 382.71,
+      dayOpen: 381.34,
+      dayLow: 380.89,
+      dayHigh: 384.88,
+      low52w: 360.12,
+      high52w: 509.7,
+      ytdPct: -4.88,
       card1: { title: 'GLD ETF ETF Net Asset Value', sub: 'ETF: GLD' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -789,14 +884,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (252.6 / 4169.3);
+        const ratio = (382.01 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -821,10 +916,15 @@
       unit: 'share',
       ticker: 'USO',
       themeColor: '#ff1744',
-      basePrice: 74.2,
-      dayBase: 74.05,
-      dayLow: 73.75,
-      dayHigh: 74.65,
+      basePrice: 161.76,
+      livePrice: 161.76,
+      dayBase: 157.31,
+      dayOpen: 156.97,
+      dayLow: 155.8,
+      dayHigh: 162.38,
+      low52w: 65.99,
+      high52w: 163.35,
+      ytdPct: 136.39,
       card1: { title: 'USO Oil ETF ETF Net Asset Value', sub: 'ETF: USO' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -833,14 +933,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (74.2 / 4169.3);
+        const ratio = (161.76 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -865,10 +965,15 @@
       unit: 'share',
       ticker: 'EEM',
       themeColor: '#00e676',
-      basePrice: 44.8,
-      dayBase: 44.71,
-      dayLow: 44.53,
-      dayHigh: 45.07,
+      basePrice: 62.85,
+      livePrice: 62.85,
+      dayBase: 63.96,
+      dayOpen: 63.64,
+      dayLow: 62.68,
+      dayHigh: 63.67,
+      low52w: 52.38,
+      high52w: 71.57,
+      ytdPct: 12.45,
       card1: { title: 'EEM ETF ETF Net Asset Value', sub: 'ETF: EEM' },
       card2: { title: 'AUM & Liquidity Depth', sub: 'INSTITUTIONAL FLOW' },
       card3: { title: 'Benchmark Index Tracking', sub: 'UNDERLYING INDEX' },
@@ -877,14 +982,14 @@
       overlay1: 'Tracking Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (44.8 / 4169.3);
+        const ratio = (62.85 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -909,10 +1014,15 @@
       unit: '%',
       ticker: '^TNX',
       themeColor: '#ffd600',
-      basePrice: 5.217,
-      dayBase: 5.21,
-      dayLow: 5.19,
-      dayHigh: 5.25,
+      basePrice: 5.098,
+      livePrice: 5.098,
+      dayBase: 5.089,
+      dayOpen: 5.114,
+      dayLow: 5.067,
+      dayHigh: 5.133,
+      low52w: 3.947,
+      high52w: 5.364,
+      ytdPct: 22.52,
       card1: { title: 'US 10Y Yield Yield', sub: 'BENCHMARK: ^TNX' },
       card2: { title: 'Yield Curve Slope', sub: 'TERM PREMIUM' },
       card3: { title: 'Real Yield / Breakeven', sub: 'INFLATION EXPECTATIONS' },
@@ -921,14 +1031,14 @@
       overlay1: 'Curve Slope (bps)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (5.217 / 4169.3);
+        const ratio = (5.098 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -953,10 +1063,15 @@
       unit: '%',
       ticker: '^IRX',
       themeColor: '#00e5ff',
-      basePrice: 4.885,
-      dayBase: 4.88,
-      dayLow: 4.86,
-      dayHigh: 4.91,
+      basePrice: 4.736,
+      livePrice: 4.736,
+      dayBase: 4.751,
+      dayOpen: 4.749,
+      dayLow: 4.71,
+      dayHigh: 4.783,
+      low52w: 3.365,
+      high52w: 4.96,
+      ytdPct: 36.29,
       card1: { title: 'US 2Y Yield Yield', sub: 'BENCHMARK: ^IRX' },
       card2: { title: 'Yield Curve Slope', sub: 'TERM PREMIUM' },
       card3: { title: 'Real Yield / Breakeven', sub: 'INFLATION EXPECTATIONS' },
@@ -965,14 +1080,14 @@
       overlay1: 'Curve Slope (bps)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (4.885 / 4169.3);
+        const ratio = (4.736 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -997,10 +1112,15 @@
       unit: '%',
       ticker: 'DE10Y.F',
       themeColor: '#ffd600',
-      basePrice: 2.215,
-      dayBase: 2.21,
-      dayLow: 2.2,
-      dayHigh: 2.23,
+      basePrice: 3.409,
+      livePrice: 3.409,
+      dayBase: 3.407,
+      dayOpen: 3.407,
+      dayLow: 3.398,
+      dayHigh: 3.444,
+      low52w: 2.636,
+      high52w: 3.653,
+      ytdPct: 19.11,
       card1: { title: 'Germany 10Y Bund Yield', sub: 'BENCHMARK: DE10Y.F' },
       card2: { title: 'Yield Curve Slope', sub: 'TERM PREMIUM' },
       card3: { title: 'Real Yield / Breakeven', sub: 'INFLATION EXPECTATIONS' },
@@ -1009,14 +1129,14 @@
       overlay1: 'Curve Slope (bps)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (2.215 / 4169.3);
+        const ratio = (3.409 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -1041,10 +1161,15 @@
       unit: '%',
       ticker: 'GB10Y.L',
       themeColor: '#00e676',
-      basePrice: 4.185,
-      dayBase: 4.18,
-      dayLow: 4.16,
-      dayHigh: 4.21,
+      basePrice: 5.377,
+      livePrice: 5.377,
+      dayBase: 5.363,
+      dayOpen: 5.361,
+      dayLow: 5.347,
+      dayHigh: 5.41,
+      low52w: 4.234,
+      high52w: 5.527,
+      ytdPct: 20.18,
       card1: { title: 'UK 10Y Gilt Yield', sub: 'BENCHMARK: GB10Y.L' },
       card2: { title: 'Yield Curve Slope', sub: 'TERM PREMIUM' },
       card3: { title: 'Real Yield / Breakeven', sub: 'INFLATION EXPECTATIONS' },
@@ -1053,14 +1178,14 @@
       overlay1: 'Curve Slope (bps)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (4.185 / 4169.3);
+        const ratio = (5.377 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -1085,10 +1210,15 @@
       unit: '%',
       ticker: 'JP10Y.T',
       themeColor: '#ff1744',
-      basePrice: 0.965,
-      dayBase: 0.96,
-      dayLow: 0.96,
-      dayHigh: 0.97,
+      basePrice: 2.941,
+      livePrice: 2.941,
+      dayBase: 2.931,
+      dayOpen: 2.932,
+      dayLow: 2.86,
+      dayHigh: 2.946,
+      low52w: 1.914,
+      high52w: 3.137,
+      ytdPct: 42.42,
       card1: { title: 'Japan 10Y JGB Yield', sub: 'BENCHMARK: JP10Y.T' },
       card2: { title: 'Yield Curve Slope', sub: 'TERM PREMIUM' },
       card3: { title: 'Real Yield / Breakeven', sub: 'INFLATION EXPECTATIONS' },
@@ -1097,14 +1227,14 @@
       overlay1: 'Curve Slope (bps)',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (0.965 / 4169.3);
+        const ratio = (2.941 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -1129,10 +1259,15 @@
       unit: 'pts',
       ticker: 'DX-Y.NYB',
       themeColor: '#00e676',
-      basePrice: 103.45,
-      dayBase: 103.24,
-      dayLow: 102.83,
-      dayHigh: 104.07,
+      basePrice: 101.78,
+      livePrice: 101.78,
+      dayBase: 102.0,
+      dayOpen: 102.04,
+      dayLow: 101.58,
+      dayHigh: 102.09,
+      low52w: 95.55,
+      high52w: 102.95,
+      ytdPct: 3.6,
       card1: { title: 'US Dollar Index Exchange Rate', sub: 'FX: DX-Y.NYB' },
       card2: { title: 'US Dollar Index DXY', sub: 'MACRO DOLLAR' },
       card3: { title: 'Interest Rate Differential', sub: 'POLICY SPREAD' },
@@ -1141,14 +1276,14 @@
       overlay1: 'US Dollar Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (103.45 / 4169.3);
+        const ratio = (101.78 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -1173,10 +1308,15 @@
       unit: 'USD',
       ticker: 'EURUSD=X',
       themeColor: '#00b0ff',
-      basePrice: 1.085,
-      dayBase: 1.08,
-      dayLow: 1.08,
-      dayHigh: 1.09,
+      basePrice: 1.124,
+      livePrice: 1.124,
+      dayBase: 1.121,
+      dayOpen: 1.122,
+      dayLow: 1.121,
+      dayHigh: 1.127,
+      low52w: 1.111,
+      high52w: 1.202,
+      ytdPct: -4.34,
       card1: { title: 'EUR / USD Exchange Rate', sub: 'FX: EURUSD=X' },
       card2: { title: 'US Dollar Index DXY', sub: 'MACRO DOLLAR' },
       card3: { title: 'Interest Rate Differential', sub: 'POLICY SPREAD' },
@@ -1185,14 +1325,14 @@
       overlay1: 'US Dollar Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (1.085 / 4169.3);
+        const ratio = (1.124 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -1217,10 +1357,15 @@
       unit: 'JPY',
       ticker: 'USDJPY=X',
       themeColor: '#ff1744',
-      basePrice: 149.5,
-      dayBase: 149.2,
-      dayLow: 148.6,
-      dayHigh: 150.4,
+      basePrice: 157.99,
+      livePrice: 157.99,
+      dayBase: 158.14,
+      dayOpen: 157.97,
+      dayLow: 157.69,
+      dayHigh: 158.34,
+      low52w: 151.55,
+      high52w: 163.98,
+      ytdPct: 0.8,
       card1: { title: 'USD / JPY Exchange Rate', sub: 'FX: USDJPY=X' },
       card2: { title: 'US Dollar Index DXY', sub: 'MACRO DOLLAR' },
       card3: { title: 'Interest Rate Differential', sub: 'POLICY SPREAD' },
@@ -1229,14 +1374,14 @@
       overlay1: 'US Dollar Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (149.5 / 4169.3);
+        const ratio = (157.99 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -1261,10 +1406,15 @@
       unit: 'THB',
       ticker: 'THB=X',
       themeColor: '#00e5ff',
-      basePrice: 33.56,
-      dayBase: 33.49,
-      dayLow: 33.36,
-      dayHigh: 33.76,
+      basePrice: 33.42,
+      livePrice: 33.42,
+      dayBase: 33.47,
+      dayOpen: 33.49,
+      dayLow: 33.34,
+      dayHigh: 33.54,
+      low52w: 30.82,
+      high52w: 33.86,
+      ytdPct: 6.1,
       card1: { title: 'USD / THB Exchange Rate', sub: 'FX: THB=X' },
       card2: { title: 'US Dollar Index DXY', sub: 'MACRO DOLLAR' },
       card3: { title: 'Interest Rate Differential', sub: 'POLICY SPREAD' },
@@ -1273,14 +1423,14 @@
       overlay1: 'US Dollar Index',
       overlay2: 'US 10Y Yield (%)',
       computeDerived: (raw) => {
-        const ratio = (33.56 / 4169.3);
+        const ratio = (33.42 / 4169.3);
         const orig = Number(raw.close !== undefined ? raw.close : (raw.gold || 4169.3));
         const c = Number((orig * ratio).toFixed(2));
         const o = Number(((raw.open !== undefined ? raw.open : orig) * ratio).toFixed(2));
         const h = Number(((raw.high !== undefined ? raw.high : Math.max(o, c)) * ratio).toFixed(2));
         const l = Number(((raw.low !== undefined ? raw.low : Math.min(o, c)) * ratio).toFixed(2));
-        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.217);
-        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.56);
+        const bond = Number(raw.us10y !== undefined ? raw.us10y : 5.098);
+        const thb = Number(raw.usd_thb !== undefined ? raw.usd_thb : 33.42);
         return {
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
@@ -1305,10 +1455,15 @@
       unit: 'BTC',
       ticker: 'BTC-USD',
       themeColor: '#ffd600',
-      basePrice: 68450.0,
-      dayBase: 68100.0,
-      dayLow: 67800.0,
-      dayHigh: 69200.0,
+      basePrice: 81427.3,
+      livePrice: 81427.3,
+      dayBase: 82141.5,
+      dayOpen: 81501.6,
+      dayLow: 81302.6,
+      dayHigh: 81546.9,
+      low52w: 57747.8,
+      high52w: 87363.8,
+      ytdPct: -6.95,
       card1: { title: 'Bitcoin Spot', sub: 'CRYPTO: BTC-USD' },
       card2: { title: 'Ethereum / USD', sub: 'CRYPTO: ETH-USD' },
       card3: { title: 'US Dollar Index', sub: 'CURRENCY: DXY' },
@@ -1317,7 +1472,7 @@
       overlay1: 'Ethereum (ETH)',
       overlay2: 'US Dollar Index',
       computeDerived: (raw) => {
-        const c = Number(raw.close !== undefined ? raw.close : 68450.0);
+        const c = Number(raw.close !== undefined ? raw.close : 81427.3);
         const o = Number(raw.open !== undefined ? raw.open : c);
         const h = Number(raw.high !== undefined ? raw.high : Math.max(o, c));
         const l = Number(raw.low !== undefined ? raw.low : Math.min(o, c));
@@ -1326,7 +1481,7 @@
           ...raw,
           open: o, high: h, low: l, close: c, gold: c,
           usd_thb: eth, thb: eth,
-          us10y: 103.45, bond: 103.45,
+          us10y: 101.78, bond: 101.78,
           gold_thb_oz: eth,
           pure_gram_thb: eth / 31.1034768,
           thai_gold_bar: Math.round(100000000 / c),

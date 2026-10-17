@@ -1,0 +1,312 @@
+{
+  "gold": {
+    "price": 4169.3,
+    "prevClose": 4159.0,
+    "open": 4159.0,
+    "dayLow": 4165.5,
+    "dayHigh": 4193.5,
+    "low52w": 3901.3,
+    "high52w": 5586.2,
+    "ytdPct": -3.93
+  },
+  "silver": {
+    "price": 57.13,
+    "prevClose": 56.84,
+    "open": 56.99,
+    "dayLow": 56.99,
+    "dayHigh": 57.13,
+    "low52w": 45.85,
+    "high52w": 121.3,
+    "ytdPct": -19.96
+  },
+  "crude_oil": {
+    "price": 99.04,
+    "prevClose": 97.97,
+    "open": 97.55,
+    "dayLow": 96.85,
+    "dayHigh": 101.9,
+    "low52w": 54.98,
+    "high52w": 119.48,
+    "ytdPct": 72.51
+  },
+  "natural_gas": {
+    "price": 3.117,
+    "prevClose": 3.236,
+    "open": 3.212,
+    "dayLow": 3.062,
+    "dayHigh": 3.229,
+    "low52w": 2.483,
+    "high52w": 7.827,
+    "ytdPct": -15.28
+  },
+  "copper": {
+    "price": 6.562,
+    "prevClose": 6.511,
+    "open": 6.574,
+    "dayLow": 6.531,
+    "dayHigh": 6.607,
+    "low52w": 4.905,
+    "high52w": 6.83,
+    "ytdPct": 16.08
+  },
+  "sp500": {
+    "price": 7659.4,
+    "prevClose": 7744.1,
+    "open": 7745.3,
+    "dayLow": 7631.8,
+    "dayHigh": 7756.8,
+    "low52w": 6316.9,
+    "high52w": 7844.5,
+    "ytdPct": 11.36
+  },
+  "nasdaq": {
+    "price": 26140.0,
+    "prevClose": 26713.0,
+    "open": 26653.0,
+    "dayLow": 26023.1,
+    "dayHigh": 26674.7,
+    "low52w": 20690.2,
+    "high52w": 27722.8,
+    "ytdPct": 11.32
+  },
+  "dowjones": {
+    "price": 52002.4,
+    "prevClose": 52177.7,
+    "open": 52308.3,
+    "dayLow": 51847.9,
+    "dayHigh": 52582.3,
+    "low52w": 45057.3,
+    "high52w": 54744.3,
+    "ytdPct": 8.1
+  },
+  "russell2000": {
+    "price": 2721.4,
+    "prevClose": 2767.3,
+    "open": 2768.9,
+    "dayLow": 2716.2,
+    "dayHigh": 2771.7,
+    "low52w": 2303.5,
+    "high52w": 3069.7,
+    "ytdPct": 9.21
+  },
+  "nikkei225": {
+    "price": 65324.3,
+    "prevClose": 64425.9,
+    "open": 64925.3,
+    "dayLow": 64800.9,
+    "dayHigh": 65712.3,
+    "low52w": 44659.2,
+    "high52w": 72831.7,
+    "ytdPct": 28.06
+  },
+  "dax40": {
+    "price": 25622.6,
+    "prevClose": 25382.6,
+    "open": 25495.3,
+    "dayLow": 25466.1,
+    "dayHigh": 25693.9,
+    "low52w": 21863.8,
+    "high52w": 26618.7,
+    "ytdPct": 4.58
+  },
+  "ftse100": {
+    "price": 10881.9,
+    "prevClose": 10840.4,
+    "open": 10839.2,
+    "dayLow": 10796.7,
+    "dayHigh": 10892.4,
+    "low52w": 9354.5,
+    "high52w": 10989.5,
+    "ytdPct": 9.57
+  },
+  "hangseng": {
+    "price": 24186.8,
+    "prevClose": 24062.7,
+    "open": 24321.4,
+    "dayLow": 24087.2,
+    "dayHigh": 24392.3,
+    "low52w": 22518.0,
+    "high52w": 28056.1,
+    "ytdPct": -5.95
+  },
+  "spy": {
+    "price": 763.25,
+    "prevClose": 771.79,
+    "open": 773.24,
+    "dayLow": 760.64,
+    "dayHigh": 773.25,
+    "low52w": 629.28,
+    "high52w": 781.62,
+    "ytdPct": 11.31
+  },
+  "qqq": {
+    "price": 709.8,
+    "prevClose": 728.0,
+    "open": 725.52,
+    "dayLow": 707.23,
+    "dayHigh": 725.96,
+    "low52w": 555.6,
+    "high52w": 762.86,
+    "ytdPct": 14.47
+  },
+  "iwm": {
+    "price": 270.44,
+    "prevClose": 275.08,
+    "open": 275.52,
+    "dayLow": 269.88,
+    "dayHigh": 275.91,
+    "low52w": 228.9,
+    "high52w": 305.18,
+    "ytdPct": 9.21
+  },
+  "vti": {
+    "price": 374.07,
+    "prevClose": 378.42,
+    "open": 379.2,
+    "dayLow": 372.74,
+    "dayHigh": 379.42,
+    "low52w": 310.4,
+    "high52w": 385.12,
+    "ytdPct": 10.95
+  },
+  "agg": {
+    "price": 95.38,
+    "prevClose": 95.41,
+    "open": 95.29,
+    "dayLow": 95.22,
+    "dayHigh": 95.58,
+    "low52w": 93.84,
+    "high52w": 101.46,
+    "ytdPct": -4.62
+  },
+  "gld": {
+    "price": 382.01,
+    "prevClose": 382.71,
+    "open": 381.34,
+    "dayLow": 380.89,
+    "dayHigh": 384.88,
+    "low52w": 360.12,
+    "high52w": 509.7,
+    "ytdPct": -4.88
+  },
+  "uso": {
+    "price": 161.76,
+    "prevClose": 157.31,
+    "open": 156.97,
+    "dayLow": 155.8,
+    "dayHigh": 162.38,
+    "low52w": 65.99,
+    "high52w": 163.35,
+    "ytdPct": 136.39
+  },
+  "eem": {
+    "price": 62.85,
+    "prevClose": 63.96,
+    "open": 63.64,
+    "dayLow": 62.68,
+    "dayHigh": 63.67,
+    "low52w": 52.38,
+    "high52w": 71.57,
+    "ytdPct": 12.45
+  },
+  "us10y": {
+    "price": 5.098,
+    "prevClose": 5.089,
+    "open": 5.114,
+    "dayLow": 5.067,
+    "dayHigh": 5.133,
+    "low52w": 3.947,
+    "high52w": 5.364,
+    "ytdPct": 22.52
+  },
+  "us02y": {
+    "price": 4.736,
+    "prevClose": 4.751,
+    "open": 4.749,
+    "dayLow": 4.71,
+    "dayHigh": 4.783,
+    "low52w": 3.365,
+    "high52w": 4.96,
+    "ytdPct": 36.29
+  },
+  "bund10y": {
+    "price": 3.409,
+    "prevClose": 3.407,
+    "open": 3.407,
+    "dayLow": 3.398,
+    "dayHigh": 3.444,
+    "low52w": 2.636,
+    "high52w": 3.653,
+    "ytdPct": 19.11
+  },
+  "gilt10y": {
+    "price": 5.377,
+    "prevClose": 5.363,
+    "open": 5.361,
+    "dayLow": 5.347,
+    "dayHigh": 5.41,
+    "low52w": 4.234,
+    "high52w": 5.527,
+    "ytdPct": 20.18
+  },
+  "jgb10y": {
+    "price": 2.941,
+    "prevClose": 2.931,
+    "open": 2.932,
+    "dayLow": 2.86,
+    "dayHigh": 2.946,
+    "low52w": 1.914,
+    "high52w": 3.137,
+    "ytdPct": 42.42
+  },
+  "dxy": {
+    "price": 101.78,
+    "prevClose": 102.0,
+    "open": 102.04,
+    "dayLow": 101.58,
+    "dayHigh": 102.09,
+    "low52w": 95.55,
+    "high52w": 102.95,
+    "ytdPct": 3.6
+  },
+  "eurusd": {
+    "price": 1.124,
+    "prevClose": 1.121,
+    "open": 1.122,
+    "dayLow": 1.121,
+    "dayHigh": 1.127,
+    "low52w": 1.111,
+    "high52w": 1.202,
+    "ytdPct": -4.34
+  },
+  "usdjpy": {
+    "price": 157.99,
+    "prevClose": 158.14,
+    "open": 157.97,
+    "dayLow": 157.69,
+    "dayHigh": 158.34,
+    "low52w": 151.55,
+    "high52w": 163.98,
+    "ytdPct": 0.8
+  },
+  "usdthb": {
+    "price": 33.42,
+    "prevClose": 33.47,
+    "open": 33.49,
+    "dayLow": 33.34,
+    "dayHigh": 33.54,
+    "low52w": 30.82,
+    "high52w": 33.86,
+    "ytdPct": 6.1
+  },
+  "crypto": {
+    "price": 81427.3,
+    "prevClose": 82141.5,
+    "open": 81501.6,
+    "dayLow": 81302.6,
+    "dayHigh": 81546.9,
+    "low52w": 57747.8,
+    "high52w": 87363.8,
+    "ytdPct": -6.95
+  }
+}

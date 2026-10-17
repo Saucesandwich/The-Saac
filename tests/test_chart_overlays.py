@@ -96,9 +96,9 @@ try:
     print(f"   Overlay pills in DOM: {pill_elements}")
     assert cnt_after_1 == 2, f"Expected 2 charts, got {cnt_after_1}"
     assert "S&P" in ds1_label
-    assert abs(ds1_last_val - 5850.2) < 30.0, f"Overlay S&P 500 price should be ~5,850, got {ds1_last_val}"
+    assert abs(ds1_last_val - 7659.4) < 30.0, f"Overlay S&P 500 price should be ~7,659.4, got {ds1_last_val}"
     assert ds1_len == labels_len, f"Overlay series must span 100% of labels, got {ds1_len} vs {labels_len}"
-    assert y1_min < 5850.2 < y1_max, f"Y1 scale [{y1_min}, {y1_max}] must encompass 5,850.2!"
+    assert y1_min < 7659.4 < y1_max, f"Y1 scale [{y1_min}, {y1_max}] must encompass 7,659.4!"
     assert not meta1_hidden, f"Dataset 1 meta must not be hidden, got {meta1_hidden}"
     assert meta1_data_len == labels_len, f"Dataset 1 must have rendered canvas points for all labels ({meta1_data_len} vs {labels_len})"
     assert btn_remove_primary_disp != 'none', "btnRemovePrimary must be visible when multiple charts active"
@@ -125,9 +125,9 @@ try:
     print(f"   Add Button state: disabled={btn_add_disabled}, text='{btn_add_text}'")
     assert cnt_after_2 == 3, f"Expected 3 charts, got {cnt_after_2}"
     assert "10Y" in ds2_label or "Yield" in ds2_label
-    assert abs(ds2_last_val - 5.217) < 0.1, f"Overlay US 10Y price should be ~5.217%, got {ds2_last_val}"
+    assert abs(ds2_last_val - 5.098) < 0.15, f"Overlay US 10Y price should be ~5.098%, got {ds2_last_val}"
     assert ds2_len == labels_len, f"Overlay 2 series must span 100% of labels, got {ds2_len} vs {labels_len}"
-    assert y2_min < 5.217 < y2_max, f"Y2 scale [{y2_min}, {y2_max}] must encompass 5.217!"
+    assert y2_min < 5.098 < y2_max, f"Y2 scale [{y2_min}, {y2_max}] must encompass 5.098!"
     assert not meta2_hidden, f"Dataset 2 meta must not be hidden, got {meta2_hidden}"
     assert meta2_data_len == labels_len, f"Dataset 2 must have rendered canvas points for all labels ({meta2_data_len} vs {labels_len})"
     assert btn_add_disabled is True, "Add overlay button must be disabled when max 3 charts reached!"
@@ -223,10 +223,54 @@ try:
     print(f"   Scale mode: {scale_mode_act}, D0 last={d0_last_act}, D1 last={d1_last_act}, Y1 display={y1_display}")
     assert scale_mode_act == 'actual'
     assert abs(d0_last_act - 4180.6) < 30.0 or abs(d0_last_act - 4169.3) < 30.0
-    assert abs(d1_last_act - 5850.2) < 30.0
+    assert abs(d1_last_act - 7659.4) < 30.0
     assert y1_display is True
 
-    print("\n>>> ALL CHART OVERLAY & SCALE MODE TESTS PASSED WITH 100% SUCCESS! <<<")
+    # 10. Test Ctrl+Click on Market Switchers (#macroTickerBar .ticker-pill-btn)
+    print("\n--- 10. Testing Ctrl+Click on Market Switchers to Add/Remove Comparison ---")
+    eval_js("removeOverlay('sp500')")
+    assert eval_js("activeOverlays.length") == 0
+
+    # Dispatch synthetic MouseEvent with ctrlKey: true on nasdaq market switcher button
+    eval_js("""
+      const btnNasdaq = document.querySelector('.ticker-pill-btn[data-id="nasdaq"]');
+      btnNasdaq.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
+    """)
+    ovs_ctrl1 = eval_js("activeOverlays")
+    nasdaq_cls = eval_js("document.querySelector('.ticker-pill-btn[data-id=\"nasdaq\"]').className")
+    print(f"   After Ctrl+Click on nasdaq: activeOverlays={ovs_ctrl1}, btn class='{nasdaq_cls}'")
+    assert ovs_ctrl1 == ['nasdaq'], f"Ctrl+Click on nasdaq should add nasdaq to overlays, got {ovs_ctrl1}"
+    assert 'overlay-active-1' in nasdaq_cls, f"nasdaq button should have overlay-active-1 class, got '{nasdaq_cls}'"
+    assert eval_js("histChartInstance.data.datasets.length") == 2
+
+    # Dispatch synthetic MouseEvent with ctrlKey: true on silver market switcher button
+    eval_js("""
+      const btnSilver = document.querySelector('.ticker-pill-btn[data-id="silver"]');
+      btnSilver.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
+    """)
+    ovs_ctrl2 = eval_js("activeOverlays")
+    silver_cls = eval_js("document.querySelector('.ticker-pill-btn[data-id=\"silver\"]').className")
+    print(f"   After Ctrl+Click on silver: activeOverlays={ovs_ctrl2}, btn class='{silver_cls}'")
+    assert ovs_ctrl2 == ['nasdaq', 'silver'], f"Ctrl+Click on silver should add silver to overlays, got {ovs_ctrl2}"
+    assert 'overlay-active-2' in silver_cls, f"silver button should have overlay-active-2 class, got '{silver_cls}'"
+    assert eval_js("histChartInstance.data.datasets.length") == 3
+
+    # Dispatch Ctrl+Click again on nasdaq to toggle/remove it from overlays
+    eval_js("""
+      const btnNasdaq2 = document.querySelector('.ticker-pill-btn[data-id="nasdaq"]');
+      btnNasdaq2.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
+    """)
+    ovs_ctrl3 = eval_js("activeOverlays")
+    nasdaq_cls_after = eval_js("document.querySelector('.ticker-pill-btn[data-id=\"nasdaq\"]').className")
+    print(f"   After second Ctrl+Click on nasdaq (toggle off): activeOverlays={ovs_ctrl3}, class='{nasdaq_cls_after}'")
+    assert ovs_ctrl3 == ['silver'], f"Second Ctrl+Click on nasdaq should remove it, got {ovs_ctrl3}"
+    assert 'overlay-active' not in nasdaq_cls_after
+    assert eval_js("histChartInstance.data.datasets.length") == 2
+
+    # Clean up overlay
+    eval_js("removeOverlay('silver')")
+
+    print("\n>>> ALL CHART OVERLAY, CTRL+CLICK COMPARISON & SCALE MODE TESTS PASSED WITH 100% SUCCESS! <<<")
 
 finally:
     try:

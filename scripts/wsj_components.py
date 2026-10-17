@@ -149,9 +149,9 @@ WSJ_CSS = """
     /* Responsive Ticker Grid */
     .wsj-ticker-ribbon {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap: 6px;
-      max-height: 170px;
+      max-height: 215px;
       overflow-y: auto;
       padding: 8px;
       background: #050505;
@@ -177,7 +177,7 @@ WSJ_CSS = """
       align-items: center;
       gap: 6px;
       font-family: var(--font-mono);
-      transition: background 0.1s ease, border-color 0.1s ease;
+      transition: background 0.12s ease, border-color 0.12s ease;
       text-align: left;
     }
     .ticker-pill-btn:hover {
@@ -189,17 +189,66 @@ WSJ_CSS = """
       background: #161616;
       border-color: var(--wsj-amber);
       color: #ffffff;
-      box-shadow: inset 2px 0 0 var(--wsj-amber);
+      box-shadow: inset 3px 0 0 var(--wsj-amber);
+    }
+    .ticker-pill-btn.overlay-active-1 {
+      background: #111618;
+      border-color: #00e5ff;
+      color: #ffffff;
+      box-shadow: inset 3px 0 0 #00e5ff;
+    }
+    .ticker-pill-btn.overlay-active-2 {
+      background: #111814;
+      border-color: #00e676;
+      color: #ffffff;
+      box-shadow: inset 3px 0 0 #00e676;
     }
     .pill-sym {
       font-weight: 800;
       letter-spacing: 0.03em;
       color: var(--wsj-amber);
+      flex-shrink: 0;
+    }
+    .pill-side {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      padding: 1px 3px;
+      transition: background 0.18s ease;
+    }
+    .pill-side.tick-flash-up {
+      background: rgba(0, 230, 118, 0.22);
+    }
+    .pill-side.tick-flash-down {
+      background: rgba(255, 23, 68, 0.22);
     }
     .pill-price {
       color: #ffffff;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.70rem;
+    }
+    .pill-change {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 4px;
+      letter-spacing: -0.01em;
+    }
+    .pill-change.up {
+      color: #00e676;
+    }
+    .pill-change.down {
+      color: #ff1744;
+    }
+    .wsj-ctrl-hint {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: #00e676;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-left: auto;
+      padding-right: 4px;
     }
 
     .wsj-ticker-item {
@@ -743,13 +792,14 @@ WSJ_HTML_HEADER = """
   <!-- Category Filter Bar -->
   <div class="wsj-category-bar">
     <div class="wsj-category-tabs" id="categoryTabs">
-      <button class="wsj-cat-btn cat-tab-btn active" data-category="all" onclick="filterCategory('all', this)">All Markets (30)</button>
+      <button class="wsj-cat-btn cat-tab-btn active" data-category="all" onclick="filterCategory('all', this)">All Markets (31)</button>
       <button class="wsj-cat-btn cat-tab-btn" data-category="commodities" onclick="filterCategory('commodities', this)">Commodities</button>
       <button class="wsj-cat-btn cat-tab-btn" data-category="indices" onclick="filterCategory('indices', this)">Indices</button>
       <button class="wsj-cat-btn cat-tab-btn" data-category="etfs" onclick="filterCategory('etfs', this)">ETFs</button>
       <button class="wsj-cat-btn cat-tab-btn" data-category="bonds" onclick="filterCategory('bonds', this)">Sovereign Bonds</button>
       <button class="wsj-cat-btn cat-tab-btn" data-category="forex" onclick="filterCategory('forex', this)">Currencies</button>
     </div>
+    <span class="wsj-ctrl-hint" id="liveMarketHint">● LIVE STREAM • CTRL+CLICK ANY MARKET TO COMPARE</span>
   </div>
 
   <!-- Ticker Ribbon Strip -->

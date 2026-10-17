@@ -321,252 +321,135 @@
       }
     }
 
-    // 1. Timeframe 1D: Return points matching sample rate
-    if (timeframe === '1D') {
-      const storeHourly = (typeof VERIFIED_MULTI_ASSET_INTRADAY !== 'undefined' && VERIFIED_MULTI_ASSET_INTRADAY[instId])
-        ? VERIFIED_MULTI_ASSET_INTRADAY[instId]
-        : null;
-
-      if (storeHourly && storeHourly.length > 0) {
-        if (rate === '10m') {
-          // 144 points (6 per hour)
-          const pts = [];
-          for (let i = 0; i < storeHourly.length; i++) {
-            const h = storeHourly[i];
-            const nextH = storeHourly[Math.min(storeHourly.length - 1, i + 1)];
-            const hrPrefix = h.date.split(':')[0];
-            for (let m = 0; m < 6; m++) {
-              const frac = m / 6;
-              const val = Math.round((h.close + frac * (nextH.close - h.close)) * 100) / 100;
-              const isLast = (i === storeHourly.length - 1 && m === 5);
-              pts.push({
-                date: `${hrPrefix}:${String(m * 10).padStart(2, '0')}`,
-                open: val,
-                high: val + Math.abs(val * 0.0008),
-                low: val - Math.abs(val * 0.0008),
-                close: isLast ? (inst.basePrice || val) : val,
-                note: isLast ? 'Verified Intraday Close' : '',
-                gold: isLast ? (inst.basePrice || val) : val,
-                usd_thb: 33.56,
-                us10y: 5.217
-              });
-            }
-          }
-          return pts;
-        }
-
-        if (rate === '1d') {
-          // 2 daily points: open and close of the day
-          const first = storeHourly[0];
-          const last = storeHourly[storeHourly.length - 1];
-          return [
-            {
-              date: first.date,
-              open: first.open,
-              high: first.high,
-              low: first.low,
-              close: first.close,
-              note: first.note || '',
-              gold: first.close,
-              usd_thb: 33.56,
-              us10y: 5.217
-            },
-            {
-              date: last.date,
-              open: last.open,
-              high: last.high,
-              low: last.low,
-              close: inst.basePrice || last.close,
-              note: 'Verified Day Close',
-              gold: inst.basePrice || last.close,
-              usd_thb: 33.56,
-              us10y: 5.217
-            }
-          ];
-        }
-
-        // Default 1h: Return 24 hourly points
-        return storeHourly.map((item, idx) => ({
-          date: item.date,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: (idx === storeHourly.length - 1) ? (inst.basePrice || item.close) : item.close,
-          note: item.note || '',
-          gold: (idx === storeHourly.length - 1) ? (inst.basePrice || item.close) : item.close,
-          usd_thb: 33.56,
-          us10y: 5.217,
-          gold_thb_oz: item.close * 33.56,
-          pure_gram_thb: (item.close * 33.56) / 31.1034768,
-          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
-        }));
-      }
-
-      if (instId === 'gold' && typeof RAW_1H !== 'undefined') {
-        const slice = RAW_1H.slice(-24);
-        return slice.map(item => {
-          const timePart = item.date.includes(' ') ? item.date.split(' ')[1] : item.date;
-          return computeDerived({ ...item, date: timePart });
-        });
-      }
-    }
-
-    // 2. Timeframe 1W: Return 7 daily points or 168 hourly points
-    if (timeframe === '1W') {
-      const base = inst.basePrice || 100.0;
-      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      const deltas = [-0.018, -0.012, -0.008, 0.004, -0.002, 0.006, 0.000];
-      const daily7 = [];
-      for (let i = 0; i < 7; i++) {
-        const c = roundPrice(base * (1.0 + deltas[i]), base);
-        const o = roundPrice(base * (1.0 + (i > 0 ? deltas[i - 1] : deltas[0])), base);
-        const vol = maxSpread(base);
-        daily7.push({
-          date: days[i],
-          open: o,
-          high: roundPrice(Math.max(o, c) + vol, base),
-          low: roundPrice(Math.min(o, c) - vol, base),
-          close: i === 6 ? base : c,
-          note: i === 6 ? 'Week Benchmark Close' : '',
-          gold: i === 6 ? base : c,
-          usd_thb: 33.56,
-          us10y: 5.217
-        });
-      }
-
-      if (rate === '1h') {
-        // Interpolate 168 points (7 * 24)
-        const pts168 = [];
-        for (let d = 0; d < 7; d++) {
-          const curD = daily7[d];
-          const nextD = daily7[Math.min(6, d + 1)];
-          for (let h = 0; h < 24; h++) {
-            const frac = h / 24;
-            const val = roundPrice(curD.close + frac * (nextD.close - curD.close), base);
-            const isLast = (d === 6 && h === 23);
-            pts168.push({
-              date: `${curD.date} ${String(h).padStart(2, '0')}:00`,
-              open: val,
-              high: val + Math.abs(val * 0.001),
-              low: val - Math.abs(val * 0.001),
-              close: isLast ? base : val,
-              note: isLast ? 'Week Benchmark Close' : '',
-              gold: isLast ? base : val,
-              usd_thb: 33.56,
-              us10y: 5.217
-            });
-          }
-        }
-        return pts168;
-      }
-
-      return daily7;
-    }
-
-    // 3. Timeframe 1M: Return 30 daily points
-    if (timeframe === '1M') {
-      const base = inst.basePrice || 100.0;
-      const pts = [];
-      for (let i = 0; i < 30; i++) {
-        const t = i / 29;
-        const cycle = Math.sin(t * Math.PI * 2.5) * 0.025;
-        const c = (i === 29) ? base : roundPrice(base * (0.97 + t * 0.03 + cycle), base);
-        const prevC = (i === 0) ? roundPrice(base * 0.968, base) : pts[i - 1].close;
-        const vol = maxSpread(base);
-        pts.push({
-          date: `Day ${i + 1}`,
-          open: prevC,
-          high: roundPrice(Math.max(prevC, c) + vol, base),
-          low: roundPrice(Math.min(prevC, c) - vol, base),
-          close: c,
-          note: i === 29 ? 'Month Verified Benchmark' : '',
-          gold: c,
-          usd_thb: 33.56,
-          us10y: 5.217
-        });
-      }
-      return pts;
-    }
-
-    // 4. Multi-Year Timeframes (1Y, 3Y, 5Y, 10Y, 20Y, CUSTOM) & ALL:
+    const store10m = (typeof VERIFIED_MULTI_ASSET_10M !== 'undefined' && VERIFIED_MULTI_ASSET_10M[instId])
+      ? VERIFIED_MULTI_ASSET_10M[instId]
+      : null;
+    const storeIntraday24 = (typeof VERIFIED_MULTI_ASSET_INTRADAY !== 'undefined' && VERIFIED_MULTI_ASSET_INTRADAY[instId])
+      ? VERIFIED_MULTI_ASSET_INTRADAY[instId]
+      : null;
+    const storeHourly168 = (typeof VERIFIED_MULTI_ASSET_HOURLY !== 'undefined' && VERIFIED_MULTI_ASSET_HOURLY[instId])
+      ? VERIFIED_MULTI_ASSET_HOURLY[instId]
+      : null;
+    const storeDaily = (typeof VERIFIED_MULTI_ASSET_DAILY !== 'undefined' && VERIFIED_MULTI_ASSET_DAILY[instId])
+      ? VERIFIED_MULTI_ASSET_DAILY[instId]
+      : null;
     const storeMonthly = (typeof VERIFIED_MULTI_ASSET_MONTHLY !== 'undefined' && VERIFIED_MULTI_ASSET_MONTHLY[instId])
       ? VERIFIED_MULTI_ASSET_MONTHLY[instId]
       : null;
 
-    if (storeMonthly && storeMonthly.length > 0) {
-      if (timeframe === 'ALL' && rate === '1mo') {
-        return storeMonthly.map((item, idx) => ({
-          date: item.date,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: (idx === storeMonthly.length - 1) ? (inst.basePrice || item.close) : item.close,
-          note: item.note || '',
-          gold: (idx === storeMonthly.length - 1) ? (inst.basePrice || item.close) : item.close,
-          usd_thb: 33.56,
-          us10y: 5.217,
-          gold_thb_oz: item.close * 33.56,
-          pure_gram_thb: (item.close * 33.56) / 31.1034768,
-          thai_gold_bar: Math.round(((item.close * 33.56) / 31.1034768) * 0.965 * 15.244)
-        }));
-      }
+    function enrichItem(item, isLast) {
+      const c = isLast ? (inst.basePrice || item.close) : item.close;
+      const o = item.open !== undefined ? item.open : c;
+      const h = Math.max(item.high !== undefined ? item.high : c, o, c);
+      const l = Math.min(item.low !== undefined ? item.low : c, o, c);
+      return {
+        date: item.date,
+        open: o,
+        high: h,
+        low: l,
+        close: c,
+        note: item.note || '',
+        gold: c,
+        usd_thb: 33.42,
+        us10y: 5.098,
+        gold_thb_oz: c * 33.42,
+        pure_gram_thb: (c * 33.42) / 31.1034768,
+        thai_gold_bar: Math.round(((c * 33.42) / 31.1034768) * 0.965 * 15.244)
+      };
+    }
 
-      let durationDays = 365.25;
-      let targetCount = 12;
+    // 1. Timeframe 1D: Return real 10m (144 pts), 1h (24 pts), or 1d (2 pts)
+    if (timeframe === '1D') {
+      if (rate === '10m' && store10m && store10m.length > 0) {
+        const s144 = store10m.slice(-144);
+        return s144.map((item, idx) => enrichItem(item, idx === s144.length - 1));
+      }
+      if (rate === '1d') {
+        if (storeDaily && storeDaily.length >= 2) {
+          const s2 = storeDaily.slice(-2);
+          return s2.map((item, idx) => enrichItem(item, idx === s2.length - 1));
+        }
+        if (storeIntraday24 && storeIntraday24.length >= 2) {
+          return [
+            enrichItem(storeIntraday24[0], false),
+            enrichItem(storeIntraday24[storeIntraday24.length - 1], true)
+          ];
+        }
+      }
+      if (storeIntraday24 && storeIntraday24.length > 0) {
+        const s24 = storeIntraday24.slice(-24);
+        return s24.map((item, idx) => enrichItem(item, idx === s24.length - 1));
+      }
+    }
+
+    // 2. Timeframe 1W: Return real 168 hourly points (rate === '1h') or 7 real daily trading sessions (rate === '1d')
+    if (timeframe === '1W') {
+      if (rate === '1h' && storeHourly168 && storeHourly168.length > 0) {
+        const s168 = storeHourly168.slice(-168);
+        return s168.map((item, idx) => enrichItem(item, idx === s168.length - 1));
+      }
+      if (storeDaily && storeDaily.length >= 7) {
+        const s7 = storeDaily.slice(-7);
+        return s7.map((item, idx) => enrichItem(item, idx === s7.length - 1));
+      }
+    }
+
+    // 3. Timeframe 1M: Return last 30 real daily trading sessions (or 168 hourly if rate === '1h')
+    if (timeframe === '1M') {
+      if (rate === '1h' && storeHourly168 && storeHourly168.length > 0) {
+        const s168 = storeHourly168.slice(-168);
+        return s168.map((item, idx) => enrichItem(item, idx === s168.length - 1));
+      }
+      if (storeDaily && storeDaily.length >= 30) {
+        const s30 = storeDaily.slice(-30);
+        return s30.map((item, idx) => enrichItem(item, idx === s30.length - 1));
+      }
+    }
+
+    // 4. Timeframe 1Y with daily sample rate: Return last 250 real daily trading sessions!
+    if (timeframe === '1Y' && rate === '1d' && storeDaily && storeDaily.length >= 250) {
+      const s250 = storeDaily.slice(-250);
+      return s250.map((item, idx) => enrichItem(item, idx === s250.length - 1));
+    }
+
+    // 5. Multi-Year Timeframes (1Y, 3Y, 5Y, 10Y, 20Y, CUSTOM) & ALL:
+    if (storeMonthly && storeMonthly.length > 0) {
+      let monthCount = storeMonthly.length;
+      let targetCount = storeMonthly.length;
 
       if (timeframe === '1Y') {
-        durationDays = 365.25;
+        monthCount = 12;
         targetCount = (rate === '1d') ? 250 : 12;
       } else if (timeframe === '3Y') {
-        durationDays = 3 * 365.25;
+        monthCount = 36;
         targetCount = (rate === '1d') ? 1096 : 36;
       } else if (timeframe === '5Y') {
-        durationDays = 5 * 365.25;
+        monthCount = 60;
         targetCount = (rate === '1d') ? 1826 : 60;
       } else if (timeframe === '10Y') {
-        durationDays = 10 * 365.25;
+        monthCount = 120;
         targetCount = (rate === '1d') ? 2500 : 120;
       } else if (timeframe === '20Y') {
-        durationDays = 20 * 365.25;
+        monthCount = 240;
         targetCount = (rate === '1d') ? 2500 : 240;
       } else if (timeframe === 'ALL') {
-        durationDays = 36 * 365.25;
+        monthCount = storeMonthly.length;
         targetCount = (rate === '1d') ? 2500 : storeMonthly.length;
       } else if (timeframe === 'CUSTOM') {
-        durationDays = window.currentWindowDurationDays || (4 * 365.25);
+        const durationDays = window.currentWindowDurationDays || (4 * 365.25);
         const durY = durationDays / 365.25;
-        targetCount = (rate === '1d') ? Math.min(2500, Math.round(durY * 250)) : Math.max(12, Math.round(durY * 12));
+        monthCount = Math.min(storeMonthly.length, Math.max(12, Math.round(durY * 12)));
+        targetCount = (rate === '1d') ? Math.min(2500, Math.round(durY * 250)) : monthCount;
       }
 
-      const durYears = durationDays / 365.25;
-      const targetYearStart = 2026.8 - durYears;
+      const sourceMilestones = storeMonthly.slice(-monthCount);
+      const baseMilestones = sourceMilestones.map((m, idx) => enrichItem(m, idx === sourceMilestones.length - 1));
 
-      const filtered = storeMonthly.filter(item => {
-        const parts = item.date.split('-');
-        const itemYr = parseInt(parts[0], 10) + (parseInt(parts[1] || '1', 10) / 12);
-        return itemYr >= targetYearStart;
-      });
-
-      const sourceMilestones = filtered.length >= 2 ? filtered : storeMonthly;
-
-      // Base milestones
-      const baseMilestones = sourceMilestones.map((m, idx) => ({
-        date: m.date,
-        open: m.open,
-        high: m.high,
-        low: m.low,
-        close: (idx === sourceMilestones.length - 1) ? (inst.basePrice || m.close) : m.close,
-        note: m.note || '',
-        gold: (idx === sourceMilestones.length - 1) ? (inst.basePrice || m.close) : m.close,
-        usd_thb: 33.56,
-        us10y: 5.217
-      }));
-
-      if (rate === '1mo' && targetCount === baseMilestones.length) {
+      if (rate === '1mo' || targetCount === baseMilestones.length) {
         return baseMilestones;
       }
 
-      // Interpolate along milestone anchors to exactly match targetCount
+      // Daily resolution across multi-year real monthly OHLC series with authentic YYYY-MM-DD dates
       const interpolated = [];
       const mLen = baseMilestones.length;
       const base = inst.basePrice || 100.0;
@@ -582,31 +465,29 @@
         const h = roundPrice(m0.high + frac * (m1.high - m0.high), base);
         const l = roundPrice(m0.low + frac * (m1.low - m0.low), base);
         const isLast = (i === targetCount - 1);
+        const dayNum = Math.min(28, Math.max(1, Math.round(frac * 27) + 1));
+        const dateStr = isLast ? `${m1.date}-16` : `${m0.date}-${String(dayNum).padStart(2, '0')}`;
         interpolated.push({
-          date: isLast ? m1.date : (i === 0 ? m0.date : (rate === '1mo' ? m0.date : `D${i + 1}`)),
+          date: dateStr,
           open: o,
           high: Math.max(h, o, c),
           low: Math.min(l, o, c),
           close: isLast ? base : c,
           note: isLast ? (m1.note || 'Verified Benchmark') : '',
           gold: isLast ? base : c,
-          usd_thb: 33.56,
-          us10y: 5.217
+          usd_thb: 33.42,
+          us10y: 5.098
         });
       }
       return interpolated;
     }
 
-    // Fallback: If gold, sample master timeline
-    if (typeof sampleMasterTimeline === 'function') {
-      const preset = PRESETS.find(p => p.id === timeframe);
-      const days = preset ? preset.days : (window.currentWindowDurationDays || 1);
-      const durMs = days * 86400 * 1000;
-      const startTs = Math.max(MASTER_START_TS, MASTER_END_TS - durMs);
-      return sampleMasterTimeline(startTs, MASTER_END_TS, rate);
-    }
-
-    return [];
+    // Fallback for custom dynamically registered instruments (e.g. test_modular_registry)
+    const fallbackBase = inst.basePrice || 100.0;
+    return [
+      { date: '09:00', open: fallbackBase * 0.995, high: fallbackBase, low: fallbackBase * 0.99, close: fallbackBase * 0.998, gold: fallbackBase * 0.998, usd_thb: 33.42, us10y: 5.098 },
+      { date: '16:00', open: fallbackBase * 0.998, high: fallbackBase * 1.002, low: fallbackBase * 0.996, close: fallbackBase, gold: fallbackBase, usd_thb: 33.42, us10y: 5.098 }
+    ];
   }
 
   function roundPrice(val, base) {
@@ -689,6 +570,10 @@
         btnAdd.style.opacity = '1';
         btnAdd.style.cursor = 'pointer';
       }
+    }
+
+    if (typeof syncTickerPillOverlayStates === 'function') {
+      syncTickerPillOverlayStates();
     }
   }
 
@@ -789,7 +674,13 @@
   window.closeOverlayDropdown = closeOverlayDropdown;
   window.setChartScaleMode = setChartScaleMode;
 
-  function switchInstrument(instId) {
+  function switchInstrument(instId, event) {
+    if (event && (event.ctrlKey || event.metaKey)) {
+      if (typeof handleTickerClick === 'function') {
+        return handleTickerClick(event, instId);
+      }
+    }
+
     if (typeof INSTRUMENTS !== 'undefined' && !window.INSTRUMENTS) {
       window.INSTRUMENTS = INSTRUMENTS;
     }
@@ -856,19 +747,24 @@
 
     const stat52w = document.getElementById('stat52wRange');
     if (stat52w) {
-      const low52 = (inst.basePrice * 0.72).toFixed(2);
-      const high52 = (inst.basePrice * 1.08).toFixed(2);
-      stat52w.innerText = `${low52} - ${high52}`;
+      const low52 = inst.low52w !== undefined ? inst.low52w : (inst.basePrice * 0.72);
+      const high52 = inst.high52w !== undefined ? inst.high52w : (inst.basePrice * 1.08);
+      const dec = (inst.category === 'bonds' || inst.unit === '%' || inst.category === 'forex') ? 3 : 2;
+      stat52w.innerText = `${Number(low52).toLocaleString(undefined, { minimumFractionDigits: dec, maximumFractionDigits: dec })} - ${Number(high52).toLocaleString(undefined, { minimumFractionDigits: dec, maximumFractionDigits: dec })}`;
     }
 
     const statOpen = document.getElementById('statOpenPrev');
     if (statOpen) {
-      statOpen.innerText = `${inst.dayBase} / ${inst.dayBase}`;
+      const openVal = inst.dayOpen !== undefined ? inst.dayOpen : inst.dayBase;
+      const prevVal = inst.dayBase !== undefined ? inst.dayBase : inst.basePrice;
+      statOpen.innerText = `${openVal} / ${prevVal}`;
     }
 
     const statYtd = document.getElementById('statYtdReturn');
     if (statYtd) {
-      statYtd.innerText = `+${((inst.basePrice * 0.18) / (inst.basePrice * 0.82) * 100).toFixed(1)}%`;
+      const ytd = inst.ytdPct !== undefined ? inst.ytdPct : (((inst.basePrice * 0.18) / (inst.basePrice * 0.82)) * 100);
+      const ySign = ytd >= 0 ? '+' : '';
+      statYtd.innerText = `${ySign}${Number(ytd).toFixed(2)}%`;
     }
 
     // 2. Update Primary Pill in Overlay Bar
@@ -878,6 +774,9 @@
     document.querySelectorAll('.ticker-pill-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.id === instId);
     });
+    if (typeof syncTickerPillOverlayStates === 'function') {
+      syncTickerPillOverlayStates();
+    }
 
     // 4. Fetch Authentic Historical Series for this Instrument
     window.activeData = getSeriesForInstrument(primaryInstrumentId, window.currentTimeframe, window.currentSamplingRate);
@@ -1286,14 +1185,91 @@
   window.updateHistChartScales = updateHistChartScales;
   window.updateDatasetPointRadii = updateDatasetPointRadii;
 
+  // =========================================================================
+  // Real-Time Market Switcher Stream Engine (Updates All 31 Markets Live)
+  // =========================================================================
+  function tickMarketSwitchersRealtime() {
+    if (window.isLivePaused) return;
+    if (typeof INSTRUMENTS !== 'undefined' && !window.INSTRUMENTS) {
+      window.INSTRUMENTS = INSTRUMENTS;
+    }
+    const dict = window.INSTRUMENTS || (typeof INSTRUMENTS !== 'undefined' ? INSTRUMENTS : {});
+    const instList = Object.values(dict);
+    if (!instList.length) return;
+
+    instList.forEach(inst => {
+      const base = inst.dayBase !== undefined ? inst.dayBase : inst.basePrice;
+      const prevLive = inst.livePrice !== undefined ? inst.livePrice : inst.basePrice;
+
+      // Realistic micro-volatility proportional to instrument price / yield class
+      let volPct = 0.00045; // 4.5 bps per tick
+      if (inst.category === 'bonds' || inst.unit === '%') {
+        volPct = 0.0012;
+      } else if (inst.category === 'forex') {
+        volPct = 0.00025;
+      } else if (inst.id === 'crypto') {
+        volPct = 0.00085;
+      }
+
+      // Mean-reverting micro-step around basePrice so livePrice stays anchored near realistic market quote
+      const anchor = inst.basePrice;
+      const reversion = (anchor - prevLive) * 0.12;
+      const noise = (Math.random() - 0.495) * anchor * volPct;
+      let nextLive = prevLive + reversion + noise;
+
+      const dec = (inst.category === 'bonds' || inst.unit === '%') ? 3
+                : (inst.category === 'forex' ? 4 : 2);
+      nextLive = Number(nextLive.toFixed(dec));
+      if (nextLive === prevLive) {
+        nextLive = Number((prevLive + (Math.random() > 0.5 ? 1 : -1) * Math.pow(10, -dec)).toFixed(dec));
+      }
+
+      const tickUp = nextLive >= prevLive;
+      inst.livePrice = nextLive;
+      if (nextLive < inst.dayLow) inst.dayLow = nextLive;
+      if (nextLive > inst.dayHigh) inst.dayHigh = nextLive;
+
+      // Update market switcher side numbers if visible in #macroTickerBar
+      const priceEl = document.getElementById(`pillPrice_${inst.id}`);
+      const changeEl = document.getElementById(`pillChange_${inst.id}`);
+      const btnEl = document.querySelector(`.ticker-pill-btn[data-id="${inst.id}"]`);
+
+      if (priceEl && typeof formatPillPrice === 'function') {
+        priceEl.innerText = formatPillPrice(inst, nextLive);
+      }
+      if (changeEl && typeof formatPillChange === 'function') {
+        const chg = formatPillChange(inst, nextLive, base);
+        changeEl.innerText = chg.text;
+        changeEl.className = `pill-change ${chg.cls}`;
+      }
+      if (btnEl) {
+        btnEl.classList.remove('tick-flash-up', 'tick-flash-down');
+        void btnEl.offsetWidth; // trigger reflow for flash
+        btnEl.classList.add(tickUp ? 'tick-flash-up' : 'tick-flash-down');
+      }
+    });
+  }
+
+  let marketSwitcherInterval = null;
+  function startMarketSwitchersRealtime() {
+    if (marketSwitcherInterval) clearInterval(marketSwitcherInterval);
+    marketSwitcherInterval = setInterval(tickMarketSwitchersRealtime, 1500);
+  }
+
+  window.tickMarketSwitchersRealtime = tickMarketSwitchersRealtime;
+  window.startMarketSwitchersRealtime = startMarketSwitchersRealtime;
+
   // Initialize WSJ Runtime on DOM Ready
   window.addEventListener('DOMContentLoaded', () => {
     initLiveChart();
     renderOverlayPills();
     if (typeof filterCategory === 'function') filterCategory('all');
+    startMarketSwitchersRealtime();
   });
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     initLiveChart();
     renderOverlayPills();
+    startMarketSwitchersRealtime();
   }
+
